@@ -1,9 +1,10 @@
 from django.db.models import Model, CharField, ForeignKey, TextField, CASCADE
 
 from . import Notebook
+from .mixins import TrackingFieldsMixin
 
 
-class Note(Model):
+class Note(TrackingFieldsMixin, Model):
     """ A cloudCache note. """
 
     class Meta:

@@ -1,8 +1,10 @@
 from django.db.models import Model, CharField, ForeignKey, CASCADE
 from django.contrib.auth.models import User
 
+from .mixins import TrackingFieldsMixin
 
-class Notebook(Model):
+
+class Notebook(TrackingFieldsMixin, Model):
     """ A cloudCache notebook, which may contain additional notebooks and/or notes. """
 
     class Meta:
