@@ -59,7 +59,7 @@ class Account(AbstractBaseUser):
     objects = AccountManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ('username', 'email')
+    REQUIRED_FIELDS = ('email',)
 
     def __unicode__(self):
         return self.email
