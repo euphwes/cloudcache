@@ -1,5 +1,5 @@
 from django.db.models import Model, CharField, ForeignKey, CASCADE
-from django.contrib.auth.models import User
+from django.conf import settings
 
 from .mixins import TrackingFieldsMixin
 
@@ -11,7 +11,7 @@ class Notebook(TrackingFieldsMixin, Model):
         ordering = ('id',)
 
     name = CharField(max_length=1024, blank=False)
-    owner = ForeignKey(User, related_name='notebooks')
+    owner = ForeignKey(settings.AUTH_USER_MODEL, related_name='notebooks')
     parent = ForeignKey('self', on_delete=CASCADE, related_name='notebooks', null=True)
 
     def __repr__(self):
