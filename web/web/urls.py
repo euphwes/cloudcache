@@ -14,7 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
+from django.core.urlresolvers import reverse_lazy
+from django.views.generic import RedirectView
 
 urlpatterns = [
     url(r'^cloudcache/', include('cloudcache.urls', namespace='cloudcache')),
+    url(r'^$', RedirectView.as_view(url=reverse_lazy('cloudcache:home')))
 ]
