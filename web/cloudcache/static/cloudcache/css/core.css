@@ -9,3 +9,8 @@ body {
 .navbar-custom .navbar-brand {
     color: #222222;
 }
+.description {
+    font-size: 16px;
+    margin-top: 1.5em;
+    color: #757575;
+}
