@@ -28,7 +28,7 @@ body {
 .login-body > form {
     margin-bottom: 0px;
 }
-.login-body .input-group {
+.login-body .field-group {
     margin-bottom: 8px;
 }
 .login-body .form-control {

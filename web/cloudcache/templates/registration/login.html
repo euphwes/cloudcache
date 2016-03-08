@@ -17,12 +17,12 @@
             </div>
             <div class="login-body">
                 <form method="post" action="{% url 'cloudcache:login' %}">
-                    <div class="input-group">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ next }}" />
-                    <input class="form-control" placeholder="Username" type="text" name="username" id="id_username"/>
-                    <input class="form-control" placeholder="Password" type="password" name="password" id="id_password">
-                        </div>
+                    <div class="field-group">
+                        <input class="form-control" placeholder="Username" type="text" name="username" id="id_username"/>
+                        <input class="form-control" placeholder="Password" type="password" name="password" id="id_password">
+                    </div>
                     <button class="btn btn-primary" type="submit" name="commit" id="id_signin">Sign In</button>
                 </form>
             </div>
