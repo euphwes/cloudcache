@@ -1,11 +1,31 @@
-{% load static from staticfiles %}
-
 <nav class="navbar navbar-static-top navbar-custom">
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="#">
                 <span class="glyphicon glyphicon-tags"></span>
             </a>
+        </div>
+
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a id='id_navbar_user_dropdown' href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        {{ user.username }}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#">My Profile</a>
+                        </li>
+                        <li>
+                            <a href="#">My Settings</a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <a id="id_navbar_logout" href="{% url 'cloudcache:logout' %}">Log Out</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
 </nav>
