@@ -8,12 +8,16 @@
     <!--<link rel="shortcut icon" href="{% static 'cloudcache/favicon.ico' %}">-->
 
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'intact/css/core.css' %}" rel="stylesheet">
 </head>
 <body>
+
+    {% include 'cloudcache/core/navbar.html' %}
 
     {% block content %}
     {% endblock %}
 
+    <script src="{% static 'jquery/js/jquery-2.1.0.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 </body>
 </html>
