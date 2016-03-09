@@ -30,11 +30,13 @@
                         {% csrf_token %}
                         <div class="form-group {% if form.username.errors %}has-error{% endif %}">
                             <input class="form-control" placeholder="Username" type="text" name="username"
-                                   id="id_username" data-toggle="tooltip" data-placement="right"/>
+                                   id="id_username" data-toggle="tooltip" data-placement="right"
+                                   value='{{ form.username.value }}'/>
                         </div>
                         <div class="form-group {% if form.email.errors %}has-error{% endif %}">
                             <input class="form-control" placeholder="Email" type="text" name="email"
-                                   id="id_email" data-toggle="tooltip" data-placement="right"/>
+                                   id="id_email" data-toggle="tooltip" data-placement="right"
+                                   value='{{ form.email.value }}'/>
                         </div>
                         <div class="form-group {% if form.password.errors %}has-error{% endif %}">
                             <input class="form-control" placeholder="Password" type="password" name="password"
