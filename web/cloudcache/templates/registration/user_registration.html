@@ -2,6 +2,16 @@
 {% extends 'registration/auth_base.html' %}
 
 {% block content %}
+
+    {% if new_registration_success %}
+    <div id="id_success_banner" class="alert alert-success text-center alert-auth">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        Congrats! Your account is now active. Click
+        <a id="id_register_success_link" href="{% url 'cloudcache:login' %}" class="alert-link">here</a>
+        to sign in.
+    </div>
+    {% endif %}
+
     {% for error in form.non_field_errors %}
         <div class="alert alert-danger text-center alert-auth">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -10,41 +20,46 @@
     {% endfor %}
 
     <div class="container login-container">
-        <div class="col-sm-6 col-sm-offset-1">
-            <h1>Sign up for cloudCache</h1>
-            <h3>You'll be glad you did.</h3>
-            <p class="description">Simplify your note-taking. Create notes and put them in notebooks, organizing them
-                however you like. Tag notes, search them, and color code them for easier browsing.</p>
-        </div>
-        <div class="col-sm-4">
+        <div class="col-sm-4 col-sm-offset-1">
             <div class="login-box">
                 <div class="login-heading">
-                    <h3 class="text-centered">Sign in</h3>
+                    <h3 class="text-centered">Sign up</h3>
                 </div>
                 <div class="login-body">
-                    <form method="post" action="{% url 'cloudcache:login' %}">
+                    <form method="post" action="{% url 'cloudcache:register' %}">
                         {% csrf_token %}
-                        <input type="hidden" name="next" value="{{ next }}" />
                         <div class="form-group {% if form.username.errors %}has-error{% endif %}">
                             <input class="form-control" placeholder="Username" type="text" name="username"
                                    id="id_username" data-toggle="tooltip" data-placement="right"/>
+                        </div>
+                        <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+                            <input class="form-control" placeholder="Email" type="text" name="email"
+                                   id="id_email" data-toggle="tooltip" data-placement="right"/>
                         </div>
                         <div class="form-group {% if form.password.errors %}has-error{% endif %}">
                             <input class="form-control" placeholder="Password" type="password" name="password"
                                    id="id_password" data-toggle="tooltip" data-placement="right">
                         </div>
-                        <button class="btn btn-primary btn-login" type="submit" name="commit" id="id_signin">Sign In</button>
+                        <div class="form-group {% if form.confirm_password.errors %}has-error{% endif %}">
+                            <input class="form-control" placeholder="Confirm password" type="password" name="confirm_password"
+                                   id="id_confirm_password" data-toggle="tooltip" data-placement="right">
+                        </div>
+                        <button class="btn btn-primary btn-register" type="submit" id="id_signin">Sign up</button>
                     </form>
                 </div>
             </div>
-            <div class="prepend-top-10 grey-text text-center">
-                New here, and want to take awesome notes? <a href="{% url 'cloudcache:register' %}">Sign up</a>
-            </div>
+        </div>
+        <div class="col-sm-6 col-sm-offset-1">
+            <h1>Sign up for cloudCache</h1>
+            <h3>You'll be glad you did.</h3>
+            <p class="description">It's quick and easy, and you'll be taking notes like a boss in no time.</p>
         </div>
     </div>
 {% endblock %}
 
 {% block additional_js %}
     $('#id_username').tooltip({'trigger':'focus', 'title': '{{ form.username.errors.0 }}'});
+    $('#id_email').tooltip({'trigger':'focus', 'title': '{{ form.email.errors.0 }}'});
     $('#id_password').tooltip({'trigger':'focus', 'title': '{{ form.password.errors.0 }}'});
+    $('#id_confirm_password').tooltip({'trigger':'focus', 'title': '{{ form.confirm_password.errors.0 }}'});
 {% endblock %}

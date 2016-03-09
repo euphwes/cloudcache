@@ -32,7 +32,7 @@ class UserRegistrationView(View):
         # Redirect back to this page, with a success flag set.
         if acct_creation_form.is_valid():
             acct_creation_form.save(commit=True)
-            return redirect(reverse('intact:register') + self.success_flag)
+            return redirect(reverse('cloudcache:register') + self.success_flag)
 
         # If the form is invalid, re-display the page with the relevant errors in the form
         else:
