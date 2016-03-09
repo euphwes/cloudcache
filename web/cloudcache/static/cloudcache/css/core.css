@@ -41,13 +41,20 @@ body {
 }
 .login-heading > h3 {
     margin-top: 0px;
+    margin-bottom: 30px;
     text-align: center;
 }
 .alert-auth {
     padding: 6px;
 }
+.btn-auth {
+    margin-top: 20px;
+}
 .btn-login {
     background-color: #446E9B;
+}
+.btn-register {
+    background-color: #019875;
 }
 .tooltip-inner {
     width: 150px;

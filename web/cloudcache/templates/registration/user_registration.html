@@ -51,9 +51,12 @@
                             <input class="form-control" placeholder="Confirm password" type="password" name="confirm_password"
                                    id="id_confirm_password" data-toggle="tooltip" data-placement="right">
                         </div>
-                        <button class="btn btn-primary btn-register" type="submit" id="id_signin">Sign up</button>
+                        <button class="btn btn-primary btn-register btn-auth" type="submit" id="id_signin">Sign up</button>
                     </form>
                 </div>
+            </div>
+            <div class="prepend-top-10 grey-text text-center">
+                Already have an account? <a href="{% url 'cloudcache:home' %}">Sign in</a>
             </div>
         </div>
     </div>
