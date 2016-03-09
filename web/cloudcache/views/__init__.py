@@ -14,3 +14,4 @@ class LoginRequiredMixin(object):
 
 from .HomePageView import HomePageView
 from .LogoutView import LogoutView
+from .UserRegistrationView import UserRegistrationView
