@@ -14,6 +14,13 @@
 
     {% include 'registration/basic_navbar.html' %}
 
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger text-center alert-auth">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            {{ error }}
+        </div>
+    {% endfor %}
+
     {% block content %}
     {% endblock %}
 
