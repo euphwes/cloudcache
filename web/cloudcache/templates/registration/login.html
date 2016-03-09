@@ -10,16 +10,16 @@
     {% endfor %}
 
     <div class="container login-container">
-        <div class="col-sm-8">
+        <div class="col-sm-6 col-sm-offset-1">
             <h1>cloudCache</h1>
             <h3>Open source note-taking software</h3>
-            <p class="description">Simplify your note taking. Create notes and put them in notebooks, organizing them
+            <p class="description">Simplify your note-taking. Create notes and put them in notebooks, organizing them
                 however you like. Tag notes, search them, and color code them for easier browsing.</p>
         </div>
         <div class="col-sm-4">
             <div class="login-box">
                 <div class="login-heading">
-                    <h3 class="text-centered">Sign In</h3>
+                    <h3 class="text-centered">Sign in</h3>
                 </div>
                 <div class="login-body">
                     <form method="post" action="{% url 'cloudcache:login' %}">
@@ -36,6 +36,9 @@
                         <button class="btn btn-primary btn-login" type="submit" name="commit" id="id_signin">Sign In</button>
                     </form>
                 </div>
+            </div>
+            <div class="prepend-top-10 grey-text text-center">
+                New here, and want to take awesome notes? <a href="#">Sign up</a>
             </div>
         </div>
     </div>

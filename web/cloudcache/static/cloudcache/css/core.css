@@ -52,3 +52,9 @@ body {
 .tooltip-inner {
     width: 150px;
 }
+.prepend-top-10 {
+    margin-top: 10px;
+}
+.grey-text {
+    color: #757575;
+}
