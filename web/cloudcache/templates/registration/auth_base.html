@@ -14,17 +14,14 @@
 
     {% include 'registration/basic_navbar.html' %}
 
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-danger text-center alert-auth">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {{ error }}
-        </div>
-    {% endfor %}
-
     {% block content %}
     {% endblock %}
 
     <script src="{% static 'jquery/js/jquery-2.1.0.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script>
+        {% block additional_js %}
+        {% endblock %}
+    </script>
 </body>
 </html>

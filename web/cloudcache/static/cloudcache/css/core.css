@@ -32,7 +32,7 @@ body {
 .login-body > form {
     margin-bottom: 0px;
 }
-.login-body .field-group {
+.login-body .form-group {
     margin-bottom: 8px;
 }
 .login-body .form-control {
@@ -48,4 +48,7 @@ body {
 }
 .btn-login {
     background-color: #446E9B;
+}
+.tooltip-inner {
+    width: 150px;
 }
