@@ -54,7 +54,12 @@ body {
     background-color: #446E9B;
 }
 .btn-register {
+    border-color: #017f62;
     background-color: #019875;
+}
+.btn-register:hover {
+    border-color: #017f62;
+    background-color: #01b289;
 }
 .tooltip-inner {
     width: 150px;
