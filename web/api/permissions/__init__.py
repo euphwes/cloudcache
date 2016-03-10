@@ -3,11 +3,11 @@ from rest_framework import permissions
 # ----------------------------------------------------------------------------------------------------------------------
 
 class IsAccountSelfOrReadOnly(permissions.BasePermission):
-    """ Object-level permission to only allow Account owners to edit themselves. Anybody can POST a new user. """
+    """ Object-level permission to only allow Account owners to edit themselves. Anybody can POST a new Account. """
 
     def has_object_permission(self, request, view, obj):
 
-        # Read are allowed to anybody
+        # Read actions are allowed to anybody
         if request.method in permissions.SAFE_METHODS:
             return True
 
