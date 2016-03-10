@@ -34,7 +34,7 @@ class NotebookList(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """ For listing (via GET), only show the Notebooks owned by the currently logged-in user. """
+        """ For listing, only show the Notebooks owned by the currently logged-in user. """
         return Notebook.objects.filter(owner=self.request.user)
 
 
@@ -68,24 +68,28 @@ class NotebookDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """ For displaying (via GET), only show the Notebooks owned by the currently logged-in user. """
+        """ For displaying, only show the Notebooks owned by the currently logged-in user. """
         return Notebook.objects.filter(owner=self.request.user)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 class NoteList(ListCreateAPIView):
+    """ API endpoint for listing and creating Note. Requires authentication. """
 
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        """ Only show Notes which are in Notebooks that are owned by the currently logged-in user. """
         return Note.objects.filter(notebook__owner=self.request.user)
 
 
 class NoteDetail(RetrieveUpdateDestroyAPIView):
+    """ API endpoint which allows retrieving details for, updating, or deleting a specific Note. """
 
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        """ Only show Notes which are in Notebooks that are owned by the currently logged-in user. """
         return Note.objects.filter(notebook__owner=self.request.user)
