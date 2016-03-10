@@ -1,15 +1,17 @@
 from cloudcache.models import Notebook
 from authentication.models import Account
-from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework.serializers import HyperlinkedModelSerializer, HyperlinkedRelatedField
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 class NotebookSerializer(HyperlinkedModelSerializer):
     """ Serializer for read/write actions on the Notebook model list and detail endpoints. """
 
+    notebooks = HyperlinkedRelatedField(many=True, read_only=True, view_name='notebook-detail')
+
     class Meta:
         model = Notebook
-        fields = ('id', 'name', 'owner', 'parent', 'created', 'modified', 'url')
+        fields = ('id', 'name', 'owner', 'parent', 'notebooks', 'created', 'modified', 'url')
 
         extra_kwargs = {
             'id': {'read_only': True},    # Shouldn't be able to edit ID
