@@ -17,7 +17,18 @@ from django.conf.urls import url, include
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import RedirectView
 
+from rest_framework import routers
+
+from api.views.public import AccountViewSet
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+router = routers.DefaultRouter()
+router.register(r'accounts', AccountViewSet)
+
 urlpatterns = [
+    url(r'^api/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls')),
     url(r'^cloudcache/', include('cloudcache.urls', namespace='cloudcache')),
     url(r'^$', RedirectView.as_view(url=reverse_lazy('cloudcache:home')))
 ]
