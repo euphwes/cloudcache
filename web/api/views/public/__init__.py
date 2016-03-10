@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from authentication.models import Account
-from cloudcache.models import Notebook
+from cloudcache.models import Notebook, Note
 
-from ...serializers import AccountSerializer, NotebookSerializer
+from ...serializers import AccountSerializer, NotebookSerializer, NoteSerializer
 from ...permissions import IsAccountSelfOrReadOnly
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -69,4 +69,23 @@ class NotebookDetail(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         """ For displaying (via GET), only show the Notebooks owned by the currently logged-in user. """
-        return Notebook.objects.filter(owner=self.request.user).order_by('id')
+        return Notebook.objects.filter(owner=self.request.user)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+class NoteList(ListCreateAPIView):
+
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Note.objects.filter(notebook__owner=self.request.user)
+
+
+class NoteDetail(RetrieveUpdateDestroyAPIView):
+
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Note.objects.filter(notebook__owner=self.request.user)
