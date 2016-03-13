@@ -22,13 +22,10 @@ body {
     color: #757575;
 }
 .login-box {
-    -webkit-box-shadow: 0 0px 2px #cccccc;
-    -moz-box-shadow:    0 0px 2px #cccccc;
-    box-shadow:         0 0px 2px #cccccc;
-    background-color: #f5f5f5;
     padding: 15px;
+    background-color: #f5f5f5;
+    border: 1px solid #d0d0d0;
     border-radius: 6px;
-    border: 1px solid #b0b0b0;
 }
 .login-body > form {
     margin-bottom: 0px;
@@ -90,16 +87,16 @@ body {
 }
 
 #wrapper.toggled {
-    padding-left: 250px;
+    padding-left: 200px;
 }
 
 #sidebar-wrapper {
     z-index: 50;
     position: fixed;
-    left: 175px;
+    left: 200px;
     width: 0;
     height: 100%;
-    margin-left: -175px;
+    margin-left: -200px;
     overflow-y: auto;
     background: #f5f5f5;
     -webkit-transition: all 0.5s ease;
@@ -110,7 +107,7 @@ body {
 }
 
 #wrapper.toggled #sidebar-wrapper {
-    width: 175px;
+    width: 200px;
 }
 
 #page-content-wrapper {
@@ -121,15 +118,12 @@ body {
 
 #wrapper.toggled #page-content-wrapper {
     position: absolute;
-    margin-right: -175px;
+    margin-right: -200px;
 }
 
 /* Sidebar Styles */
 
 .sidebar-nav {
-    position: absolute;
-    top: 0;
-    width: 175px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -174,7 +168,7 @@ body {
 
 @media(min-width:768px) {
     #wrapper {
-        padding-left: 175px;
+        padding-left: 200px;
     }
 
     #wrapper.toggled {
@@ -182,7 +176,7 @@ body {
     }
 
     #sidebar-wrapper {
-        width: 175px;
+        width: 200px;
     }
 
     #wrapper.toggled #sidebar-wrapper {
@@ -198,4 +192,22 @@ body {
         position: relative;
         margin-right: 0;
     }
+}
+
+.treeview > ul > li {
+    font-size: 10pt;
+    padding: 5px 6px;
+}
+
+.treeview > ul > li > span.indent {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.tree-wrapper {
+    margin-top: 25px;
+}
+
+.list-group-item:first-child, .list-group-item:last-child {
+    border-radius: 0;
 }
