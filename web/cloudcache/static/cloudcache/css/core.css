@@ -200,8 +200,13 @@ body {
 }
 
 .treeview > ul > li > span.indent {
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+.treeview ul > li > span.icon {
+    font-size: 12px;
+    width: 6px;
 }
 
 .tree-wrapper {
