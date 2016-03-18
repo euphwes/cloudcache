@@ -74,6 +74,8 @@ function buildTreeviewForNotebooks(notebooks) {
         backColor: '#f5f5f5',
         selectedBackColor: '#446E9B',
         showBorder: false,
+        expandIcon: 'glyphicon glyphicon-triangle-right',
+        collapseIcon: 'glyphicon glyphicon-triangle-bottom',
     });
 }
 
