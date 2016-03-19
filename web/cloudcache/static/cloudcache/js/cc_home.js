@@ -77,6 +77,30 @@ function buildTreeviewForNotebooks(notebooks) {
         expandIcon: 'glyphicon glyphicon-triangle-right',
         collapseIcon: 'glyphicon glyphicon-triangle-bottom',
     });
+
+    wireTreeEvents();
+}
+
+/**
+ * Wire up handlers to events fired by the treeview.
+ **/
+function wireTreeEvents() {
+    var tree = $('#tree');
+
+    tree.on('nodeSelected', function(event, node) {
+        node.notes.forEach(function(note) {
+            $.ajax({
+                url: node.notes[0],
+                type: 'GET',
+                timeout: 1000,
+                success: function(note) {
+                    $('#notes-wrapper').append('<p>' + note.title + '<br>' + note.content + '</p>');
+                },
+            });
+        });
+    });
+
+    tree.on('nodeUnselected', function() { $('#notes-wrapper').empty(); });
 }
 
 /**
