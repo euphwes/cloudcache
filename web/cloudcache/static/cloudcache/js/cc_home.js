@@ -88,13 +88,16 @@ function wireTreeEvents() {
     var tree = $('#tree');
 
     tree.on('nodeSelected', function(event, node) {
+
         node.notes.forEach(function(note) {
             $.ajax({
-                url: node.notes[0],
+                url: note,
                 type: 'GET',
                 timeout: 1000,
                 success: function(note) {
-                    $('#notes-wrapper').append('<p>' + note.title + '<br>' + note.content + '</p>');
+                    console.log(note);
+                    var content = '<div class="note"><div class="note-title">' + note.title + '</div><div class="note-contents">' + note.content + '</div></div>'
+                    $('#notes-wrapper').append(content);
                 },
             });
         });
