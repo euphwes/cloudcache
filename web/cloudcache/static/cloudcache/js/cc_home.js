@@ -81,39 +81,39 @@ function buildTreeviewForNotebooks(notebooks) {
     wireTreeEvents();
 }
 
-String.prototype.replaceAll = function(search, replace)
-{
-    //if replace is not sent, return original string otherwise it will
-    //replace search string with 'undefined'.
-    if (replace === undefined) {
-        return this.toString();
-    }
+/**
+ * Event handler for selecting a node in the treeview. Performs an API retrieval for each note in that notebook, builds
+ * an element for it in the DOM, and appends it to the content pane.
+ **/
+function handleNotebookSelected(event, notebook) {
 
-    return this.replace(new RegExp('[' + search + ']', 'g'), replace);
-};
+    // Build up a note div which contains inner note-title and note-contents class divs, with the title and content
+    // of a note object retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
+    var buildNote = function(note) {
+        var title = $('<div>', {class: 'note-title'}).append(note.title);
+        var note_content = note.content.replaceAll('\r\n', '<br>').trim();
+        var content = $('<div>', {class: 'note-contents'}).append('<p>' + note_content + '</p>');
+        var note = $('<div>', {class: 'note'}).append(title, content);
+        $('#notes-wrapper').append(note);
+    };
+
+    // Do an API get on each note contained by this notebook, and when it succeeds, run it through buildNote
+    notebook.notes.forEach(function(note) {
+        $.ajax({
+            url: note,
+            type: 'GET',
+            timeout: 1000,
+            success: buildNote,
+        });
+    });
+}
 
 /**
  * Wire up handlers to events fired by the treeview.
  **/
 function wireTreeEvents() {
     var tree = $('#tree');
-
-    tree.on('nodeSelected', function(event, node) {
-
-        node.notes.forEach(function(note) {
-            $.ajax({
-                url: note,
-                type: 'GET',
-                timeout: 1000,
-                success: function(note) {
-                    console.log(note);
-                    var content = '<div class="note"><div class="note-title">' + note.title + '</div><div class="note-contents"><p>' + note.content.replaceAll('\r\n', '<br/>') + '</p></div></div>'
-                    $('#notes-wrapper').append(content);
-                },
-            });
-        });
-    });
-
+    tree.on('nodeSelected',handleNotebookSelected);
     tree.on('nodeUnselected', function() { $('#notes-wrapper').empty(); });
 }
 
