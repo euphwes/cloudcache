@@ -81,6 +81,17 @@ function buildTreeviewForNotebooks(notebooks) {
     wireTreeEvents();
 }
 
+String.prototype.replaceAll = function(search, replace)
+{
+    //if replace is not sent, return original string otherwise it will
+    //replace search string with 'undefined'.
+    if (replace === undefined) {
+        return this.toString();
+    }
+
+    return this.replace(new RegExp('[' + search + ']', 'g'), replace);
+};
+
 /**
  * Wire up handlers to events fired by the treeview.
  **/
@@ -96,7 +107,7 @@ function wireTreeEvents() {
                 timeout: 1000,
                 success: function(note) {
                     console.log(note);
-                    var content = '<div class="note"><div class="note-title">' + note.title + '</div><div class="note-contents">' + note.content + '</div></div>'
+                    var content = '<div class="note"><div class="note-title">' + note.title + '</div><div class="note-contents"><p>' + note.content.replaceAll('\r\n', '<br/>') + '</p></div></div>'
                     $('#notes-wrapper').append(content);
                 },
             });
