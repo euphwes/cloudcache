@@ -87,6 +87,20 @@ function buildTreeviewForNotebooks(notebooks) {
  **/
 function handleNotebookSelected(event, notebook) {
 
+    // We want to get the shortest column in the content pane, to append the newest to the end of that.
+    // Check the height of each of the note-col divs inside the #notes-wrapper, find the sortest, and return that
+    var getShortestColumn = function() {
+        var minHeight = 9999999;
+        var shortColumn;
+        $('#notes-wrapper').children().each(function() {
+            if ($(this).height() < minHeight) {
+                minHeight = $(this).height();
+                shortColumn = $(this);
+            }
+        });
+        return shortColumn;
+    };
+
     // Build up a note div which contains inner note-title and note-contents class divs, with the title and content
     // of a note object retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
     var buildNote = function(note) {
@@ -94,7 +108,7 @@ function handleNotebookSelected(event, notebook) {
         var note_content = note.content.replaceAll('\r\n', '<br>').trim();
         var content = $('<div>', {class: 'note-contents'}).append('<p>' + note_content + '</p>');
         var note = $('<div>', {class: 'note'}).append(title, content);
-        $('#notes-wrapper').append(note);
+        getShortestColumn().append(note);
     };
 
     // Do an API get on each note contained by this notebook, and when it succeeds, run it through buildNote
@@ -114,7 +128,11 @@ function handleNotebookSelected(event, notebook) {
 function wireTreeEvents() {
     var tree = $('#tree');
     tree.on('nodeSelected',handleNotebookSelected);
-    tree.on('nodeUnselected', function() { $('#notes-wrapper').empty(); });
+    tree.on('nodeUnselected', function() {
+        $('#notes-wrapper').children().each(function() {
+            $(this).empty();
+        });
+    });
 }
 
 /**
