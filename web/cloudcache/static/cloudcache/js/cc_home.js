@@ -114,6 +114,13 @@ function buildBreadcrumbs(notebook) {
 
     $('#breadcrumbs').empty();
 
+    // If no notebook is provided, only put the 'Notebooks' crumb at the root, set it as active, and bail out early
+    if (notebook == null) {
+        var crumb = $('<li>').addClass('active').append('Notebooks');
+        $('#breadcrumbs').prepend(crumb);
+        return;
+    }
+
     // Make the last element the active element with the current notebook's name
     var crumb = $('<li>').addClass('active').append(notebook.text);
     $('#breadcrumbs').prepend(crumb);
@@ -122,16 +129,27 @@ function buildBreadcrumbs(notebook) {
     // an ol->li element with that notebook's name
     var parent = $('#tree').treeview('getParent', notebook);
     while (parent.selector != '#tree') {
-        var anchor = $('<a href="#">').append(parent.text);
+        var anchorId = 'crumb' + parent.nodeId;
+        var anchor = $('<a href="#">').attr('id', anchorId).append(parent.text);
         var crumb = $('<li>').append(anchor);
         $('#breadcrumbs').prepend(crumb);
-
         parent = $('#tree').treeview('getParent', parent);
     }
+
+    // Wire up click handlers for each anchor
+    $('#breadcrumbs li a').each(function(index, element){
+        var nodeId = $(this).attr('id').replace('crumb','');
+        $(this).click(function() {
+            $('#tree').treeview('selectNode', parseInt(nodeId));
+        });
+    });
 
     // Prepend the root element in the breadcrumbs, which we'll call "Notebooks"
     var anchor = $('<a href="#">').append('Notebooks');
     var crumb = $('<li>').append(anchor);
+    anchor.click(function() {
+        $('#tree').treeview('unselectNode', $('#tree').treeview('getSelected')[0]);
+    });
     $('#breadcrumbs').prepend(crumb);
 }
 
@@ -151,7 +169,6 @@ function handleNotebookSelected(event, notebook) {
             timeout: 1000,
             success: buildNote,
         });
-        console.log(blah);
     });
 }
 
@@ -164,6 +181,7 @@ function wireTreeEvents() {
     tree.on('nodeUnselected', function() {
         $('#notes-wrapper').children().each(function() {
             $(this).empty();
+            buildBreadcrumbs(null);
         });
     });
 }
