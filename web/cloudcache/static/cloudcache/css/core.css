@@ -217,13 +217,15 @@ body {
     border-radius: 0;
 }
 
+#controls-wrapper {
+    height: 50px;
+    border-bottom: 1px solid #aaaaaa;
+}
+
 #notes-wrapper {
     width: 100%;
     text-align: center;
-}
-
-.notes-col {
-    padding: 0px 8px;
+    margin-top: 10px;
 }
 
 .note {
@@ -267,4 +269,10 @@ body {
     vertical-align: middle;
     height: 15px;
     line-height: 100%;
+}
+
+.breadcrumb-custom {
+    margin: 0;
+    padding-left: 0;
+    background-color: transparent;
 }

@@ -87,7 +87,19 @@ function buildTreeviewForNotebooks(notebooks) {
  **/
 function handleNotebookSelected(event, notebook) {
 
-    // We want to get the shortest column in the content pane, to append the newest to the end of that.
+    // Build up the breadcrumbs for the current notebook structure
+    $('#breadcrumbs').empty();
+    $('#breadcrumbs').prepend('<li class="active">' + notebook.text + '</li>');
+
+    var parent = $('#tree').treeview('getParent', notebook);
+    while (parent.selector != '#tree') {
+        console.log(parent);
+        $('#breadcrumbs').prepend('<li><a href="#">' + parent.text.trim() + '</a></li>')
+        parent = $('#tree').treeview('getParent', parent);
+    }
+    $('#breadcrumbs').prepend('<li><a href="#">Home</a></li>')
+
+    // We want to get the shortest column in the content pane, to append the current note to the end of that.
     // Check the height of each of the note-col divs inside the #notes-wrapper, find the sortest, and return that
     var getShortestColumn = function() {
         var minHeight = 9999999;
