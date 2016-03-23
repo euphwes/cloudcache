@@ -98,14 +98,13 @@ function getShortestColumn() {
 // Build up a note div which contains inner note-title and note-contents class divs, with the title and content
 // of a note object retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
 function buildNote(note) {
+    var tag = $('<span>').addClass('glyphicon glyphicon-tag flipped pull-right');
+    var title = $('<div>').addClass('note-title').append(note.title, tag);
 
-    var tag = $('<span>').addClass('glyphicon glyphicon-tag');
-    var title = $('<div>', {class: 'note-title'}).append(tag, note.title);
     var note_content = note.content.replaceAll('\r\n', '<br>').trim();
     var content = $('<div>', {class: 'note-contents'}).append('<p>' + note_content + '</p>');
 
-    var note = $('<div>', {class: 'note'}).append(title, content);
-    getShortestColumn().append(note);
+    var note = $('<div>', {class: 'note'}).append(title, content).appendTo(getShortestColumn());
 }
 
 /**
