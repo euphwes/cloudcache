@@ -73,6 +73,38 @@ class NotebookDetail(RetrieveUpdateDestroyAPIView):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
+class NotebookNotesList(ListCreateAPIView):
+    """ API endpoint for listing only those notes under a specific Notebook. Requires authentication. """
+
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        """ Retrieve only those notes which are contained within the Notebook whose ID is <pk> in the API endpoint. """
+        notes = self.get_queryset().filter(notebook__id=pk)
+        serializer = NoteSerializer(notes, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        """ Create a new note under the Notebook whose ID is <pk> in the API endpoint. """
+
+        # Add a 'notebook' parameter to the request data (or override it if it exists) to ensure the Note being posted
+        # is owned by the Notebook whose ID is in the API endpoint URL.
+        request.data['notebook'] = '/api/notebooks/{}/'.format(pk)
+
+        serializer = NoteSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        """ Only show Notes which are in Notebooks that are owned by the currently logged-in user. """
+        return Note.objects.filter(notebook__owner=self.request.user)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 class NoteList(ListCreateAPIView):
     """ API endpoint for listing and creating Note. Requires authentication. """
 
