@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from .views.public import AccountList, AccountDetail, NotebookList, NotebookDetail, NoteList, NoteDetail,\
-    NotebookNotesList
+    NotebookNotesList, NotebookNotebooksList
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -35,6 +35,9 @@ urlpatterns = [
 
     # cloudcache.models.Notebook nested notes list
     url('^notebooks/(?P<pk>[0-9]+)/notes/$', NotebookNotesList.as_view(), name='notebook-notes-list'),
+
+    # cloudcache.models.Notebook nested notebooks list
+    url('^notebooks/(?P<pk>[0-9]+)/notebooks/$', NotebookNotebooksList.as_view(), name='notebook-notebooks-list'),
 
     # cloudcache.models.Note list and detail views
     url(r'^notes/$', NoteList.as_view(), name='note-list'),
