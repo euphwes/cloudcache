@@ -83,10 +83,10 @@ function buildTreeviewForNotebooks(notebooks) {
 
 // We want to get the shortest column in the content pane, to append the current note to the end of that.
 // Check the height of each of the note-col divs inside the #notes-wrapper, find the shortest, and return that
-function getShortestColumn() {
+function getShortestColumn(selector) {
     var minHeight = 9999999;
     var shortColumn;
-    $('#notes-wrapper').children().each(function() {
+    $(selector).children().each(function() {
         if ($(this).height() < minHeight) {
             minHeight = $(this).height();
             shortColumn = $(this);
@@ -104,7 +104,22 @@ function buildNote(note) {
     var note_content = note.content.replaceAll('\r\n', '<br>').trim();
     var content = $('<div>', {class: 'note-contents'}).append('<p>' + note_content + '</p>');
 
-    var note = $('<div>', {class: 'note'}).append(title, content).appendTo(getShortestColumn());
+    var note = $('<div>', {class: 'note'}).append(title, content).appendTo(getShortestColumn('#notes-wrapper'));
+}
+
+/**
+ * Builds up a notebook div which contains the notebook
+ **/
+function buildNotebook(notebook) {
+    var folder = $('<span>').addClass('glyphicon glyphicon-folder-open pull-right');
+    var nb = $('<div>')
+        .addClass('notebook')
+        .attr({
+            'url': notebook.url,
+            'nodeid': notebook.nodeId,
+        })
+        .append(notebook.text, folder)
+        .appendTo(getShortestColumn('#notebooks-wrapper'));
 }
 
 /**
@@ -156,12 +171,29 @@ function buildBreadcrumbs(notebook) {
 }
 
 /**
+ * Empty the notebooks portion of the content pane, and then add a notebook element for each nested notebook.
+ **/
+function buildNestedNotebookElements(notebook) {
+
+    $('#notebooks-wrapper').children().each(function(){
+        $(this).empty();
+    });
+
+    if (notebook && notebook.nodes) {
+        notebook.nodes.forEach(function(nb){
+            buildNotebook(nb);
+        });
+    }
+}
+
+/**
  * Event handler for selecting a node in the treeview. Performs an API retrieval for each note in that notebook, builds
- * an element for it in the DOM, and appends it to the content pane.
+ * an element for it in the DOM, and appends it to the content pane. Also adds notebook DOM elements to the notebooks
+ * portion of the content pane.
  **/
 function handleNotebookSelected(event, notebook) {
 
-    console.log(notebook);
+    buildNestedNotebookElements(notebook);
 
     buildBreadcrumbs(notebook);
 
@@ -186,6 +218,7 @@ function wireTreeEvents() {
         $('#notes-wrapper').children().each(function() {
             $(this).empty();
             buildBreadcrumbs(null);
+            buildNestedNotebookElements(null);
         });
     });
 }
