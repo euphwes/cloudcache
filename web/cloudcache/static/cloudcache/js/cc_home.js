@@ -183,6 +183,11 @@ function buildNestedNotebookElements(notebook) {
         notebook.nodes.forEach(function(nb){
             buildNotebook(nb);
         });
+        $('.notebook').each(function(index, item){
+            $(item).dblclick(function(){
+                $('#tree').treeview('selectNode', parseInt($(item).attr('nodeid')));
+            });
+        });
     }
 }
 
