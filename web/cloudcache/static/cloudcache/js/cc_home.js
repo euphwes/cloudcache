@@ -1,30 +1,3 @@
-
-/**
- * General utility function for turning a flat list of objects into a nested structure. The ID, parent, and children
- * attributes' names are configurable, but it's assumed that each object coming in has a unique ID, and that each object
- * either identifies a parent object by ID or identifies a null parent (meaning it's the root of a tree).
- **/
-function buildTrees(list, idAttr, parentAttr, childrenAttr) {
-    if (!idAttr) idAttr = 'id';
-    if (!parentAttr) parentAttr = 'parent';
-    if (!childrenAttr) childrenAttr = 'children';
-
-    var treeList = [];
-    var lookup = {};
-    list.forEach(function(obj) {
-        lookup[obj[idAttr]] = obj;
-        obj[childrenAttr] = [];
-    });
-    list.forEach(function(obj) {
-        if (obj[parentAttr] != null) {
-            lookup[obj[parentAttr]][childrenAttr].push(obj);
-        } else {
-            treeList.push(obj);
-        }
-    });
-    return treeList;
-}
-
 /**
  * Bootstrap-Treeview believes that all objects with a 'nodes' attribute have children, even if that attribute is an
  * empty array, and will display a collapse/expand icon. We don't want that behavior, so if a notebook has no child
@@ -107,23 +80,29 @@ function buildBreadcrumbs(notebook) {
 
     // If no notebook is provided, only put the 'Notebooks' crumb at the root, set it as active, and bail out early
     if (notebook == null) {
-        var crumb = $('<li>').addClass('active').append('Notebooks');
-        $('#breadcrumbs').prepend(crumb);
+        $('<li>')
+            .addClass('active')
+            .append('Notebooks')
+            .prependTo('#breadcrumbs');
         return;
     }
 
     // Make the last element the active element with the current notebook's name
-    var crumb = $('<li>').addClass('active').append(notebook.text);
-    $('#breadcrumbs').prepend(crumb);
+    $('<li>')
+        .addClass('active')
+        .append(notebook.text)
+        .prependTo('#breadcrumbs');
 
     // Keep climbing the tree, finding each parent notebook, until we reach the top. For each parent notebook, prepend
     // an ol->li element with that notebook's name
     var parent = $('#tree').treeview('getParent', notebook);
     while (parent.selector != '#tree') {
-        var anchorId = 'crumb' + parent.nodeId;
-        var anchor = $('<a href="#">').attr('id', anchorId).append(parent.text);
-        var crumb = $('<li>').append(anchor);
-        $('#breadcrumbs').prepend(crumb);
+        var anchor = $('<a href="#">')
+            .attr('id', 'crumb' + parent.nodeId)
+            .append(parent.text);
+        $('<li>')
+            .append(anchor)
+            .prependTo('#breadcrumbs');
         parent = $('#tree').treeview('getParent', parent);
     }
 
@@ -145,13 +124,16 @@ function buildBreadcrumbs(notebook) {
 }
 
 /**
- * Builds up a notebook div which contains the notebook
+ * Builds a "go up" div which links to the current notebook's parent notebook
  **/
 function buildUpOneLevelThing(notebook) {
 
+    // Get the parent node in the treeview. If one doesn't exist, return without doing anything
     var parent = $('#tree').treeview('getParent', notebook.nodeId);
     if (parent.selector == '#tree') return;
 
+    // Build a div which links to this notebook's parent. Put it in a nested row/column structure so that it is smaller
+    // than the other notebook divs, to visually distinguish it a bit.
     var upIcon = $('<span>').addClass('glyphicon glyphicon-level-up');
     var back = $('<div>')
         .addClass('notebook go-up')
@@ -169,20 +151,27 @@ function buildUpOneLevelThing(notebook) {
  **/
 function buildNestedNotebookElements(notebook) {
 
+    // Empty out the child columns of the #notebooks-wrapper portion of the content pane
     $('#notebooks-wrapper').children().each(function(){
         $(this).empty();
     });
 
+    // If there is no notebook passed in, just return
     if (!notebook) return;
 
+    // Build the "go up" link to the parent notebook, if possible
     buildUpOneLevelThing(notebook);
 
+    // For each notebook under this notebook, build a notebook div and place it in the #notebooks-wrapper portion of
+    // the content pane
     if (notebook.nodes) {
         notebook.nodes.forEach(function(nb){
             buildNotebook(nb);
         });
     }
 
+    // Wire up double-click event handlers for each div, using the nodeId attribute to determine which node in the
+    // treeview should be selected
     $('.notebook').each(function(index, item){
         $(item).dblclick(function(){
             $('#tree').treeview('selectNode', parseInt($(item).attr('nodeid')));
@@ -197,12 +186,16 @@ function buildNestedNotebookElements(notebook) {
  **/
 function buildNoteElements(notebook) {
 
+    // Empty out the child columns of the #notes-wrapper portion of the content pane
     $('#notes-wrapper').children().each(function(){
         $(this).empty();
     });
 
+    // If there is no notebook passed in, just return
     if (!notebook) return;
 
+    // Make an API call to get all of the notes under this notebook all at once. Then for each note returned, build up
+    // a note div and stick it in the #notes-wrapper portion of the content pane
     $.ajax({
         url: notebook.url + 'notes',
         type: 'GET',

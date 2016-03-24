@@ -41,3 +41,29 @@ function clearTextSelection() {
       document.selection.empty();
     }
 }
+
+/**
+ * General utility function for turning a flat list of objects into a nested structure. The ID, parent, and children
+ * attributes' names are configurable, but it's assumed that each object coming in has a unique ID, and that each object
+ * either identifies a parent object by ID or identifies a null parent (meaning it's the root of a tree).
+ **/
+function buildTrees(list, idAttr, parentAttr, childrenAttr) {
+    if (!idAttr) idAttr = 'id';
+    if (!parentAttr) parentAttr = 'parent';
+    if (!childrenAttr) childrenAttr = 'children';
+
+    var treeList = [];
+    var lookup = {};
+    list.forEach(function(obj) {
+        lookup[obj[idAttr]] = obj;
+        obj[childrenAttr] = [];
+    });
+    list.forEach(function(obj) {
+        if (obj[parentAttr] != null) {
+            lookup[obj[parentAttr]][childrenAttr].push(obj);
+        } else {
+            treeList.push(obj);
+        }
+    });
+    return treeList;
+}
