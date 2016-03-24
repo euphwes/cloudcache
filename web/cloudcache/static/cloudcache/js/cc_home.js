@@ -170,16 +170,23 @@ function buildNestedNotebookElements(notebook) {
  * buildNote to build the DOM element and insert it.
  **/
 function buildNoteElements(notebook) {
-    $.ajax({
-        url: notebook.url + 'notes',
-        type: 'GET',
-        timeout: 1000,
-        success: function(data) {
-            $.each(data, function(index, note) {
-                buildNote(note);
-            });
-        },
+
+    $('#notes-wrapper').children().each(function(){
+        $(this).empty();
     });
+
+    if (notebook) {
+        $.ajax({
+            url: notebook.url + 'notes',
+            type: 'GET',
+            timeout: 1000,
+            success: function(data) {
+                $.each(data, function(index, note) {
+                    buildNote(note);
+                });
+            },
+        });
+    }
 }
 
 /**
@@ -198,14 +205,8 @@ function handleNotebookSelected(event, notebook) {
  **/
 function wireTreeEvents() {
     var tree = $('#tree');
-    tree.on('nodeSelected',handleNotebookSelected);
-    tree.on('nodeUnselected', function() {
-        $('#notes-wrapper').children().each(function() {
-            $(this).empty();
-            buildBreadcrumbs(null);
-            buildNestedNotebookElements(null);
-        });
-    });
+    tree.on('nodeSelected', handleNotebookSelected);
+    tree.on('nodeUnselected', function() { handleNotebookSelected(null, null); });
 }
 
 /**
