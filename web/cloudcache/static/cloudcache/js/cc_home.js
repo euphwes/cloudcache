@@ -58,29 +58,6 @@ function renameFieldsForTree(notebooks) {
     return notebooks;
 }
 
-/**
- * Build a hierarchical structure of notebooks, so that the Bootstrap-Treeview library can display a tree in the
- * sidebar. Pre- and post- processes the notebook objects to make sure they're suitable (proper field names, etc)
- **/
-function buildTreeviewForNotebooks(notebooks) {
-    notebooks = renameFieldsForTree(notebooks);                   // name->text, notebooks->nodes
-    notebooks = buildTrees(notebooks, 'url', 'parent', 'nodes');  // turn flat list into nested tree structure
-    notebooks = deleteEmptyNodes(notebooks);                      // make sure we don't have any empty child arrays
-
-    // Build the treeview in the #tree div in the sidebar, with specific options
-    $('#tree').treeview({
-        data: notebooks,
-        levels: 3,
-        backColor: '#f5f5f5',
-        selectedBackColor: '#446E9B',
-        showBorder: false,
-        expandIcon: 'glyphicon glyphicon-triangle-right',
-        collapseIcon: 'glyphicon glyphicon-triangle-bottom',
-    });
-
-    wireTreeEvents();
-}
-
 // We want to get the shortest column in the content pane, to append the current note to the end of that.
 // Check the height of each of the note-col divs inside the #notes-wrapper, find the shortest, and return that
 function getShortestColumn(selector) {
@@ -112,14 +89,11 @@ function buildNote(note) {
  **/
 function buildNotebook(notebook) {
     var folder = $('<span>').addClass('glyphicon glyphicon-folder-open pull-right');
-    var nb = $('<div>')
-        .addClass('notebook')
-        .attr({
-            'url': notebook.url,
-            'nodeid': notebook.nodeId,
-        })
-        .append(notebook.text, folder)
-        .appendTo(getShortestColumn('#notebooks-wrapper'));
+    $('<div>')
+      .addClass('notebook')
+      .attr({'url': notebook.url, 'nodeid': notebook.nodeId})
+      .append(notebook.text, folder)
+      .appendTo(getShortestColumn('#notebooks-wrapper'));
 }
 
 /**
@@ -192,25 +166,31 @@ function buildNestedNotebookElements(notebook) {
 }
 
 /**
+ * Do a GET call to this notebook's notes list API endpoint, get an array of note objects, then run each of them through
+ * buildNote to build the DOM element and insert it.
+ **/
+function buildNoteElements(notebook) {
+    $.ajax({
+        url: notebook.url + 'notes',
+        type: 'GET',
+        timeout: 1000,
+        success: function(data) {
+            $.each(data, function(index, note) {
+                buildNote(note);
+            });
+        },
+    });
+}
+
+/**
  * Event handler for selecting a node in the treeview. Performs an API retrieval for each note in that notebook, builds
  * an element for it in the DOM, and appends it to the content pane. Also adds notebook DOM elements to the notebooks
  * portion of the content pane.
  **/
 function handleNotebookSelected(event, notebook) {
-
     buildNestedNotebookElements(notebook);
-
+    buildNoteElements(notebook);
     buildBreadcrumbs(notebook);
-
-    // Do an API get on each note contained by this notebook, and when it succeeds, run it through buildNote
-    notebook.notes.forEach(function(note) {
-        var blah = $.ajax({
-            url: note,
-            type: 'GET',
-            timeout: 1000,
-            success: buildNote,
-        });
-    });
 }
 
 /**
@@ -226,6 +206,29 @@ function wireTreeEvents() {
             buildNestedNotebookElements(null);
         });
     });
+}
+
+/**
+ * Build a hierarchical structure of notebooks, so that the Bootstrap-Treeview library can display a tree in the
+ * sidebar. Pre- and post- processes the notebook objects to make sure they're suitable (proper field names, etc)
+ **/
+function buildTreeviewForNotebooks(notebooks) {
+    notebooks = renameFieldsForTree(notebooks);                   // name->text, notebooks->nodes
+    notebooks = buildTrees(notebooks, 'url', 'parent', 'nodes');  // turn flat list into nested tree structure
+    notebooks = deleteEmptyNodes(notebooks);                      // make sure we don't have any empty child arrays
+
+    // Build the treeview in the #tree div in the sidebar, with specific options
+    $('#tree').treeview({
+        data: notebooks,
+        levels: 3,
+        backColor: '#f5f5f5',
+        selectedBackColor: '#446E9B',
+        showBorder: false,
+        expandIcon: 'glyphicon glyphicon-triangle-right',
+        collapseIcon: 'glyphicon glyphicon-triangle-bottom',
+    });
+
+    wireTreeEvents();
 }
 
 /**
