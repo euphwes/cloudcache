@@ -145,6 +145,26 @@ function buildBreadcrumbs(notebook) {
 }
 
 /**
+ * Builds up a notebook div which contains the notebook
+ **/
+function buildUpOneLevelThing(notebook) {
+
+    var parent = $('#tree').treeview('getParent', notebook.nodeId);
+    if (parent.selector == '#tree') return;
+
+    var upIcon = $('<span>').addClass('glyphicon glyphicon-level-up');
+    var back = $('<div>')
+        .addClass('notebook go-up')
+        .attr({'url': parent.url, 'nodeid': parent.nodeId})
+        .append('Up', upIcon);
+
+    var row = $('<div>')
+        .addClass('row')
+        .append($('<div>').addClass('col-md-10 col-md-offset-5').append(back))
+        .appendTo(getShortestColumn('#notebooks-wrapper'));
+}
+
+/**
  * Empty the notebooks portion of the content pane, and then add a notebook element for each nested notebook.
  **/
 function buildNestedNotebookElements(notebook) {
@@ -153,16 +173,22 @@ function buildNestedNotebookElements(notebook) {
         $(this).empty();
     });
 
-    if (notebook && notebook.nodes) {
+    if (!notebook) return;
+
+    buildUpOneLevelThing(notebook);
+
+    if (notebook.nodes) {
         notebook.nodes.forEach(function(nb){
             buildNotebook(nb);
         });
-        $('.notebook').each(function(index, item){
-            $(item).dblclick(function(){
-                $('#tree').treeview('selectNode', parseInt($(item).attr('nodeid')));
-            });
-        });
     }
+
+    $('.notebook').each(function(index, item){
+        $(item).dblclick(function(){
+            $('#tree').treeview('selectNode', parseInt($(item).attr('nodeid')));
+            clearTextSelection();
+        });
+    });
 }
 
 /**
@@ -175,18 +201,18 @@ function buildNoteElements(notebook) {
         $(this).empty();
     });
 
-    if (notebook) {
-        $.ajax({
-            url: notebook.url + 'notes',
-            type: 'GET',
-            timeout: 1000,
-            success: function(data) {
-                $.each(data, function(index, note) {
-                    buildNote(note);
-                });
-            },
-        });
-    }
+    if (!notebook) return;
+
+    $.ajax({
+        url: notebook.url + 'notes',
+        type: 'GET',
+        timeout: 1000,
+        success: function(data) {
+            $.each(data, function(index, note) {
+                buildNote(note);
+            });
+        },
+    });
 }
 
 /**
@@ -204,9 +230,8 @@ function handleNotebookSelected(event, notebook) {
  * Wire up handlers to events fired by the treeview.
  **/
 function wireTreeEvents() {
-    var tree = $('#tree');
-    tree.on('nodeSelected', handleNotebookSelected);
-    tree.on('nodeUnselected', function() { handleNotebookSelected(null, null); });
+    $('#tree').on('nodeSelected', handleNotebookSelected);
+    $('#tree').on('nodeUnselected', function() { handleNotebookSelected(null, null); });
 }
 
 /**

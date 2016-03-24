@@ -28,3 +28,16 @@ String.prototype.replaceAll = function(search, replace)
     if (replace === undefined) return this.toString();
     return this.replace(new RegExp('[' + search + ']', 'g'), replace);
 }
+
+// Clear any text selection in the browser. Should work cross-browser
+function clearTextSelection() {
+    if (window.getSelection) {
+      if (window.getSelection().empty) {  // Chrome
+        window.getSelection().empty();
+      } else if (window.getSelection().removeAllRanges) {  // Firefox
+        window.getSelection().removeAllRanges();
+      }
+    } else if (document.selection) {  // IE?
+      document.selection.empty();
+    }
+}
