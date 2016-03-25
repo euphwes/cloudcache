@@ -48,13 +48,28 @@ function getShortestColumn(selector) {
 // Build up a note div which contains inner note-title and note-contents class divs, with the title and content
 // of a note object retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
 function buildNote(note) {
-    var tag = $('<span>').addClass('glyphicon glyphicon-tag flipped pull-right');
-    var title = $('<div>').addClass('note-title').append(note.title, tag);
+    var tag = $('<span>')
+        .addClass('glyphicon glyphicon-tag flipped pull-right');
 
-    var note_content = note.content.replaceAll('\r\n', '<br>').trim();
-    var content = $('<div>', {class: 'note-contents'}).append('<p>' + note_content + '</p>');
+    var title = $('<div>')
+        .addClass('note-title')
+        .attr('contenteditable', true)
+        .append(note.title, tag);
 
-    var note = $('<div>', {class: 'note'}).append(title, content).appendTo(getShortestColumn('#notes-wrapper'));
+    // In the note content, replace newlines with <br>, then get rid of carriage returns, for nice display inside a <p>
+    var content = note.content
+                    .replaceAll(/\n/, '<br>')
+                    .replaceAll(/\r/, '').trim();
+
+    var content = $('<div>')
+        .addClass('note-contents')
+        .attr('contenteditable', true)
+        .append('<p>' + content + '</p>');
+
+    var note = $('<div>')
+        .addClass('note')
+        .append(title, content)
+        .appendTo(getShortestColumn('#notes-wrapper'));
 }
 
 /**

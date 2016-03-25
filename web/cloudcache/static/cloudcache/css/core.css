@@ -1,11 +1,5 @@
 body {
     background-color: #e8e8e8;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 .login-container {
     margin-top: 50px;
@@ -75,6 +69,7 @@ body {
     color: #757575;
 }
 
+[contenteditable]:focus { outline: 0px solid transparent; }
 
 /*!
  * Start Bootstrap - Simple Sidebar HTML Template (http://startbootstrap.com)
@@ -285,12 +280,6 @@ body {
 .note:hover {
     box-shadow: 0 2px 15px rgba(0,0,0,0.5);
     transition: all 0.2s ease;
-    -webkit-touch-callout: text;
-    -webkit-user-select: text;
-    -khtml-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
 }
 
 .note-title {
@@ -309,7 +298,7 @@ body {
     display: table-cell;
     vertical-align: middle;
     height: 15px;
-    line-height: 100%;
+    line-height: 175%;
 }
 
 .breadcrumb-custom {
