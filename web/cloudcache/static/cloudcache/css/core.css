@@ -223,14 +223,12 @@ body {
 }
 
 #notebooks-wrapper {
-    border-bottom: 1px solid #aaaaaa;
-    padding: 10px 0;
+    padding: 10px 10px 0 10px;
+    width: 100%;
 }
 
 #notes-wrapper {
     width: 100%;
-    text-align: center;
-    margin-top: 10px;
     padding: 0 10px;
 }
 
@@ -253,6 +251,7 @@ body {
 .go-up {
     text-align: center;
     vertical-align: middle;
+    background: #A85252;
 }
 
 .go-up span {
