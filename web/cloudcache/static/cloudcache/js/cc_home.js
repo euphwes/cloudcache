@@ -128,9 +128,12 @@ function buildBreadcrumbs(notebook) {
  **/
 function buildUpOneLevelThing(notebook) {
 
-    // Get the parent node in the treeview. If one doesn't exist, return without doing anything
+    var returnToRoot = false;
+
+    // Get the parent node in the treeview. If one doesn't exist, set a flag indicating this element will instead
+    // return the user to the notebooks root
     var parent = $('#tree').treeview('getParent', notebook.nodeId);
-    if (parent.selector == '#tree') return;
+    if (parent.selector == '#tree') returnToRoot = true;
 
     // Build a div which links to this notebook's parent. Put it in a nested row/column structure so that it is smaller
     // than the other notebook divs, to visually distinguish it a bit.
@@ -140,6 +143,18 @@ function buildUpOneLevelThing(notebook) {
         .attr({'url': parent.url, 'nodeid': parent.nodeId})
         .append('Up', upIcon);
 
+    // If this div is returning the user to the root, add a 'to-root' class so that it's skipped when we add
+    // double-click handlers in buildNestedNotebookElements. Instead, add an event handler here which just unselects
+    // the current node in the treeview, effectively returning the user to the notebooks root
+    if (returnToRoot) {
+        back.addClass('to-root');
+        back.dblclick(function(){
+            $('#tree').treeview('unselectNode', $('#tree').treeview('getSelected')[0]);
+        });
+    }
+
+    // Append the go-up element to a sub-row, in a centered nested column, then stick that in the shortest column,
+    // which should be the first one
     var row = $('<div>')
         .addClass('row')
         .append($('<div>').addClass('col-md-10 col-md-offset-5').append(back))
@@ -172,7 +187,7 @@ function buildNestedNotebookElements(notebook) {
 
     // Wire up double-click event handlers for each div, using the nodeId attribute to determine which node in the
     // treeview should be selected
-    $('.notebook').each(function(index, item){
+    $('.notebook:not(.to-root)').each(function(index, item){
         $(item).dblclick(function(){
             $('#tree').treeview('selectNode', parseInt($(item).attr('nodeid')));
             clearTextSelection();
