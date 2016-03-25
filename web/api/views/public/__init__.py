@@ -124,6 +124,9 @@ class NotebookNotebooksList(ListCreateAPIView):
         # is owned by the Notebook whose ID is in the API endpoint URL.
         request.data['parent'] = '/api/notebooks/{}/'.format(pk)
 
+        # The owner is automatically the logged-in user, no need to specify via POST data
+        request.data['owner'] = '/api/accounts/{}/'.format(request.user.id)
+
         serializer = NotebookSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
