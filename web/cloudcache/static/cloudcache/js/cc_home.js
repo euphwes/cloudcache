@@ -150,6 +150,7 @@ function buildUpOneLevelThing(notebook) {
         back.addClass('to-root');
         back.dblclick(function(){
             $('#tree').treeview('unselectNode', $('#tree').treeview('getSelected')[0]);
+            clearTextSelection()
         });
     }
 
@@ -171,19 +172,32 @@ function buildNestedNotebookElements(notebook) {
         $(this).empty();
     });
 
-    // If there is no notebook passed in, just return
-    if (!notebook) return;
+    // Build the "go up" link to the parent notebook, or to the notebooks root
+    // If no notebook is passed in, skip this, since we're at the root and there is no level higher up
+    if (notebook) buildUpOneLevelThing(notebook);
 
-    // Build the "go up" link to the parent notebook, if possible
-    buildUpOneLevelThing(notebook);
+    var notebooksToBuildUp;
+    if (notebook) {
+        if (notebook.nodes) {
+            // If we have a notebook with nodes, those are the notebooks to place on the page
+            notebooksToBuildUp = notebook.nodes;
+        } else {
+            // If we have a notebook with no nested notebooks, create an empty array. The forEach below won't do
+            // anything, but then we continue on to wiring up double-click events. We still want to do that, so we can
+            // wire up the "go up one level" div
+            notebooksToBuildUp = [];
+        }
+    } else {
+        // If we don't have a notebook, it means we're at the root. Find all root nodes and build notebook divs for those
+        notebooksToBuildUp = $('#tree').treeview('getSiblings', 0);
+        notebooksToBuildUp.unshift($('#tree').treeview('getNode', 0));
+    }
 
     // For each notebook under this notebook, build a notebook div and place it in the #notebooks-wrapper portion of
     // the content pane
-    if (notebook.nodes) {
-        notebook.nodes.forEach(function(nb){
-            buildNotebook(nb);
-        });
-    }
+    notebooksToBuildUp.forEach(function(nb){
+        buildNotebook(nb);
+    });
 
     // Wire up double-click event handlers for each div, using the nodeId attribute to determine which node in the
     // treeview should be selected
@@ -263,6 +277,7 @@ function buildTreeviewForNotebooks(notebooks) {
     });
 
     wireTreeEvents();
+    buildNestedNotebookElements(null);
 }
 
 /**
