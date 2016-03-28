@@ -48,27 +48,37 @@ function getShortestColumn(selector) {
 // Build up a note div which contains inner note-title and note-contents class divs, with the title and content
 // of a note object retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
 function buildNote(note) {
-    var tag = $('<span>')
-        .addClass('glyphicon glyphicon-tag flipped pull-right');
 
-    var title = $('<div>')
-        .addClass('note-title')
+    // --- Note header stuff ---
+    var header = $('<div>')
+        .addClass('note-title');
+
+    $('<div>')
+        .addClass('inline')
         .attr('contenteditable', true)
-        .append(note.title, tag);
+        .append(note.title)
+        .appendTo(header);
 
-    // In the note content, replace newlines with <br>, then get rid of carriage returns, for nice display inside a <p>
-    var content = note.content
-                    .replaceAll(/\n/, '<br>')
-                    .replaceAll(/\r/, '').trim();
+    $('<span>')
+        .addClass('glyphicon glyphicon-tag flipped pull-right inline')
+        .appendTo(header);
 
+    // --- Note content stuff ---
     var content = $('<div>')
         .addClass('note-contents')
-        .attr('contenteditable', true)
-        .append('<p>' + content + '</p>');
+        .attr('contenteditable', true);
 
+    // In the note content, replace newlines with <br>, then get rid of carriage returns, for nice display inside a <p>
+    $('<p>')
+        .append(note.content
+                    .replaceAll(/\n/, '<br>')
+                    .replaceAll(/\r/, ''))
+        .appendTo(content);
+
+    // -- Full note body --
     var note = $('<div>')
         .addClass('note')
-        .append(title, content)
+        .append(header, content)
         .appendTo(getShortestColumn('#notes-wrapper'));
 }
 

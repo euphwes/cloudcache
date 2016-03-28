@@ -313,3 +313,7 @@ body {
     -webkit-transform: scaleX(-1);
     -ms-transform: scaleX(-1);
 }
+
+.inline {
+    display: inline-block;
+}
