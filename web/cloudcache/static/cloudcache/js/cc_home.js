@@ -71,12 +71,22 @@ function attachOnEditHandler(noteDiv) {
             timeout: 1000,
             data: data,
             success: function(data){
-                console.log(data);
+                $.notify({
+                    message: "Successfully updated '<strong>" + data.title + "</strong>'.",
+                    icon: 'glyphicon glyphicon-ok',
+                },{
+                    type: 'info',
+                    placement: {
+                        from: 'bottom',
+                        align: 'right',
+                    },
+                    delay: 3000,
+                });
             }
         });
     };
 
-    noteDiv.on('input', debounce(editHandler, 1000));
+    noteDiv.on('input', debounce(editHandler, 1500));
 }
 
 // Build up a note div which contains inner note-title and note-contents class divs, with the title and content
