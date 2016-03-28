@@ -45,6 +45,35 @@ function getShortestColumn(selector) {
     return shortColumn;
 }
 
+/**
+ * Attach a debounced on-edit event handler to this note div. When editing completes, hit the API endpoint for this
+ * note to update the title and content.
+ **/
+function attachOnEditHandler(noteDiv) {
+
+    var editHandler = function() {
+        var put_url = $(this).attr('note-url');
+        var data = {
+            'title'    : $(this).children('.note-title').text(),
+            'content'  : $(this).children('.note-contents').text(),
+            'notebook' : $(this).attr('notebook-url')
+        };
+
+        // Make PUT call to submit updates to this note
+        $.ajax({
+            url: put_url,
+            type: 'PUT',
+            timeout: 1000,
+            data: data,
+            success: function(data){
+                console.log(data);
+            }
+        });
+    };
+
+    noteDiv.on('input', debounce(editHandler, 500));
+}
+
 // Build up a note div which contains inner note-title and note-contents class divs, with the title and content
 // of a note object retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
 function buildNote(note) {
@@ -78,8 +107,11 @@ function buildNote(note) {
     // -- Full note body --
     var note = $('<div>')
         .addClass('note')
+        .attr({'note-url': note.url, 'notebook-url': note.notebook})
         .append(header, content)
         .appendTo(getShortestColumn('#notes-wrapper'));
+
+    attachOnEditHandler(note);
 }
 
 /**
