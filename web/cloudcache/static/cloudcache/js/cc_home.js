@@ -57,11 +57,28 @@ function attachOnEditHandler(noteDiv) {
             .children('.note-contents').children('p')
             .html().replace(/<br>/g, '\r\n');
 
+        var title = $(this).children('.note-title').text();
+        var notebook_url = $(this).attr('notebook-url');
+
         var put_url = $(this).attr('note-url');
         var data = {
-            'title'    : $(this).children('.note-title').text(),
+            'title'    : title,
             'content'  : content,
-            'notebook' : $(this).attr('notebook-url')
+            'notebook' : notebook_url,
+        };
+
+        var notify = function(message, icon, type){
+               $.notify({
+                    message: message,
+                    icon: icon,
+                },{
+                    type: type,
+                    placement: {
+                        from: 'bottom',
+                        align: 'right',
+                    },
+                    delay: 3000,
+                });
         };
 
         // Make PUT call to submit updates to this note
@@ -71,17 +88,12 @@ function attachOnEditHandler(noteDiv) {
             timeout: 1000,
             data: data,
             success: function(data){
-                $.notify({
-                    message: "Successfully updated '<strong>" + data.title + "</strong>'.",
-                    icon: 'glyphicon glyphicon-ok',
-                },{
-                    type: 'info',
-                    placement: {
-                        from: 'bottom',
-                        align: 'right',
-                    },
-                    delay: 3000,
-                });
+                var msg = "Successfully updated '<strong>" + title + "</strong>'.";
+                notify(msg, 'glyphicon glyphicon-ok','info');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                var msg = "Error updating '<strong>" + title + "</strong>': " + textStatus + ".";
+                notify(msg, 'glyphicon glyphicon-exclamation-sign', 'danger');
             }
         });
     };
