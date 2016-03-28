@@ -68,17 +68,17 @@ function attachOnEditHandler(noteDiv) {
         };
 
         var notify = function(message, icon, type){
-               $.notify({
-                    message: message,
-                    icon: icon,
-                },{
-                    type: type,
-                    placement: {
-                        from: 'bottom',
-                        align: 'right',
-                    },
-                    delay: 3000,
-                });
+            $.notify({
+                message: message,
+                icon: icon,
+            },{
+                type: type,
+                placement: {
+                    from: 'bottom',
+                    align: 'right',
+                },
+                delay: 3000,
+            });
         };
 
         // Make PUT call to submit updates to this note
@@ -101,9 +101,87 @@ function attachOnEditHandler(noteDiv) {
     noteDiv.on('input', debounce(editHandler, 1500));
 }
 
+
+function attachNewNoteHandler(noteDiv) {
+
+    var focusHandler = function(event) {
+        $(this).text('');
+    };
+
+    var titleUnfocus = function() {
+        if (!$(this).text()) $(this).append('Take a note...');
+    };
+
+    noteDiv.children('.note-title').children('.inline').on('focusin', focusHandler);
+    noteDiv.children('.note-title').children('.inline').on('focusout', titleUnfocus);
+
+
+    var editHandler = function() {
+
+        var content = $(this)
+            .children('.note-contents').children('p')
+            .html().replace(/<br>/g, '\r\n');
+
+        var title = $(this).children('.note-title').text();
+
+        if (title == 'Take a note...' || title == '') return;
+
+        var notebook_url = $(this).attr('notebook-url');
+
+        var post_url = $(this).attr('notebook-url') + 'notes/';
+
+        var data = {
+            'title'    : title,
+            'content'  : content,
+        };
+
+        var notify = function(message, icon, type){
+            $.notify({
+                message: message,
+                icon: icon,
+            },{
+                type: type,
+                placement: {
+                    from: 'bottom',
+                    align: 'right',
+                },
+                delay: 3000,
+            });
+        };
+
+        // Make PUT call to submit updates to this note
+        $.ajax({
+            url: post_url,
+            type: 'POST',
+            timeout: 1000,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(data){
+                var msg = "Successfully created '<strong>" + title + "</strong>'.";
+                notify(msg, 'glyphicon glyphicon-ok', 'success');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                var msg = "Error creating '<strong>" + title + "</strong>': " + textStatus + ".";
+                notify(msg, 'glyphicon glyphicon-exclamation-sign', 'danger');
+            }
+        });
+    };
+
+    noteDiv.on('input', debounce(editHandler, 1500));
+}
+
+function buildPlaceholderNote() {
+    var note = {
+        title: 'Take a note...',
+        content: 'Content goes here',
+        notebook: $('#tree').treeview('getSelected')[0].url,
+    }
+    buildNote(note, true);
+}
+
 // Build up a note div which contains inner note-title and note-contents class divs, with the title and content
 // of a note object retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
-function buildNote(note) {
+function buildNote(note, placeholder) {
 
     // --- Note header stuff ---
     var header = $('<div>')
@@ -133,10 +211,16 @@ function buildNote(note) {
     var note = $('<div>')
         .addClass('note')
         .attr({'note-url': note.url, 'notebook-url': note.notebook})
-        .append(header, content)
-        .appendTo(getShortestColumn('#notes-wrapper'));
+        .append(header, content);
 
-    attachOnEditHandler(note);
+    if (placeholder) {
+        note.addClass('placeholder');
+        note.prependTo($('#notes-wrapper').children()[0]);
+        attachNewNoteHandler(note);
+    } else {
+        note.appendTo(getShortestColumn('#notes-wrapper'));
+        attachOnEditHandler(note);
+    }
 }
 
 /**
@@ -304,6 +388,8 @@ function buildNoteElements(notebook) {
 
     // If there is no notebook passed in, just return
     if (!notebook) return;
+
+    buildPlaceholderNote();
 
     // Make an API call to get all of the notes under this notebook all at once. Then for each note returned, build up
     // a note div and stick it in the #notes-wrapper portion of the content pane
