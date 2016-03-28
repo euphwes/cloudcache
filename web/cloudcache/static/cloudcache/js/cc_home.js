@@ -52,10 +52,15 @@ function getShortestColumn(selector) {
 function attachOnEditHandler(noteDiv) {
 
     var editHandler = function() {
+
+        var content = $(this)
+            .children('.note-contents').children('p')
+            .html().replace(/<br>/g, '\r\n');
+
         var put_url = $(this).attr('note-url');
         var data = {
             'title'    : $(this).children('.note-title').text(),
-            'content'  : $(this).children('.note-contents').text(),
+            'content'  : content,
             'notebook' : $(this).attr('notebook-url')
         };
 
@@ -71,7 +76,7 @@ function attachOnEditHandler(noteDiv) {
         });
     };
 
-    noteDiv.on('input', debounce(editHandler, 500));
+    noteDiv.on('input', debounce(editHandler, 1000));
 }
 
 // Build up a note div which contains inner note-title and note-contents class divs, with the title and content
@@ -99,9 +104,7 @@ function buildNote(note) {
 
     // In the note content, replace newlines with <br>, then get rid of carriage returns, for nice display inside a <p>
     $('<p>')
-        .append(note.content
-                    .replaceAll(/\n/, '<br>')
-                    .replaceAll(/\r/, ''))
+        .append(note.content.replace(/\r\n/g, '<br/>'))
         .appendTo(content);
 
     // -- Full note body --

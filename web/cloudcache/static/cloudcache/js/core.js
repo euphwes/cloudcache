@@ -20,15 +20,6 @@ function csrfSafeMethod(method) {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
-// Add a replaceAll method to the String prototype so we can replace all instances of matching text within a string
-// instead of just the first instance
-String.prototype.replaceAll = function(search, replace)
-{
-    // If 'replace' argument is not sent, return original string otherwise it will replace with 'undefined'
-    if (replace === undefined) return this.toString();
-    return this.replace(new RegExp('[' + search + ']', 'g'), replace);
-}
-
 // Clear any text selection in the browser. Should work cross-browser
 function clearTextSelection() {
     if (window.getSelection) {
