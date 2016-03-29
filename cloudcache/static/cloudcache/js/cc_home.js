@@ -104,27 +104,57 @@ function attachOnEditHandler(noteDiv) {
 
 function attachNewNoteHandler(noteDiv) {
 
-    var focusHandler = function(event) {
-        $(this).text('');
+    // Wire up a few event handlers to simulate the placeholder-text effect on a contenteditable div for the note title.
+    // If the text in the div is the title placeholder text, focusing the div will clear the text. If the text is empty
+    // when the div loses focus, it'll add back the placeholder text
+    var noteTitle = noteDiv.children('.note-title').children('.inline');
+    var titlePlaceholder = 'Take a note...';
+
+    // Hack around a Chrome weirdness: if you focus a contenteditable element and immediately clear its text or html,
+    // it loses the focus. You have to click again to make the cursor come back. The workaround is to put the clear
+    // logic on a time delay, to fire slightly after the element gains focus.
+    var titleClick = function(e) {
+        var innerHandler = function() {
+            if ($(e.target).text() == titlePlaceholder) $(e.target).text('');
+        };
+        setTimeout(innerHandler, 10);
     };
 
-    var titleUnfocus = function() {
-        if (!$(this).text()) $(this).append('Take a note...');
+    noteTitle.on('click',    titleClick )
+             .on('focus',    function() { $(this).click(); })
+             .on('focusout', function() { if (!$(this).text()) $(this).append(titlePlaceholder); });
+
+
+    // Wire up a few event handlers to simulate the placeholder-text effect on a contenteditable div for the note content.
+    // If the text in the div is the title placeholder text, focusing the div will clear the text. If the text is empty
+    // when the div loses focus, it'll add back the placeholder text
+    var noteContent = noteDiv.children('.note-contents');
+    var contentPlaceholder = 'Content goes here';
+
+    // Same weird hack as above.
+    var contentClick = function(e) {
+        var innerHandler = function() {
+            if ($(e.target).children('p').text() == contentPlaceholder) $(e.target).children('p').text('');
+        };
+        setTimeout(innerHandler, 10);
     };
 
-    noteDiv.children('.note-title').children('.inline').on('focusin', focusHandler);
-    noteDiv.children('.note-title').children('.inline').on('focusout', titleUnfocus);
+    noteContent.on('click',    contentClick )
+               .on('focus',    function() { $(this).click(); })
+               .on('focusout', function() { if (!$(this).children('p').text()) $(this).children('p').append(contentPlaceholder); });
 
 
     var editHandler = function() {
 
         var content = $(this)
             .children('.note-contents').children('p')
-            .html().replace(/<br>/g, '\r\n');
+            .html()
+            .replace(/<br>/g, '\r\n');
 
         var title = $(this).children('.note-title').text();
 
-        if (title == 'Take a note...' || title == '') return;
+        if (!title   || title == titlePlaceholder ||
+            !content || content == contentPlaceholder) return;
 
         var notebook_url = $(this).attr('notebook-url');
 
@@ -159,6 +189,7 @@ function attachNewNoteHandler(noteDiv) {
             success: function(data){
                 var msg = "Successfully created '<strong>" + title + "</strong>'.";
                 notify(msg, 'glyphicon glyphicon-ok', 'success');
+                console.log(data);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 var msg = "Error creating '<strong>" + title + "</strong>': " + textStatus + ".";
