@@ -298,10 +298,10 @@ body {
     padding: 15px;
 }
 
-.note-contents > p {
+.note-contents p {
     display: table-cell;
     vertical-align: middle;
-    height: 15px;
+    height: 25px;
     line-height: 175%;
 }
 

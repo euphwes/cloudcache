@@ -1,3 +1,8 @@
+
+// -- HACK ALERT --
+// See lengthy comment at the end of attachNewNoteHandler()
+var stillInNewNote = true;
+
 /**
  * Bootstrap-Treeview believes that all objects with a 'nodes' attribute have children, even if that attribute is an
  * empty array, and will display a collapse/expand icon. We don't want that behavior, so if a notebook has no child
@@ -53,18 +58,15 @@ function attachOnEditHandler(noteDiv) {
 
     var editHandler = function() {
 
-        var content = $(this)
-            .children('.note-contents').children('p')
-            .html().replace(/<br>/g, '\r\n');
+        var $note = $(this);
+        var content = $note
+                      .children('.note-contents').children('p')
+                      .html().replace(/<br>/g, '\r\n');
 
-        var title = $(this).children('.note-title').text();
-        var notebook_url = $(this).attr('notebook-url');
-
-        var put_url = $(this).attr('note-url');
         var data = {
-            'title'    : title,
+            'title'    : $note.children('.note-title').text(),
+            'notebook' : $note.attr('notebook-url'),
             'content'  : content,
-            'notebook' : notebook_url,
         };
 
         var notify = function(message, icon, type){
@@ -83,7 +85,7 @@ function attachOnEditHandler(noteDiv) {
 
         // Make PUT call to submit updates to this note
         $.ajax({
-            url: put_url,
+            url: $note.attr('note-url'),
             type: 'PUT',
             timeout: 1000,
             data: data,
@@ -114,6 +116,7 @@ function attachNewNoteHandler(noteDiv) {
     // it loses the focus. You have to click again to make the cursor come back. The workaround is to put the clear
     // logic on a time delay, to fire slightly after the element gains focus.
     var titleClick = function(e) {
+        stillInNewNote = true;
         var innerHandler = function() {
             if ($(e.target).text() == titlePlaceholder) $(e.target).text('');
         };
@@ -133,6 +136,7 @@ function attachNewNoteHandler(noteDiv) {
 
     // Same weird hack as above.
     var contentClick = function(e) {
+        stillInNewNote = true;
         var innerHandler = function() {
             if ($(e.target).children('p').text() == contentPlaceholder) $(e.target).children('p').text('');
         };
@@ -146,19 +150,23 @@ function attachNewNoteHandler(noteDiv) {
 
     var editHandler = function() {
 
-        var content = $(this)
+        if (stillInNewNote) return;
+
+        var $note = $('.note.placeholder');
+
+        var content = $note
             .children('.note-contents').children('p')
             .html()
             .replace(/<br>/g, '\r\n');
 
-        var title = $(this).children('.note-title').text();
+        var title = $note.children('.note-title').text();
 
         if (!title   || title == titlePlaceholder ||
             !content || content == contentPlaceholder) return;
 
-        var notebook_url = $(this).attr('notebook-url');
+        var notebook_url = $note.attr('notebook-url');
 
-        var post_url = $(this).attr('notebook-url') + 'notes/';
+        var post_url = $note.attr('notebook-url') + 'notes/';
 
         var data = {
             'title'    : title,
@@ -189,7 +197,8 @@ function attachNewNoteHandler(noteDiv) {
             success: function(data){
                 var msg = "Successfully created '<strong>" + title + "</strong>'.";
                 notify(msg, 'glyphicon glyphicon-ok', 'success');
-                console.log(data);
+                buildNote(data);
+                buildPlaceholderNote();
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 var msg = "Error creating '<strong>" + title + "</strong>': " + textStatus + ".";
@@ -198,10 +207,25 @@ function attachNewNoteHandler(noteDiv) {
         });
     };
 
-    noteDiv.on('input', debounce(editHandler, 1500));
+    // -- HACK ALERT --
+    //
+    // Only want to fire the editHandler when the focus leaves the note div entirely, but focusout will fire when
+    // either note-title or note-contents loses focus. To deal with this, we maintain a global var 'stillInNewNote'.
+    // This var is set to false immediately whenever note sees a focusout event, but if the note-title or note-contents
+    // receives focus, we immediately set it back to true. We delay editHandler here by 1/8 second, to make sure the
+    // title and content focus-in handlers have time to set stillInNewNote back to true. If the editHandler sees that
+    // this variable is false, we'll know that something else other than the placeholder note div has focus, and we can
+    // actually save the note
+    noteDiv.on('focusout', function(e) {
+        stillInNewNote = false;
+        setTimeout(function(){
+            editHandler();
+        }, 125);
+    });
 }
 
 function buildPlaceholderNote() {
+    $('.note.placeholder').remove();
     var note = {
         title: 'Take a note...',
         content: 'Content goes here',
