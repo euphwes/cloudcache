@@ -77,9 +77,20 @@ WSGI_APPLICATION = 'web.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-DATABASES = {
-    'default': dj_database_url.config(default=os.environ['DATABASE_URL']),
-}
+
+try:
+    default_db_conn = dj_database_url.config(default=os.environ['DATABASE_URL'])
+except KeyError as e:
+    default_db_conn = {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'cloudcache',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': '',
+        'PORT': '5432'
+    }
+
+DATABASES = {'default': default_db_conn}
 
 
 # Password validation
