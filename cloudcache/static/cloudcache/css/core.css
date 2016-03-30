@@ -321,3 +321,7 @@ body {
 .inline {
     display: inline-block;
 }
+
+.notebook span {
+    margin-right: 15px;
+}
