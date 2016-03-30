@@ -117,6 +117,7 @@ function attachNewNoteHandler(noteDiv) {
     // logic on a time delay, to fire slightly after the element gains focus.
     var titleClick = function(e) {
         stillInNewNote = true;
+        placeCaretAtEnd(e.target);
         var innerHandler = function() {
             if ($(e.target).text() == titlePlaceholder) $(e.target).text('');
         };
@@ -137,6 +138,7 @@ function attachNewNoteHandler(noteDiv) {
     // Same weird hack as above.
     var contentClick = function(e) {
         stillInNewNote = true;
+        placeCaretAtEnd(e.target);
         var innerHandler = function() {
             if ($(e.target).children('p').text() == contentPlaceholder) $(e.target).children('p').text('');
         };
