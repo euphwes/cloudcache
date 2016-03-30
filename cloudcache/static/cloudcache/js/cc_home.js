@@ -742,6 +742,44 @@ $(function(){
         }
     });
 
+    $.contextMenu({
+        selector: '.notebook:not(.placeholder)',
+        items: {
+            "delete": {
+                name: "Delete",
+                icon: "delete",
+                callback: function(key, options) {
+                    var $notebook = $(this);
+                    $.ajax({
+                        url: $notebook.attr('url'),
+                        type: 'DELETE',
+                        timeout: 1000,
+                        success: function() {
+
+                            // If there is a currently selected notebook, get its url, otherwise set the current notebook url to null.
+                            var currTreeNodeId = null;
+                            try {
+                                currTreeNodeId = $('#tree').treeview('getSelected')[0].nodeId;
+                            } catch(err) {}
+
+                            var $sibs = $notebook.nextAll();
+                            $notebook.animateCss('zoomOut', function() {
+                                $notebook.remove();
+                                $sibs.animateCss('pulse');
+
+                                getUserNotebooks(function(){
+                                    if (currTreeNodeId !== null)
+                                        $('#tree').treeview('selectNode', currTreeNodeId);
+                                });
+
+                            });
+                        },
+                    });
+                }
+            },
+        }
+    });
+
     getUserNotebooks();
 });
 
