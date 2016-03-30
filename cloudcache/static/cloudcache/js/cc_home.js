@@ -284,12 +284,87 @@ function buildNote(note, placeholder, addedNow) {
  * Builds up a notebook div which contains the notebook
  **/
 function buildNotebook(notebook) {
-    var folder = $('<span>').addClass('glyphicon glyphicon-folder-open pull-right');
+
+    var parent = notebook.parent || null;
+
+    // If there is a currently selected notebook, get its url, otherwise set the current notebook url to null.
+    var currTreeNodeId = null;
+    if (parent !== null) {
+        try {
+            currTreeNodeId = $('#tree').treeview('getSelected')[0].nodeId;
+        } catch(err) {}
+    }
+
+    var notebookDiv = $('<div>')
+        .attr({'url': notebook.url, 'nodeid': notebook.nodeId})
+        .addClass('notebook')
+        .appendTo(getShortestColumn('#notebooks-wrapper'));
+
     $('<div>')
-      .addClass('notebook')
-      .attr({'url': notebook.url, 'nodeid': notebook.nodeId})
-      .append(notebook.text, folder)
-      .appendTo(getShortestColumn('#notebooks-wrapper'));
+        .addClass('inline')
+        .attr('contenteditable', true)
+        .append(notebook.text)
+        .appendTo(notebookDiv);
+
+    $('<span>')
+        .addClass('glyphicon glyphicon-folder-open pull-right inline')
+        .appendTo(notebookDiv);
+
+
+    // Wire up a few event handlers to simulate a placeholder in a contenteditable div for the notebook name.
+    // If the text in the div is the notebook placeholder text, focusing the div will clear the text. If the text is
+    // empty when the div loses focus, it'll add back the placeholder text
+    var notebookName = notebookDiv.children('div.inline');
+
+    var originalName = notebookName.text();
+
+    // Hack around a Chrome weirdness: if you focus a contenteditable element and immediately clear its text or html,
+    // it loses the focus. You have to click again to make the cursor come back. The workaround is to put the clear
+    // logic on a time delay, to fire slightly after the element gains focus.
+    var nameFocus = function(e) { placeCaretAtEnd(e.target); };
+
+    // Event handler for when the thing loses focus
+    var nameFocusOut = function() {
+
+        var nbName = $(this).text().trim();
+
+        // If the name is still the placeholder text, exit without saving
+        if (nbName == originalName)
+            return;
+
+        // If the name is empty, restore the original name, and exit without saving
+        if (!nbName) {
+            $(this).text(originalName);
+            return;
+        }
+
+        // Make PUT call to update notebook
+        $.ajax({
+            url: notebookDiv.attr('url'),
+            type: 'PUT',
+            timeout: 1000,
+            data: {
+                'name'  : nbName,
+                'parent': parent,
+                'owner' : notebook.owner,
+            },
+            success: function(){
+                notifySuccess("Successfully updated <strong>'" + nbName + ".");
+                getUserNotebooks(function(){
+                    if (currTreeNodeId !== null)
+                        $('#tree').treeview('selectNode', currTreeNodeId);
+                });
+            },
+            error: function(xhr, status, err) {
+                notifyError("Error updating '<strong>" + nbName + "</strong>': " + status + ".");
+            }
+        });
+    };
+
+    // wire up the event handlers
+    notebookName.on('click',    nameFocus )
+                .on('focus',    function() { $(this).click(); })
+                .on('focusout', nameFocusOut );
 }
 
 /**
@@ -426,7 +501,6 @@ function buildPlaceholderNotebook(treeInitialized) {
     // it loses the focus. You have to click again to make the cursor come back. The workaround is to put the clear
     // logic on a time delay, to fire slightly after the element gains focus.
     var nameFocus = function(e) {
-        stillInNewNote = true;
         placeCaretAtEnd(e.target);
         var innerHandler = function() {
             if ($(e.target).text() == newNbPlaceholderText) $(e.target).text('');
