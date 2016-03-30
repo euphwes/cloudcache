@@ -385,13 +385,22 @@ function buildUpOneLevelThing(notebook) {
         .appendTo(getShortestColumn('#notebooks-wrapper'));
 }
 
-
-function buildPlaceholderNotebook() {
+/**
+ * Builds a placeholder notebook which can be used for creating new notebooks
+ **/
+function buildPlaceholderNotebook(treeInitialized) {
 
     // If there is a currently selected notebook, get its url, otherwise set the current notebook url to null.
     var currNotebookUrl = null;
-    try { currNotebookUrl = $('#tree').treeview('getSelected')[0].url; } catch(err) {}
+    var currTreeNodeId = null;
+    if (treeInitialized) {
+        try {
+            currNotebookUrl = $('#tree').treeview('getSelected')[0].url;
+            currTreeNodeId = $('#tree').treeview('getSelected')[0].nodeId;
+        } catch(err) {}
+    }
 
+    // Build up the new notebook placeholder div
     var newNbPlaceholderText = 'New notebook...';
 
     var notebook = $('<div>')
@@ -426,19 +435,22 @@ function buildPlaceholderNotebook() {
     };
 
 
+    // Event handler for when the thing loses focus
     var nameFocusOut = function() {
 
         var nbName = $(this).text().trim();
 
+        // If the name is still the placeholder text, exit without saving
         if (nbName == newNbPlaceholderText)
             return;
 
+        // If the name is empty, restore the placeholder text, and exit without saving
         if (!nbName) {
             $(this).text(newNbPlaceholderText);
             return;
         }
 
-        // Make POST call to create new note
+        // Make POST call to create new notebook
         $.ajax({
             url: '/api/notebooks/',
             type: 'POST',
@@ -449,7 +461,15 @@ function buildPlaceholderNotebook() {
                 'parent': currNotebookUrl,
             }),
             success: function(data){
-                getUserNotebooks();
+                // Reload all user notebooks, passing in callback function which reselects the current node in the tree
+                // by node ID. This works, because we just created a new notebook as a child of the current notebook.
+                // No notebooks are created or deleted above the current notebook in the tree, therefore its nodeID will
+                // not change
+                getUserNotebooks(function(){
+                    if (currTreeNodeId !== null)
+                        $('#tree').treeview('selectNode', currTreeNodeId);
+                });
+
             },
             error: function(xhr, status, err) {
                 notifyError("Error creating '<strong>" + nbName + "</strong>': " + status + ".");
@@ -457,6 +477,7 @@ function buildPlaceholderNotebook() {
         });
     };
 
+    // wire up the event handlers
     notebookName.on('click',    nameFocus )
                 .on('focus',    function() { $(this).click(); })
                 .on('focusout', nameFocusOut );
@@ -495,7 +516,7 @@ function buildNestedNotebookElements(notebook) {
     }
 
     // Build a placeholder notebook div for creating new notebooks
-    buildPlaceholderNotebook();
+    buildPlaceholderNotebook(true);
 
     // For each notebook under this notebook, build a notebook div and place it in the #notebooks-wrapper portion of
     // the content pane
@@ -566,10 +587,15 @@ function wireTreeEvents() {
  * Build a hierarchical structure of notebooks, so that the Bootstrap-Treeview library can display a tree in the
  * sidebar. Pre- and post- processes the notebook objects to make sure they're suitable (proper field names, etc)
  **/
-function buildTreeviewForNotebooks(notebooks) {
+function buildTreeviewForNotebooks(notebooks, postNotebookLoadCallback) {
     notebooks = renameFieldsForTree(notebooks);                   // name->text, notebooks->nodes
     notebooks = buildTrees(notebooks, 'url', 'parent', 'nodes');  // turn flat list into nested tree structure
     notebooks = deleteEmptyNodes(notebooks);                      // make sure we don't have any empty child arrays
+
+    if (notebooks.length == 0) {
+        buildPlaceholderNotebook(false);
+        return;
+    }
 
     // Build the treeview in the #tree div in the sidebar, with specific options
     $('#tree').treeview({
@@ -585,18 +611,21 @@ function buildTreeviewForNotebooks(notebooks) {
 
     wireTreeEvents();
     buildNestedNotebookElements(null);
+
+    if (postNotebookLoadCallback)
+        postNotebookLoadCallback();
 }
 
 /**
  * Kick off the process to get the user's notebooks and parse into a tree for navigation in the sidebar, by making an
  * API call to the endpoint for listing all notebooks
  **/
-function getUserNotebooks() {
+function getUserNotebooks(postNotebookLoadCallback) {
     $.ajax({
         url: '/api/notebooks/',
         type: 'GET',
         timeout: 1000,
-        success: buildTreeviewForNotebooks,
+        success: function(data) { buildTreeviewForNotebooks(data, postNotebookLoadCallback); },
     });
 }
 
