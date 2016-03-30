@@ -435,11 +435,14 @@ function buildUpOneLevelThing(notebook) {
 
     // Build a div which links to this notebook's parent. Put it in a nested row/column structure so that it is smaller
     // than the other notebook divs, to visually distinguish it a bit.
-    var upIcon = $('<span>').addClass('glyphicon glyphicon-level-up');
+    var upIcon = $('<span>').addClass('glyphicon glyphicon-level-up pull-left inline');
+
+    var upName = $('<div>').addClass('inline').append('Up');
+
     var back = $('<div>')
         .addClass('notebook go-up')
         .attr({'url': parent.url, 'nodeid': parent.nodeId})
-        .append('Up', upIcon);
+        .append(upName, upIcon);
 
     // If this div is returning the user to the root, add a 'to-root' class so that it's skipped when we add
     // double-click handlers in buildNestedNotebookElements. Instead, add an event handler here which just unselects

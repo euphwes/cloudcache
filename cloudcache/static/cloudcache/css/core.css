@@ -250,13 +250,8 @@ body {
 }
 
 .go-up {
-    text-align: center;
     vertical-align: middle;
     background: #A85252;
-}
-
-.go-up span {
-    margin-left: 10px;
 }
 
 .notebook:hover {
@@ -323,5 +318,9 @@ body {
 }
 
 .notebook span {
+    margin-right: 15px;
+}
+
+.go-up span {
     margin-right: 15px;
 }
