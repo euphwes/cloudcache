@@ -56,6 +56,14 @@ function getShortestColumn(selector) {
  **/
 function attachOnEditHandler(noteDiv) {
 
+    var noteTitle = noteDiv.children('.note-title').children('.inline');
+    noteTitle.on('click', function(e) { placeCaretAtEnd(e.target); })
+             .on('focus', function()  { $(this).click(); });
+
+    var noteContent = noteDiv.children('.note-contents');
+    noteContent.on('click', function(e) { placeCaretAtEnd(e.target); })
+               .on('focus', function()  { $(this).click(); });
+
     var editHandler = function() {
 
         var $note = $(this);
@@ -90,11 +98,11 @@ function attachOnEditHandler(noteDiv) {
             timeout: 1000,
             data: data,
             success: function(data){
-                var msg = "Successfully updated '<strong>" + title + "</strong>'.";
+                var msg = "Successfully updated '<strong>" + data.title + "</strong>'.";
                 notify(msg, 'glyphicon glyphicon-ok','info');
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                var msg = "Error updating '<strong>" + title + "</strong>': " + textStatus + ".";
+                var msg = "Error updating note: " + textStatus + ".";
                 notify(msg, 'glyphicon glyphicon-exclamation-sign', 'danger');
             }
         });
