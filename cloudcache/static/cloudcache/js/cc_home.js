@@ -385,6 +385,84 @@ function buildUpOneLevelThing(notebook) {
         .appendTo(getShortestColumn('#notebooks-wrapper'));
 }
 
+
+function buildPlaceholderNotebook() {
+
+    // If there is a currently selected notebook, get its url, otherwise set the current notebook url to null.
+    var currNotebookUrl = null;
+    try { currNotebookUrl = $('#tree').treeview('getSelected')[0].url; } catch(err) {}
+
+    var newNbPlaceholderText = 'New notebook...';
+
+    var notebook = $('<div>')
+        .addClass('notebook placeholder')
+        .appendTo(getShortestColumn('#notebooks-wrapper'));
+
+    $('<div>')
+        .addClass('inline')
+        .attr('contenteditable', true)
+        .append(newNbPlaceholderText)
+        .appendTo(notebook);
+
+    $('<span>')
+        .addClass('glyphicon glyphicon-folder-open pull-right inline')
+        .appendTo(notebook);
+
+    // Wire up a few event handlers to simulate a placeholder in a contenteditable div for the notebook name.
+    // If the text in the div is the notebook placeholder text, focusing the div will clear the text. If the text is
+    // empty when the div loses focus, it'll add back the placeholder text
+    var notebookName = notebook.children('div.inline');
+
+    // Hack around a Chrome weirdness: if you focus a contenteditable element and immediately clear its text or html,
+    // it loses the focus. You have to click again to make the cursor come back. The workaround is to put the clear
+    // logic on a time delay, to fire slightly after the element gains focus.
+    var nameFocus = function(e) {
+        stillInNewNote = true;
+        placeCaretAtEnd(e.target);
+        var innerHandler = function() {
+            if ($(e.target).text() == newNbPlaceholderText) $(e.target).text('');
+        };
+        setTimeout(innerHandler, 10);
+    };
+
+
+    var nameFocusOut = function() {
+
+        var nbName = $(this).text().trim();
+
+        if (nbName == newNbPlaceholderText)
+            return;
+
+        if (!nbName) {
+            $(this).text(newNbPlaceholderText);
+            return;
+        }
+
+        // Make POST call to create new note
+        $.ajax({
+            url: '/api/notebooks/',
+            type: 'POST',
+            timeout: 1000,
+            contentType: 'application/json',
+            data: JSON.stringify({
+                'name'  : nbName,
+                'parent': currNotebookUrl,
+            }),
+            success: function(data){
+                getUserNotebooks();
+            },
+            error: function(xhr, status, err) {
+                notifyError("Error creating '<strong>" + nbName + "</strong>': " + status + ".");
+            }
+        });
+    };
+
+    notebookName.on('click',    nameFocus )
+                .on('focus',    function() { $(this).click(); })
+                .on('focusout', nameFocusOut );
+}
+
+
 /**
  * Empty the notebooks portion of the content pane, and then add a notebook element for each nested notebook.
  **/
@@ -416,6 +494,9 @@ function buildNestedNotebookElements(notebook) {
         notebooksToBuildUp.unshift($('#tree').treeview('getNode', 0));
     }
 
+    // Build a placeholder notebook div for creating new notebooks
+    buildPlaceholderNotebook();
+
     // For each notebook under this notebook, build a notebook div and place it in the #notebooks-wrapper portion of
     // the content pane
     notebooksToBuildUp.forEach(function(nb){
@@ -424,7 +505,7 @@ function buildNestedNotebookElements(notebook) {
 
     // Wire up double-click event handlers for each div, using the nodeId attribute to determine which node in the
     // treeview should be selected
-    $('.notebook:not(.to-root)').each(function(index, item){
+    $('.notebook:not(.to-root):not(.placeholder)').each(function(index, item){
         $(item).dblclick(function(){
             $('#tree').treeview('selectNode', parseInt($(item).attr('nodeid')));
             clearTextSelection();
@@ -451,7 +532,7 @@ function buildNoteElements(notebook) {
     // Make an API call to get all of the notes under this notebook all at once. Then for each note returned, build up
     // a note div and stick it in the #notes-wrapper portion of the content pane
     $.ajax({
-        url: notebook.url + 'notes',
+        url: notebook.url + 'notes/',
         type: 'GET',
         timeout: 1000,
         success: function(data) {

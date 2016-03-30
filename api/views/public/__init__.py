@@ -41,14 +41,9 @@ class NotebookList(ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         """ When creating a new Notebook, only allow the user to create new Notebook for themselves. """
 
-        # Get the Account detail url for the currently logged-in user.
-        expected_owner = AccountSerializer(request.user, context={'request': request}).data['url']
-
-        # Compare to the owner specified by the POST request. If they are not the same, complain about it. A user can
-        # only create an notebook for their own account.
-        if request.data['owner'] != expected_owner:
-            message = 'You may only create notebooks for yourself.'
-            return Response({'message': message}, status=HTTP_400_BAD_REQUEST)
+        # Get the Account detail url for the currently logged-in user. Set that Account url as the data for 'owner' in
+        # this request, ignoring what's already there
+        request.data['owner'] = AccountSerializer(request.user, context={'request': request}).data['url']
 
         # Use the NotebookSerializer to build up the Notebook, checking for validity, etc
         # If valid, save the object and return a detail-style view along with status 201
