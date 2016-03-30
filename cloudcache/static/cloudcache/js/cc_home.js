@@ -50,6 +50,24 @@ function getShortestColumn(selector) {
     return shortColumn;
 }
 
+// Utility function for using the Bootstrap-notify plugin for notifications. Further wrapped by utility functions
+// 'notifySuccess' and 'notifyError' below.
+function notify(message, icon, type, delay) {
+    $.notify({
+        message: message,
+        icon: 'glyphicon glyphicon-' + icon,
+    },{
+        type: type,
+        placement: {
+            from: 'bottom',
+            align: 'right',
+        },
+        delay: delay,
+    });
+}
+function notifySuccess(message) { notify(message, 'ok',               'info',   750);  }
+function notifyError(message)   { notify(message, 'exclamation-sign', 'danger', 2500); }
+
 /**
  * Attach a debounced on-edit event handler to this note div. When editing completes, hit the API endpoint for this
  * note to update the title and content.
@@ -71,47 +89,28 @@ function attachOnEditHandler(noteDiv) {
                       .children('.note-contents').children('p')
                       .html().replace(/<br>/g, '\r\n');
 
-        var data = {
-            'title'    : $note.children('.note-title').text(),
-            'notebook' : $note.attr('notebook-url'),
-            'content'  : content,
-        };
-
-        var notify = function(message, icon, type){
-            $.notify({
-                message: message,
-                icon: icon,
-            },{
-                type: type,
-                placement: {
-                    from: 'bottom',
-                    align: 'right',
-                },
-                delay: 3000,
-            });
-        };
-
         // Make PUT call to submit updates to this note
         $.ajax({
             url: $note.attr('note-url'),
             type: 'PUT',
             timeout: 1000,
-            data: data,
-            success: function(data){
-                var msg = "Successfully updated '<strong>" + data.title + "</strong>'.";
-                notify(msg, 'glyphicon glyphicon-ok','info');
+            data: {
+                'title'    : $note.children('.note-title').text(),
+                'notebook' : $note.attr('notebook-url'),
+                'content'  : content,
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                var msg = "Error updating note: " + textStatus + ".";
-                notify(msg, 'glyphicon glyphicon-exclamation-sign', 'danger');
-            }
+            success: function(data){ notifySuccess("Successfully updated '<strong>" + data.title + "</strong>'."); },
+            error: function(xhr, stat, err) { notifyError("Error updating note: " + stat + "."); }
         });
     };
 
     noteDiv.on('input', debounce(editHandler, 1500));
 }
 
-
+/**
+ * Attach an on-edit event handler to this note div. When editing completes, hit the current notebook's note list API
+ * endpoint to save a new note.
+ **/
 function attachNewNoteHandler(noteDiv) {
 
     // Wire up a few event handlers to simulate the placeholder-text effect on a contenteditable div for the note title.
@@ -136,7 +135,6 @@ function attachNewNoteHandler(noteDiv) {
              .on('focus',    function() { $(this).click(); })
              .on('focusout', function() { if (!$(this).text()) $(this).append(titlePlaceholder); });
 
-
     // Wire up a few event handlers to simulate the placeholder-text effect on a contenteditable div for the note content.
     // If the text in the div is the title placeholder text, focusing the div will clear the text. If the text is empty
     // when the div loses focus, it'll add back the placeholder text
@@ -155,12 +153,16 @@ function attachNewNoteHandler(noteDiv) {
 
     noteContent.on('click',    contentClick )
                .on('focus',    function() { $(this).click(); })
-               .on('focusout', function() { if (!$(this).children('p').text()) $(this).children('p').append(contentPlaceholder); });
-
+               .on('focusout', function() {
+                    if (!$(this).children('p').text())
+                        $(this).children('p').append(contentPlaceholder);
+               });
 
     var editHandler = function() {
 
-        if (stillInNewNote) return;
+        // this editHandler was fired, but focus is still in the new note placeholder. Don't save yet
+        if (stillInNewNote)
+            return;
 
         var $note = $('.note.placeholder');
 
@@ -171,48 +173,29 @@ function attachNewNoteHandler(noteDiv) {
 
         var title = $note.children('.note-title').text();
 
-        if (!title   || title == titlePlaceholder ||
-            !content || content == contentPlaceholder) return;
+        // If either the title or content of the note is empty, or still has the placeholder value, assume it's still
+        // a work-in-progress and don't save yet
+        if (!title || title == titlePlaceholder || !content || content == contentPlaceholder)
+            return;
 
-        var notebook_url = $note.attr('notebook-url');
-
-        var post_url = $note.attr('notebook-url') + 'notes/';
-
-        var data = {
-            'title'    : title,
-            'content'  : content,
-        };
-
-        var notify = function(message, icon, type){
-            $.notify({
-                message: message,
-                icon: icon,
-            },{
-                type: type,
-                placement: {
-                    from: 'bottom',
-                    align: 'right',
-                },
-                delay: 3000,
-            });
-        };
-
-        // Make PUT call to submit updates to this note
+        // Make POST call to create new note
         $.ajax({
-            url: post_url,
+            url: $note.attr('notebook-url') + 'notes/',
             type: 'POST',
             timeout: 1000,
             contentType: 'application/json',
-            data: JSON.stringify(data),
+            data: JSON.stringify({
+                'title'  : title,
+                'content': content,
+            }),
             success: function(data){
-                var msg = "Successfully created '<strong>" + title + "</strong>'.";
-                notify(msg, 'glyphicon glyphicon-ok', 'success');
+                // Build a new note, flagging it as created just now so it animates properly, and then rebuild the
+                // new note placeholder
                 buildNote(data, null, true);
                 buildPlaceholderNote();
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                var msg = "Error creating '<strong>" + title + "</strong>': " + textStatus + ".";
-                notify(msg, 'glyphicon glyphicon-exclamation-sign', 'danger');
+            error: function(xhr, status, err) {
+                notifyError("Error creating '<strong>" + title + "</strong>': " + status + ".");
             }
         });
     };
@@ -228,12 +211,11 @@ function attachNewNoteHandler(noteDiv) {
     // actually save the note
     noteDiv.on('focusout', function(e) {
         stillInNewNote = false;
-        setTimeout(function(){
-            editHandler();
-        }, 125);
+        setTimeout(function(){ editHandler(); }, 125);
     });
 }
 
+// Build up a special note entity which is used to create new notes
 function buildPlaceholderNote() {
     $('.note.placeholder').remove();
     var note = {
@@ -296,7 +278,6 @@ function buildNote(note, placeholder, addedNow) {
             note.animateCss('fadeIn');
         }
     }
-
 }
 
 /**
