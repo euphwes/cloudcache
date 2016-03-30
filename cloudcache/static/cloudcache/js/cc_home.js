@@ -133,7 +133,7 @@ function attachNewNoteHandler(noteDiv) {
 
     noteTitle.on('click',    titleClick )
              .on('focus',    function() { $(this).click(); })
-             .on('focusout', function() { if (!$(this).text()) $(this).append(titlePlaceholder); });
+             .on('focusout', function() { if (!$(this).text()) $(this).text(titlePlaceholder); });
 
     // Wire up a few event handlers to simulate the placeholder-text effect on a contenteditable div for the note content.
     // If the text in the div is the title placeholder text, focusing the div will clear the text. If the text is empty
@@ -155,7 +155,7 @@ function attachNewNoteHandler(noteDiv) {
                .on('focus',    function() { $(this).click(); })
                .on('focusout', function() {
                     if (!$(this).children('p').text())
-                        $(this).children('p').append(contentPlaceholder);
+                        $(this).children('p').text(contentPlaceholder);
                });
 
     var editHandler = function() {
