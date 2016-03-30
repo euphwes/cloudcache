@@ -523,12 +523,38 @@ function getUserNotebooks() {
  * On document-ready
  **/
 $(function(){
+
     // Set all ajax calls to send the CSRF token. Do *not* send the CSRF token if the request is cross-domain
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                 xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
             }
+        }
+    });
+
+    $.contextMenu({
+        selector: '.note:not(.placeholder)',
+        items: {
+            "delete": {
+                name: "Delete",
+                icon: "delete",
+                callback: function(key, options) {
+                    var $note = $(this);
+                    $.ajax({
+                        url: $note.attr('note-url'),
+                        type: 'DELETE',
+                        timeout: 1000,
+                        success: function() {
+                            var $sibs = $note.nextAll();
+                            $note.animateCss('zoomOut', function() {
+                                $note.remove();
+                                $sibs.animateCss('pulse');
+                            });
+                        },
+                    });
+                }
+            },
         }
     });
 

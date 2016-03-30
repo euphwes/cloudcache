@@ -11,10 +11,10 @@
     <link href="{% static 'cloudcache/css/core.css' %}" rel="stylesheet">
     <link href="{% static 'bootstrap-treeview/css/bootstrap-treeview.css' %}" rel="stylesheet">
     <link href="{% static 'bootstrap-notify/css/animate-min.css' %}" rel="stylesheet">
-
+    <link href="{% static 'jquery-ui/css/jquery-ui.min.css' %}" rel="stylesheet">
+    <link href="{% static 'jquery-contextmenu/jquery.contextMenu.min.css' %}" rel="stylesheet">
 </head>
-<body>
-
+<body oncontextmenu="return false;">
     <div id="wrapper">
         <div id="sidebar-wrapper">
             <div class="tree-wrapper">
@@ -51,6 +51,8 @@
     </div>
 
     <script src="{% static 'jquery/js/jquery-2.1.0.min.js' %}"></script>
+    <script src="{% static 'jquery-ui/js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'jquery-contextmenu/jquery.contextMenu.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'bootstrap-treeview/js/bootstrap-treeview.js' %}"></script>
     <script src="{% static 'bootstrap-notify/js/bootstrap-notify.min.js' %}"></script>
