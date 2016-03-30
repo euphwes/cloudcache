@@ -207,7 +207,7 @@ function attachNewNoteHandler(noteDiv) {
             success: function(data){
                 var msg = "Successfully created '<strong>" + title + "</strong>'.";
                 notify(msg, 'glyphicon glyphicon-ok', 'success');
-                buildNote(data);
+                buildNote(data, null, true);
                 buildPlaceholderNote();
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -246,7 +246,10 @@ function buildPlaceholderNote() {
 
 // Build up a note div which contains inner note-title and note-contents class divs, with the title and content
 // of a note object retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
-function buildNote(note, placeholder) {
+function buildNote(note, placeholder, addedNow) {
+
+    addedNow = addedNow || false;
+    placeholder = placeholder || false;
 
     // --- Note header stuff ---
     var header = $('<div>')
@@ -279,13 +282,21 @@ function buildNote(note, placeholder) {
         .append(header, content);
 
     if (placeholder) {
-        note.addClass('placeholder');
-        note.prependTo($('#notes-wrapper').children()[0]);
         attachNewNoteHandler(note);
+        note.addClass('placeholder')
+            .prependTo($('#notes-wrapper').children()[0]);
     } else {
-        note.appendTo(getShortestColumn('#notes-wrapper'));
         attachOnEditHandler(note);
+        note.appendTo(getShortestColumn('#notes-wrapper'));
+
+        // flipInX, fadeInUp, bounceInUp
+        if (addedNow) {
+            note.animateCss('fadeInUp');
+        } else {
+            note.animateCss('fadeIn');
+        }
     }
+
 }
 
 /**

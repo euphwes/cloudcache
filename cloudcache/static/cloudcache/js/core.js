@@ -97,3 +97,13 @@ function placeCaretAtEnd(el) {
         textRange.select();
     }
 }
+
+// Extension to jQuery to easily animate elements with animate.css, then remove the animations when complete
+$.fn.extend({
+    animateCss: function (animationName) {
+        var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+        $(this).addClass('animated ' + animationName).one(animationEnd, function() {
+            $(this).removeClass('animated ' + animationName);
+        });
+    }
+});
