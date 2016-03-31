@@ -249,6 +249,10 @@ body {
     transition: all 0.33s ease;
 }
 
+.notebook:not(.placeholder) {
+    cursor: pointer;
+}
+
 .go-up {
     vertical-align: middle;
     text-align: center;
@@ -319,6 +323,7 @@ body {
 .inline {
     display: inline-block;
     padding-left: 1px;
+    cursor: text;
 }
 
 .notebook:not(.go-up) span {
@@ -330,21 +335,21 @@ body {
 }
 
 /* Pop 10% */
-@-webkit-keyframes hvr-pop-10 {
+@-webkit-keyframes hvr-pop-5 {
   50% {
-    -webkit-transform: scale(1.10);
-    transform: scale(1.10);
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
   }
 }
 
-@keyframes hvr-pop-10 {
+@keyframes hvr-pop-5 {
   50% {
-    -webkit-transform: scale(1.10);
-    transform: scale(1.10);
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
   }
 }
 
-.hvr-pop-10 {
+.hvr-pop-5 {
   display: inline-block;
   vertical-align: middle;
   -webkit-transform: translateZ(0);
@@ -354,11 +359,11 @@ body {
   backface-visibility: hidden;
   -moz-osx-font-smoothing: grayscale;
 }
-.hvr-pop-10:hover, .hvr-pop-10:focus, .hvr-pop-10:active {
-  -webkit-animation-name: hvr-pop-10;
-  animation-name: hvr-pop-10;
-  -webkit-animation-duration: 0.3s;
-  animation-duration: 0.3s;
+.hvr-pop-5:hover, .hvr-pop-10:focus, .hvr-pop-10:active {
+  -webkit-animation-name: hvr-pop-5;
+  animation-name: hvr-pop-5;
+  -webkit-animation-duration: 0.25s;
+  animation-duration: 0.25s;
   -webkit-animation-timing-function: linear;
   animation-timing-function: linear;
   -webkit-animation-iteration-count: 1;
@@ -393,8 +398,8 @@ body {
 .hvr-pop-25:hover, .hvr-pop-25:focus, .hvr-pop-25:active {
   -webkit-animation-name: hvr-pop-25;
   animation-name: hvr-pop-25;
-  -webkit-animation-duration: 0.3s;
-  animation-duration: 0.3s;
+  -webkit-animation-duration: 0.25s;
+  animation-duration: 0.25s;
   -webkit-animation-timing-function: linear;
   animation-timing-function: linear;
   -webkit-animation-iteration-count: 1;

@@ -440,7 +440,7 @@ function buildUpOneLevelThing(notebook) {
     var upIcon = $('<span>').addClass('glyphicon glyphicon-level-up');
 
     var back = $('<div>')
-        .addClass('notebook go-up hvr-pop-10')
+        .addClass('notebook go-up hvr-pop-5')
         .attr({'url': parent.url, 'nodeid': parent.nodeId})
         .append(upIcon);
 
@@ -615,10 +615,14 @@ function buildNestedNotebookElements(notebook) {
     // Wire up double-click event handlers for each div, using the nodeId attribute to determine which node in the
     // treeview should be selected
     $('.notebook:not(.go-up):not(.placeholder)').each(function(index, item){
-        $(item).children('span').click(function(){
+
+        $(item).click(function(){
             $('#tree').treeview('selectNode', parseInt($(item).attr('nodeid')));
             clearTextSelection();
-        });
+        })
+        .find('.inline')
+        .click(function(e){ e.stopPropagation(); });
+
     });
 }
 
