@@ -76,7 +76,8 @@ function attachOnEditHandler(noteDiv) {
 
     var noteTitle = noteDiv.children('.note-title').children('.inline');
     noteTitle.on('click', function(e) { placeCaretAtEnd(e.target); })
-             .on('focus', function()  { $(this).click(); });
+             .on('focus', function()  { $(this).click(); })
+             .on('keydown', function(e) { if (e.keyCode == 13) e.preventDefault(); });
 
     var noteContent = noteDiv.children('.note-contents');
     noteContent.on('click', function(e) { placeCaretAtEnd(e.target); })
@@ -133,7 +134,8 @@ function attachNewNoteHandler(noteDiv) {
 
     noteTitle.on('click',    titleClick )
              .on('focus',    function() { $(this).click(); })
-             .on('focusout', function() { if (!$(this).text()) $(this).text(titlePlaceholder); });
+             .on('focusout', function() { if (!$(this).text()) $(this).text(titlePlaceholder); })
+             .on('keydown', function(e) { if (e.keyCode == 13) e.preventDefault(); });
 
     // Wire up a few event handlers to simulate the placeholder-text effect on a contenteditable div for the note content.
     // If the text in the div is the title placeholder text, focusing the div will clear the text. If the text is empty
@@ -485,7 +487,7 @@ function buildPlaceholderNotebook(treeInitialized) {
         .addClass('notebook placeholder')
         .appendTo(getShortestColumn('#notebooks-wrapper'));
 
-    $('<div>')
+    var editable = $('<div>')
         .addClass('inline')
         .attr('contenteditable', true)
         .append(newNbPlaceholderText)
@@ -554,10 +556,18 @@ function buildPlaceholderNotebook(treeInitialized) {
         });
     };
 
+    var catchKeys = function(e) {
+        if (e.keyCode == 13) {
+            $(this).trigger('focusout');
+            e.preventDefault();
+        }
+    };
+
     // wire up the event handlers
-    notebookName.on('click',    nameFocus )
+    notebookName.on('click',    nameFocus)
                 .on('focus',    function() { $(this).click(); })
-                .on('focusout', nameFocusOut );
+                .on('focusout', nameFocusOut)
+                .on('keydown',  catchKeys);
 }
 
 
