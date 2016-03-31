@@ -329,22 +329,22 @@ body {
     cursor: pointer;
 }
 
-/* Pop */
-@-webkit-keyframes hvr-pop {
+/* Pop 10% */
+@-webkit-keyframes hvr-pop-10 {
   50% {
-    -webkit-transform: scale(1.2);
-    transform: scale(1.2);
+    -webkit-transform: scale(1.10);
+    transform: scale(1.10);
   }
 }
 
-@keyframes hvr-pop {
+@keyframes hvr-pop-10 {
   50% {
-    -webkit-transform: scale(1.2);
-    transform: scale(1.2);
+    -webkit-transform: scale(1.10);
+    transform: scale(1.10);
   }
 }
 
-.hvr-pop {
+.hvr-pop-10 {
   display: inline-block;
   vertical-align: middle;
   -webkit-transform: translateZ(0);
@@ -354,9 +354,45 @@ body {
   backface-visibility: hidden;
   -moz-osx-font-smoothing: grayscale;
 }
-.hvr-pop:hover, .hvr-pop:focus, .hvr-pop:active {
-  -webkit-animation-name: hvr-pop;
-  animation-name: hvr-pop;
+.hvr-pop-10:hover, .hvr-pop-10:focus, .hvr-pop-10:active {
+  -webkit-animation-name: hvr-pop-10;
+  animation-name: hvr-pop-10;
+  -webkit-animation-duration: 0.3s;
+  animation-duration: 0.3s;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  -webkit-animation-iteration-count: 1;
+  animation-iteration-count: 1;
+}
+
+/* Pop 25% */
+@-webkit-keyframes hvr-pop-25 {
+  50% {
+    -webkit-transform: scale(1.25);
+    transform: scale(1.25);
+  }
+}
+
+@keyframes hvr-pop-25 {
+  50% {
+    -webkit-transform: scale(1.25);
+    transform: scale(1.25);
+  }
+}
+
+.hvr-pop-25 {
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -moz-osx-font-smoothing: grayscale;
+}
+.hvr-pop-25:hover, .hvr-pop-25:focus, .hvr-pop-25:active {
+  -webkit-animation-name: hvr-pop-25;
+  animation-name: hvr-pop-25;
   -webkit-animation-duration: 0.3s;
   animation-duration: 0.3s;
   -webkit-animation-timing-function: linear;

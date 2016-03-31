@@ -309,7 +309,7 @@ function buildNotebook(notebook) {
         .appendTo(notebookDiv);
 
     $('<span>')
-        .addClass('glyphicon glyphicon-folder-open pull-left inline hvr-pop')
+        .addClass('glyphicon glyphicon-folder-open pull-left inline hvr-pop-25')
         .appendTo(notebookDiv);
 
 
@@ -448,7 +448,7 @@ function buildUpOneLevelThing(notebook) {
     var upIcon = $('<span>').addClass('glyphicon glyphicon-level-up');
 
     var back = $('<div>')
-        .addClass('notebook go-up hvr-pop')
+        .addClass('notebook go-up hvr-pop-10')
         .attr({'url': parent.url, 'nodeid': parent.nodeId})
         .append(upIcon);
 
