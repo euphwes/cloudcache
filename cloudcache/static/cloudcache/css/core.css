@@ -298,10 +298,9 @@ body {
 }
 
 .note-contents p {
-    display: table-cell;
     vertical-align: middle;
-    height: 25px;
-    line-height: 175%;
+    min-height: 25px;
+    margin: 0;
 }
 
 .breadcrumb-custom {
@@ -319,6 +318,7 @@ body {
 
 .inline {
     display: inline-block;
+    padding-left: 1px;
 }
 
 .notebook:not(.go-up) span {

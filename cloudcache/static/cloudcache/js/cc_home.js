@@ -86,9 +86,11 @@ function attachOnEditHandler(noteDiv) {
     var editHandler = function() {
 
         var $note = $(this);
-        var content = $note
-                      .children('.note-contents').children('p')
-                      .html().replace(/<br>/g, '\r\n');
+
+        var content = '';
+        $note.children('.note-contents').children('p').each(function(index, element){
+            content += '\r\n' + $(element).text();
+        });
 
         // Make PUT call to submit updates to this note
         $.ajax({
@@ -168,10 +170,13 @@ function attachNewNoteHandler(noteDiv) {
 
         var $note = $('.note.placeholder');
 
-        var content = $note
-            .children('.note-contents').children('p')
-            .html()
-            .replace(/<br>/g, '\r\n');
+        var content = '';
+        $note.children('.note-contents').children('p').each(function(index, element){
+            var txt = $(element).text();
+            if (txt) {
+                content += '\r\n' + txt;
+            }
+        });
 
         var title = $note.children('.note-title').text();
 
@@ -254,10 +259,12 @@ function buildNote(note, placeholder, addedNow) {
         .addClass('note-contents')
         .attr('contenteditable', true);
 
-    // In the note content, replace newlines with <br>, then get rid of carriage returns, for nice display inside a <p>
-    $('<p>')
-        .append(note.content.replace(/\r\n/g, '<br/>'))
-        .appendTo(content);
+    // In the note content, split on each line, then stick that line in a paragraph and append to the content div
+    $.each(note.content.split('\r\n'), function(i, line){
+        $('<p>')
+            .append(line)
+            .appendTo(content);
+    });
 
     // -- Full note body --
     var note = $('<div>')
