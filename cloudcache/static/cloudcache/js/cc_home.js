@@ -735,6 +735,18 @@ $(function(){
         }
     });
 
+    var slideout = new Slideout({
+        'panel': document.getElementById('panel'),
+        'menu': document.getElementById('menu'),
+        'padding': 250,
+        'tolerance': 70
+    });
+
+
+    $('.navbar-brand').on('click', function() {
+        slideout.toggle();
+    });
+
     $.contextMenu({
         selector: '.note:not(.placeholder)',
         items: {

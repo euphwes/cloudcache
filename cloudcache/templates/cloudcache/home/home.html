@@ -16,46 +16,35 @@
 </head>
 <body oncontextmenu="return false;" spellcheck="false">
 
-    {% include 'cloudcache/core/navbar.html' %}
+    <nav id="menu">
+        <div class="tree-wrapper">
+            <div id="tree"></div>
+        </div>
+    </nav>
+    <main id="panel" class="content-wrapper">
 
-    <div id="wrapper">
-        <div id="sidebar-wrapper">
-            <div class="tree-wrapper">
-                <div id="tree"></div>
-            </div>
+        {% include 'cloudcache/core/navbar.html' %}
+
+        <div id="notebooks-wrapper" class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
         </div>
-        <div id="page-content-wrapper">
-            <div class="page-content">
-                <div class="container-fluid">
-                    <div id="controls-wrapper" class="row">
-                        <div class="col-md-15">
-                            <ol id="breadcrumbs" class="breadcrumb breadcrumb-custom pull-left">
-                                <li class="active">Notebooks</li>
-                            </ol>
-                        </div>
-                    </div>
-                    <div id="notebooks-wrapper" class="row">
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
-                    </div>
-                    <div id="notes-wrapper" class="row">
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
-                    </div>
-                </div>
-            </div>
+        <div id="notes-wrapper" class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
         </div>
-    </div>
+    </main>
 
     <script src="{% static 'jquery/js/jquery-2.1.0.min.js' %}"></script>
     <script src="{% static 'jquery-ui/js/jquery-ui.min.js' %}"></script>
     <script src="{% static 'jquery-contextmenu/jquery.contextMenu.min.js' %}"></script>
+    <script src="{% static 'slideout/js/slideout.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'bootstrap-treeview/js/bootstrap-treeview.js' %}"></script>
     <script src="{% static 'bootstrap-notify/js/bootstrap-notify.min.js' %}"></script>
