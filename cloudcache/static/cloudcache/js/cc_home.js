@@ -309,7 +309,7 @@ function buildNotebook(notebook) {
         .appendTo(notebookDiv);
 
     $('<span>')
-        .addClass('glyphicon glyphicon-folder-open pull-left inline')
+        .addClass('glyphicon glyphicon-folder-open pull-left inline hvr-pop')
         .appendTo(notebookDiv);
 
 
@@ -445,23 +445,26 @@ function buildUpOneLevelThing(notebook) {
 
     // Build a div which links to this notebook's parent. Put it in a nested row/column structure so that it is smaller
     // than the other notebook divs, to visually distinguish it a bit.
-    var upIcon = $('<span>').addClass('glyphicon glyphicon-level-up pull-left inline');
-
-    var upName = $('<div>').addClass('inline').append('Up');
+    var upIcon = $('<span>').addClass('glyphicon glyphicon-level-up');
 
     var back = $('<div>')
-        .addClass('notebook go-up')
+        .addClass('notebook go-up hvr-pop')
         .attr({'url': parent.url, 'nodeid': parent.nodeId})
-        .append(upName, upIcon);
+        .append(upIcon);
 
     // If this div is returning the user to the root, add a 'to-root' class so that it's skipped when we add
     // double-click handlers in buildNestedNotebookElements. Instead, add an event handler here which just unselects
     // the current node in the treeview, effectively returning the user to the notebooks root
     if (returnToRoot) {
         back.addClass('to-root');
-        back.dblclick(function(){
+        back.click(function(){
             $('#tree').treeview('unselectNode', $('#tree').treeview('getSelected')[0]);
             clearTextSelection()
+        });
+    } else {
+        back.click(function(){
+            $('#tree').treeview('selectNode', parseInt($(this).attr('nodeid')));
+            clearTextSelection();
         });
     }
 
@@ -578,7 +581,6 @@ function buildPlaceholderNotebook(treeInitialized) {
                 .on('keydown',  catchKeys);
 }
 
-
 /**
  * Empty the notebooks portion of the content pane, and then add a notebook element for each nested notebook.
  **/
@@ -621,8 +623,8 @@ function buildNestedNotebookElements(notebook) {
 
     // Wire up double-click event handlers for each div, using the nodeId attribute to determine which node in the
     // treeview should be selected
-    $('.notebook:not(.to-root):not(.placeholder)').each(function(index, item){
-        $(item).dblclick(function(){
+    $('.notebook:not(.go-up):not(.placeholder)').each(function(index, item){
+        $(item).children('span').click(function(){
             $('#tree').treeview('selectNode', parseInt($(item).attr('nodeid')));
             clearTextSelection();
         });
