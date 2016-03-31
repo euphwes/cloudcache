@@ -363,10 +363,18 @@ function buildNotebook(notebook) {
         });
     };
 
+    var catchKeys = function(e) {
+        if (e.keyCode == 13) {
+            $(this).trigger('focusout');
+            e.preventDefault();
+        }
+    };
+
     // wire up the event handlers
-    notebookName.on('click',    nameFocus )
+    notebookName.on('click',    nameFocus)
                 .on('focus',    function() { $(this).click(); })
-                .on('focusout', nameFocusOut );
+                .on('focusout', nameFocusOut)
+                .on('keydown',  catchKeys);
 }
 
 /**
@@ -487,7 +495,7 @@ function buildPlaceholderNotebook(treeInitialized) {
         .addClass('notebook placeholder')
         .appendTo(getShortestColumn('#notebooks-wrapper'));
 
-    var editable = $('<div>')
+    $('<div>')
         .addClass('inline')
         .attr('contenteditable', true)
         .append(newNbPlaceholderText)
