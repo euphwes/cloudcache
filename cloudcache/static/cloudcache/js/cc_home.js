@@ -693,9 +693,15 @@ function buildTreeviewForNotebooks(notebooks, postNotebookLoadCallback) {
     $('#tree').treeview({
         data: notebooks,
         levels: 3,
-        backColor: '#f5f5f5',
-        selectedBackColor: '#446E9B',
-        onhoverColor: '#D6D6D6',
+
+        color: '#FFFFFF',
+        backColor: '#446E9B',
+
+        selectedColor: '#446E9B',
+        selectedBackColor: '#FFFFFF',
+
+        onhoverColor: '#5488BF',
+
         showBorder: false,
         expandIcon: 'glyphicon glyphicon-triangle-right',
         collapseIcon: 'glyphicon glyphicon-triangle-bottom',
