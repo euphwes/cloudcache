@@ -79,25 +79,6 @@ function debounce(func, wait, immediate) {
 	};
 }
 
-// Places the caret at the end of the provided element. Takes the raw DOM element, not a jQuery object.
-function placeCaretAtEnd(el) {
-    el.focus();
-    if (typeof window.getSelection != "undefined"
-            && typeof document.createRange != "undefined") {
-        var range = document.createRange();
-        range.selectNodeContents(el);
-        range.collapse(false);
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-    } else if (typeof document.body.createTextRange != "undefined") {
-        var textRange = document.body.createTextRange();
-        textRange.moveToElementText(el);
-        textRange.collapse(false);
-        textRange.select();
-    }
-}
-
 // Extension to jQuery to easily animate elements with animate.css, then remove the animations when complete
 $.fn.extend({
     animateCss: function (animationName, finishCallback) {

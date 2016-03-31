@@ -75,13 +75,7 @@ function notifyError(message)   { notify(message, 'exclamation-sign', 'danger', 
 function attachOnEditHandler(noteDiv) {
 
     var noteTitle = noteDiv.children('.note-title').children('.inline');
-    noteTitle.on('click', function(e) { placeCaretAtEnd(e.target); })
-             .on('focus', function()  { $(this).click(); })
-             .on('keydown', function(e) { if (e.keyCode == 13) e.preventDefault(); });
-
-    var noteContent = noteDiv.children('.note-contents');
-    noteContent.on('click', function(e) { placeCaretAtEnd(e.target); })
-               .on('focus', function()  { $(this).click(); });
+    noteTitle.on('keydown', function(e) { if (e.keyCode == 13) e.preventDefault(); });
 
     var editHandler = function() {
 
@@ -127,7 +121,6 @@ function attachNewNoteHandler(noteDiv) {
     // logic on a time delay, to fire slightly after the element gains focus.
     var titleClick = function(e) {
         stillInNewNote = true;
-        placeCaretAtEnd(e.target);
         var innerHandler = function() {
             if ($(e.target).text() == titlePlaceholder) $(e.target).text('');
         };
@@ -148,7 +141,6 @@ function attachNewNoteHandler(noteDiv) {
     // Same weird hack as above.
     var contentClick = function(e) {
         stillInNewNote = true;
-        placeCaretAtEnd(e.target);
         var innerHandler = function() {
             if ($(e.target).children('p').text() == contentPlaceholder) $(e.target).children('p').text('');
         };
@@ -327,11 +319,6 @@ function buildNotebook(notebook) {
 
     var originalName = notebookName.text();
 
-    // Hack around a Chrome weirdness: if you focus a contenteditable element and immediately clear its text or html,
-    // it loses the focus. You have to click again to make the cursor come back. The workaround is to put the clear
-    // logic on a time delay, to fire slightly after the element gains focus.
-    var nameFocus = function(e) { placeCaretAtEnd(e.target); };
-
     // Event handler for when the thing loses focus
     var nameFocusOut = function() {
 
@@ -378,9 +365,7 @@ function buildNotebook(notebook) {
     };
 
     // wire up the event handlers
-    notebookName.on('click',    nameFocus)
-                .on('focus',    function() { $(this).click(); })
-                .on('focusout', nameFocusOut)
+    notebookName.on('focusout', nameFocusOut)
                 .on('keydown',  catchKeys);
 }
 
@@ -524,7 +509,6 @@ function buildPlaceholderNotebook(treeInitialized) {
     // it loses the focus. You have to click again to make the cursor come back. The workaround is to put the clear
     // logic on a time delay, to fire slightly after the element gains focus.
     var nameFocus = function(e) {
-        placeCaretAtEnd(e.target);
         var innerHandler = function() {
             if ($(e.target).text() == newNbPlaceholderText) $(e.target).text('');
         };
