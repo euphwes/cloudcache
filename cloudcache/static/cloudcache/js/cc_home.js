@@ -743,7 +743,8 @@ $(function(){
     });
 
 
-    $('.navbar-brand').on('click', function() {
+    $('.c-hamburger').on('click', function() {
+        $(this).toggleClass('is-active');
         slideout.toggle();
     });
 
