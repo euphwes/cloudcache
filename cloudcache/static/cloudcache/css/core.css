@@ -6,8 +6,8 @@
     -moz-box-shadow:    0px 1px 1px 0px rgba(50, 50, 50, 0.25);
     box-shadow:         0px 1px 1px 0px rgba(50, 50, 50, 0.25);
     background-color: #f5f5f5;
-    /*border-top: 3px solid #446E9B;*/
-    border-bottom: 1px solid #b0b0b0;
+    border-top: 3px solid #446E9B;
+    border-bottom: 1px solid #B0B0B0;
     margin-bottom: 0px;
 }
 .navbar-custom .navbar-brand {
@@ -84,7 +84,7 @@
 }
 
 .tree-wrapper {
-    margin-top: 50px;
+    margin-top: 15px;
 }
 
 .list-group-item:first-child, .list-group-item:last-child {
@@ -421,4 +421,17 @@ body {
 .c-hamburger--htla.is-active span::after {
   bottom: 0;
   transform: translateX(18px) translateY(-2px) rotate(-45deg);
+}
+
+#menu header h3 {
+    color: #FFFFFF;
+}
+
+#menu ul li a {
+    color: #FFFFFF;
+}
+
+#menu ul li a:hover {
+    background-color: #5488BF;
+    border-radius: 0;
 }

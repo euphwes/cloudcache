@@ -692,7 +692,7 @@ function buildTreeviewForNotebooks(notebooks, postNotebookLoadCallback) {
     // Build the treeview in the #tree div in the sidebar, with specific options
     $('#tree').treeview({
         data: notebooks,
-        levels: 3,
+        levels: 2,
 
         color: '#FFFFFF',
         backColor: '#446E9B',

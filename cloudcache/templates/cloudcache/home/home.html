@@ -17,21 +17,38 @@
 <body oncontextmenu="return false;" spellcheck="false">
 
     <nav id="menu" class="slide-menu">
+        <header>
+            <h3 class="text-center">Notebooks</h3>
+        </header>
         <div class="tree-wrapper">
             <div id="tree"></div>
         </div>
+        <ul class="nav nav-pills nav-stacked">
+            <li class="pull-down">
+                <a id="id_navbar_logout" href="{% url 'cloudcache:logout' %}">Log Out</a>
+            </li>
+        </ul>
     </nav>
     <main id="panel" class="panel-wrapper">
 
-        {% include 'cloudcache/core/navbar.html' %}
+        <header class="navbar navbar-fixed-top navbar-custom">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button class="c-hamburger c-hamburger--htla">
+                        <span>toggle menu</span>
+                    </button>
+                </div>
+            </div>
+        </header>
 
         <div class="content-wrapper">
             <div id="notebooks-wrapper" class="row">
-                <div class="col-md-4"></div>
-                <div class="col-md-4"></div>
-                <div class="col-md-4"></div>
-                <div class="col-md-4"></div>
-                <div class="col-md-4"></div>
+                <div class="col-md-3 col-sm-offset-1"></div>
+                <div class="col-md-3"></div>
+                <div class="col-md-3"></div>
+                <div class="col-md-3"></div>
+                <div class="col-md-3"></div>
+                <div class="col-md-3"></div>
             </div>
             <div id="notes-wrapper" class="row">
                 <div class="col-md-5"></div>
