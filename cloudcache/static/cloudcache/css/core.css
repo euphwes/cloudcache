@@ -101,17 +101,15 @@
 }
 
 #notebooks-wrapper {
-    padding: 25px 80px 0 80px;
-    width: 100%;
+    padding-top: 20px;
 }
 
 #notes-wrapper {
-    width: 100%;
-    padding: 15px 80px 0px 80px;
+    padding-top: 15px;
 }
 
 .content-wrapper {
-    padding-top: 50px;
+    padding: 50px 200px 0 200px;
     background-color: #e8e8e8;
     min-height: 100%;
 }
