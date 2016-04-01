@@ -698,7 +698,7 @@ function buildTreeviewForNotebooks(notebooks, postNotebookLoadCallback) {
         backColor: '#446E9B',
 
         selectedColor: '#446E9B',
-        selectedBackColor: '#FFFFFF',
+        selectedBackColor: '#E8E8E8',
 
         onhoverColor: '#5488BF',
 
