@@ -333,10 +333,8 @@ body {
   overflow: hidden;
   margin: 0;
   padding: 0;
-  /*width: 96px; /**/
-  /*height: 96px; /**/
-  width: 50px; /**/
-  height: 50px; /**/
+  width: 50px;
+  height: 50px;
   font-size: 0;
   text-indent: -9999px;
   appearance: none;
@@ -359,6 +357,7 @@ body {
   right: 9px;
   height: 4px;
   background-color: #446E9B;
+  border-radius: 3px;
 }
 
 .c-hamburger span::before,
@@ -370,6 +369,7 @@ body {
   height: 4px;
   background-color: #446E9B;
   content: "";
+  border-radius: 3px;
 }
 
 .c-hamburger span::before {
