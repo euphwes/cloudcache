@@ -424,6 +424,10 @@ body {
   transform: translateX(18px) translateY(-2px) rotate(-45deg);
 }
 
+#menu {
+    display: none;
+}
+
 #menu header h3 {
     color: #FFFFFF;
 }

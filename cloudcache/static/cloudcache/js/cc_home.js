@@ -747,6 +747,7 @@ $(function(){
         'padding': 250,
         'tolerance': 70
     });
+    $('#menu').show();
 
 
     $('.c-hamburger').on('click', function() {
