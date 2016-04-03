@@ -1,11 +1,12 @@
 .login-container {
     margin-top: 50px;
 }
+
 .navbar-custom {
     -webkit-box-shadow: 0px 1px 1px 0px rgba(50, 50, 50, 0.25);
     -moz-box-shadow:    0px 1px 1px 0px rgba(50, 50, 50, 0.25);
     box-shadow:         0px 1px 1px 0px rgba(50, 50, 50, 0.25);
-    background-color: #f5f5f5;
+    background-color: #F5F5F5;
     border-top: 3px solid #446E9B;
     border-bottom: 1px solid #B0B0B0;
     margin-bottom: 0px;
@@ -20,8 +21,8 @@
 }
 .login-box {
     padding: 15px;
-    background-color: #f5f5f5;
-    border: 1px solid #d0d0d0;
+    background-color: #F5F5F5;
+    border: 1px solid #D0D0D0;
     border-radius: 6px;
 }
 .login-body > form {
@@ -66,7 +67,6 @@
     color: #757575;
 }
 
-[contenteditable]:focus { outline: 0px solid transparent; }
 
 .treeview > ul > li {
     font-size: 10pt;
@@ -95,17 +95,12 @@
     border-radius: 0;
 }
 
-#controls-wrapper {
-    height: 50px;
-    border-bottom: 1px solid #aaaaaa;
+.section-wrapper {
+    padding: 10px 0;
 }
 
-#notebooks-wrapper {
-    padding-top: 20px;
-}
-
-#notes-wrapper {
-    padding-top: 15px;
+#notebooks-wrapper::before {
+    padding-top: 10px;
 }
 
 .content-wrapper {
@@ -114,24 +109,23 @@
     min-height: 100%;
 }
 
-.notebook {
+.cc-element {
     display: inline-block;
-    background: #446E9B;
-    color: #ffffff;
-    text-align: left;
     width: 100%;
     margin: 8px;
-    padding: 10px;
-    min-height: 40px;
     border-radius: 2px;
+    text-align: left;
     -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.12);
     -moz-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.12);
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.12);
     transition: all 0.33s ease;
 }
 
-.notebook:not(.placeholder) {
-    cursor: pointer;
+.notebook {
+    background: #446E9B;
+    color: #ffffff;
+    padding: 10px;
+    min-height: 40px;
 }
 
 .go-up {
@@ -148,21 +142,16 @@
     transform: scale(1.25);
 }
 
-.note {
-    display: inline-block;
-    background: #ffffff;
-    text-align: left;
-    width: 100%;
-    margin: 8px;
-    border-radius: 2px;
-    -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.12);
-    -moz-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.12);
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.12);
-    transition: all 0.33s ease;
+.notebook:not(.placeholder) {
+    cursor: pointer;
 }
 
-.placeholder {
-    opacity: 0.50;
+.notebook:not(.go-up) span {
+    margin-right: 15px;
+}
+
+.note {
+    background: #ffffff;
 }
 
 .note:hover {
@@ -188,9 +177,8 @@
     margin: 0;
 }
 
-.breadcrumb-custom {
-    margin: 0;
-    padding-left: 0;
+.placeholder {
+    opacity: 0.50;
 }
 
 .flipped {
@@ -202,17 +190,17 @@
 
 .inline {
     display: inline-block;
+}
+
+.edit {
     padding-left: 1px;
     cursor: text;
 }
 
-.notebook:not(.go-up) span {
-    margin-right: 15px;
+[contenteditable]:focus {
+    outline: 0px solid transparent;
 }
 
-.notebook:not(.placeholder) span {
-    cursor: pointer;
-}
 
 /* Pop 10% */
 @-webkit-keyframes hvr-pop-5 {
@@ -285,7 +273,6 @@
   -webkit-animation-iteration-count: 1;
   animation-iteration-count: 1;
 }
-
 
 /*  Slideout.js stuff  */
 body {
@@ -426,11 +413,7 @@ body {
     display: none;
 }
 
-#menu header h3 {
-    color: #FFFFFF;
-}
-
-#menu ul li a {
+#menu header h3, #menu ul li a {
     color: #FFFFFF;
 }
 

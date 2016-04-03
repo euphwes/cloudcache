@@ -237,7 +237,7 @@ function buildNote(note, placeholder, addedNow) {
         .addClass('note-title');
 
     $('<div>')
-        .addClass('inline')
+        .addClass('inline edit')
         .attr('contenteditable', true)
         .append(note.title)
         .appendTo(header);
@@ -260,7 +260,7 @@ function buildNote(note, placeholder, addedNow) {
 
     // -- Full note body --
     var note = $('<div>')
-        .addClass('note')
+        .addClass('cc-element note')
         .attr({'note-url': note.url, 'notebook-url': note.notebook})
         .append(header, content);
 
@@ -298,11 +298,11 @@ function buildNotebook(notebook) {
 
     var notebookDiv = $('<div>')
         .attr({'url': notebook.url, 'nodeid': notebook.nodeId})
-        .addClass('notebook')
+        .addClass('cc-element notebook')
         .appendTo(getShortestColumn('#notebooks-wrapper'));
 
     $('<div>')
-        .addClass('inline')
+        .addClass('inline edit')
         .attr('contenteditable', true)
         .append(notebook.text)
         .appendTo(notebookDiv);
@@ -440,7 +440,7 @@ function buildUpOneLevelThing(notebook) {
     var upIcon = $('<span>').addClass('glyphicon glyphicon-level-up');
 
     var back = $('<div>')
-        .addClass('notebook go-up hvr-pop-5')
+        .addClass('cc-element notebook go-up hvr-pop-5')
         .attr({'url': parent.url, 'nodeid': parent.nodeId})
         .append(upIcon);
 
@@ -487,11 +487,11 @@ function buildPlaceholderNotebook(treeInitialized) {
     var newNbPlaceholderText = 'New notebook...';
 
     var notebook = $('<div>')
-        .addClass('notebook placeholder')
+        .addClass('cc-element notebook placeholder')
         .appendTo(getShortestColumn('#notebooks-wrapper'));
 
     $('<div>')
-        .addClass('inline')
+        .addClass('inline edit')
         .attr('contenteditable', true)
         .append(newNbPlaceholderText)
         .appendTo(notebook);
