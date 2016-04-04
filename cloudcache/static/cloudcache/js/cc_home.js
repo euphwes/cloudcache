@@ -750,8 +750,8 @@ $(function(){
     $('#menu').show();
 
 
-    $('.c-hamburger').on('click', function() {
-        $(this).toggleClass('is-active');
+    $('.hamburger').on('click', function() {
+        $(this).toggleClass('active');
         slideout.toggle();
     });
 

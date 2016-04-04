@@ -1,0 +1,34 @@
+
+// cloudCache blue main color, and darkened for trim
+@cc-blue: #446E9B;
+@cc-blue-trim: darken(@cc-blue, 20%);
+
+// Core background color
+@bg-grey: #E8E8E8;
+
+
+//-------------------------------
+// Media query breakpoint mixins
+//-------------------------------
+
+@screen-xs:       480px;
+@screen-xs-min:   @screen-xs;
+@screen-sm:       768px;
+@screen-sm-min:   @screen-sm;
+@screen-md:       992px;
+@screen-md-min:   @screen-md;
+@screen-lg:       1200px;
+@screen-lg-min:   @screen-lg;
+@screen-xl:       1600px;
+@screen-xl-min:   @screen-xl;
+@screen-xs-max:   ( @screen-sm-min - 1 );
+@screen-sm-max:   ( @screen-md-min - 1 );
+@screen-md-max:   ( @screen-lg-min - 1 );
+@screen-lg-max:   ( @screen-xl-min - 1 );
+
+// Small mobile devices like phones
+.responsive-mobile(@rules) {
+	@media only screen and (max-device-width: @screen-xs) {
+		@rules();
+	}
+}

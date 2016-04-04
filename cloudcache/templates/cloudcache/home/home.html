@@ -8,7 +8,7 @@
     <link href="{% static 'cloudcache/favicon.ico' %}" rel="shortcut icon">
 
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}"               rel="stylesheet">
-    <link href="{% static 'cloudcache/css/core.css' %}"                       rel="stylesheet">
+    <link href="{% static 'cloudcache/css/cloudcache.css' %}"                 rel="stylesheet">
     <link href="{% static 'bootstrap-treeview/css/bootstrap-treeview.css' %}" rel="stylesheet">
     <link href="{% static 'bootstrap-notify/css/animate-min.css' %}"          rel="stylesheet">
     <link href="{% static 'jquery-ui/css/jquery-ui.min.css' %}"               rel="stylesheet">
@@ -32,14 +32,10 @@
 
     <main id="panel" class="panel-wrapper">
 
-        <header class="navbar navbar-fixed-top navbar-custom">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button class="c-hamburger c-hamburger--htla">
-                        <span>toggle menu</span>
-                    </button>
-                </div>
-            </div>
+        <header class="cc-navbar">
+            <button class="hamburger">
+                <span>toggle menu</span>
+            </button>
         </header>
 
         <div class="content-wrapper">
