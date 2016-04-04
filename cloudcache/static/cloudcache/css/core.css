@@ -421,3 +421,54 @@ body {
     background-color: #5488BF;
     border-radius: 0;
 }
+
+/* ------------------------------------------------
+ *                    Media queries
+ * ------------------------------------------------ */
+@media only screen and (max-device-width: 480px) {
+
+    .content-wrapper {
+        padding: 100px 15px 0 15px;
+        min-height: 100%;
+    }
+
+    #notebooks-wrapper {
+        text-align: center;
+    }
+
+    #notes-wrapper {
+        text-align: center;
+    }
+
+    .cc-element {
+        width: 95%;
+        font-size: 30px;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .notebook span {
+        font-size: 25px;
+    }
+
+    .note-title {
+        font-size: 30px;
+    }
+
+    .notebook:not(.go-up) span {
+        top: 10px;
+        margin-right: 20px;
+    }
+
+    .navbar-custom {
+        height: 100px;
+    }
+
+    .c-hamburger {
+        top: 25px;
+        left: 10px;
+        -webkit-transform: scale(1.25);
+        -ms-transform: scale(1.25);
+        transform: scale(1.25);
+    }
+
+}
