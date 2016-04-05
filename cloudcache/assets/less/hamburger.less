@@ -5,6 +5,9 @@
 // http://callmenick.com/post/animating-css-only-hamburger-menu-icons
 // ---------------------------------------------------------
 
+@button-left-margin:          10px;   // The margin to the left of the button to stand it off the left edge of the parent
+@line-color: @off-white;
+
 // The values are below are somewhat hardcoded to work fitting in a navbar of fixed height of 50px
 @button-width:                50px;   // The width of the button area
 @button-height:      @button-width;   // The height of the button area
@@ -13,14 +16,17 @@
 @button-bar-space:             6px;   // The spacing between button bars
 @button-transistion-duration: 0.3s;   // The transition duration
 
+
+
 .hamburger {
 
     // Display as a fixed height/width square, absolutely positioned at the top-left of the
-    // parent container. Completely plain appearance: no padding, margin, border, shadow, etc
+    // parent container. Completely plain appearance: no padding, border, shadow, etc.
+    // Only 10px left margin to stand the button off the left edge of the viewport a bit
     display: block;
     position: absolute;
     overflow: hidden;
-    margin: 0;
+    margin-left: @button-left-margin;
     padding: 0;
     top: 0;
     left: 0;
@@ -50,7 +56,7 @@
         left: @button-pad;
         right: @button-pad;
         height: @bar-thickness;
-        background-color: @cc-theme-trim;
+        background-color: @line-color;
         border-radius: 3px;
         transition: transform @button-transistion-duration;
 
@@ -60,21 +66,19 @@
             left: 0;
             width: 100%;
             height: @bar-thickness;
-            background-color: @cc-theme-trim;
+            background-color: @line-color;
             content: "";
             border-radius: 3px;
         }
 
         &::before {
             top: -@bar-thickness - @button-bar-space;
-            transform-origin: top right;
-            transition: transform @button-transistion-duration, width @button-transistion-duration, top @button-transistion-duration;
+            transition: transform @button-transistion-duration;
         }
 
         &::after {
             bottom: -@bar-thickness - @button-bar-space;
-            transform-origin: bottom right;
-            transition: transform @button-transistion-duration, width @button-transistion-duration, bottom @button-transistion-duration;
+            transition: transform @button-transistion-duration;
         }
     }
 

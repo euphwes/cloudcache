@@ -2,16 +2,14 @@
 //                           Navbar
 // ---------------------------------------------------------
 
-@navbar-bg-color:             @off-white;    // Navbar background color
-@navbar-border-top-color:     @cc-theme;     // Navbar border-top color
+@navbar-bg-color:             @cc-theme;     // Navbar background color
 @navbar-border-bottom-color:  @light-grey;   // Navbar border-bottom color
-@navbar-border-top-size:      3px;           // Navbar border-top thickness
 @navbar-border-bottom-size:   1px;           // Navbar border-bottom thickness
 
 // Take the border thicknesses into account to ensure the navbar itself (without the borders)
 // are the desired size
-@navbar-height:         50px + @navbar-border-bottom-size + @navbar-border-top-size;
-@navbar-height-mobile: 100px + @navbar-border-bottom-size + @navbar-border-top-size;
+@navbar-height:         50px + @navbar-border-bottom-size;
+@navbar-height-mobile: 100px + @navbar-border-bottom-size;
 
 .box-shadow (@shadow) {
     -webkit-box-shadow:  @shadow;
@@ -33,11 +31,9 @@
 
     .box-shadow(0px 1px 1px 0px rgba(50, 50, 50, 0.25));
 
-    border-bottom: @navbar-border-bottom-size solid @navbar-border-bottom-color;
-
     // Coloring and borders
     background: @navbar-bg-color;
-    border-top: @navbar-border-top-size solid @navbar-border-top-color;
+    border-bottom: @navbar-border-bottom-size solid @navbar-border-bottom-color;
 
     // Default to full-container width, 50px set height, for "regular" displays
     width: 100%;
@@ -52,7 +48,6 @@
     // Mobile styles
     .responsive-mobile({
         height:           2 * @navbar-height;
-        border-top-width: 2 * @navbar-border-top-size;
     });
 }
 
