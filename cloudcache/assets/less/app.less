@@ -1,0 +1,147 @@
+// ---------------------------------------------------------
+//                App page container styles
+// ---------------------------------------------------------
+
+// ---------------- Main content wrapper -------------------
+
+// Pad the main content wrapper to the same height as the navbar
+// so that all content falls underneath the navbar
+@content-padding-top:        @navbar-height;
+@content-padding-top-mobile: @navbar-height-mobile;
+
+// Pad the sides so that
+@content-padding-side:        10%;
+@content-padding-side-mobile:  5%;
+
+.content-wrapper {
+    padding-top:    @content-padding-top;
+    padding-left:   @content-padding-side;
+    padding-right:  @content-padding-side;
+    padding-bottom: 0;
+
+    background-color: @bg-grey;
+    min-height: 100%;
+
+    .responsive-mobile({
+        padding-top:    @content-padding-top-mobile;
+        padding-left:   @content-padding-side-mobile;
+        padding-right:  @content-padding-side-mobile;
+    })
+}
+
+
+// ------------------ Section wrappers ---------------------
+
+@section-padding: 10px;
+
+// Both notebook and note sections get top/bottom padding
+.section-wrapper {
+    padding-top:    @section-padding;
+    padding-bottom: @section-padding;
+}
+
+// Notebooks wrapper gets an additional chunk of padding at the top
+// to further separate it from the navbar
+#notebooks-wrapper {
+    padding-top: @section-padding;
+}
+
+
+// ------------- Note and notebook common styles -----------
+
+@cc-el-side-margin:          0;  // Unnecessary because of Bootstrap's column sidepadding
+@cc-el-top-bottom-margin: 10px;  // Match Bootstrap's column 10px side padding, create equal spacing on all sides
+@cc-el-border-radius:      2px;
+
+@cc-el-transition: all 0.3s ease;
+@cc-el-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.2), 0 1px 5px 0 rgba(0,0,0,0.12);
+
+.cc-element {
+    display: inline-block;
+    width: 100%;
+    margin: @cc-el-top-bottom-margin @cc-el-side-margin;
+    transition: @cc-el-transition;
+
+    .border-radius(@cc-el-border-radius);
+    .box-shadow(@cc-el-shadow);
+}
+
+.notebook {
+    background: #446E9B;
+    color: #ffffff;
+    padding: 10px;
+    min-height: 40px;
+}
+
+.go-up {
+    vertical-align: middle;
+    text-align: center;
+    background: #A85252;
+    cursor: pointer;
+}
+
+.go-up span {
+    margin: 0;
+    -webkit-transform: scale(1.25);
+    -ms-transform: scale(1.25);
+    transform: scale(1.25);
+}
+
+.notebook:not(.placeholder) {
+    cursor: pointer;
+}
+
+.notebook:not(.go-up) span {
+    margin-right: 15px;
+}
+
+.note {
+    background: #ffffff;
+}
+
+.note:hover {
+    box-shadow: 0 2px 15px rgba(0,0,0,0.5);
+    transition: all 0.2s ease;
+}
+
+.note-title {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 10px 0 15px;
+}
+
+.note-contents {
+    font-size: 12px;
+    min-height: 45px;
+    padding: 15px 15px 10px 15px;
+}
+
+.note-contents p {
+    vertical-align: middle;
+    min-height: 25px;
+    margin: 0;
+}
+
+.placeholder {
+    opacity: 0.50;
+}
+
+.flipped {
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+}
+
+.inline {
+    display: inline-block;
+}
+
+.edit {
+    padding-left: 1px;
+    cursor: text;
+}
+
+[contenteditable]:focus {
+    outline: 0px solid transparent;
+}
