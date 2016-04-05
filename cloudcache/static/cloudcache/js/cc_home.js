@@ -304,7 +304,7 @@ function buildNotebook(notebook) {
         .appendTo(notebookDiv);
 
     $('<span>')
-        .addClass('glyphicon glyphicon-folder-open pull-left hvr-pop-25')
+        .addClass('glyphicon glyphicon-folder-open inline pull-left hvr-pop-25')
         .appendTo(notebookDiv);
 
     // Wire up a few event handlers to simulate a placeholder in a contenteditable div for the notebook name.
@@ -492,7 +492,7 @@ function buildPlaceholderNotebook(treeInitialized) {
         .appendTo(notebook);
 
     $('<span>')
-        .addClass('glyphicon glyphicon-folder-open pull-left')
+        .addClass('glyphicon glyphicon-folder-open inline pull-left')
         .appendTo(notebook);
 
     // Wire up a few event handlers to simulate a placeholder in a contenteditable div for the notebook name.

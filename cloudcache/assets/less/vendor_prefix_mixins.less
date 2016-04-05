@@ -29,3 +29,9 @@
     -moz-opacity:    @opacity;
     opacity:         @opacity;
 }
+
+.animation (@name, @duration: 0.25s, @delay: 0, @ease: ease) {
+    -webkit-animation: @name @duration @delay @ease;
+    -moz-animation:    @name @duration @delay @ease;
+    -ms-animation:     @name @duration @delay @ease;
+}
