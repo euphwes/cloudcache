@@ -66,82 +66,116 @@
     .box-shadow(@cc-el-shadow);
 }
 
-.notebook {
-    background: #446E9B;
-    color: #ffffff;
-    padding: 10px;
-    min-height: 40px;
-}
-
-.go-up {
-    vertical-align: middle;
-    text-align: center;
-    background: #A85252;
-    cursor: pointer;
-}
-
-.go-up span {
-    margin: 0;
-    -webkit-transform: scale(1.25);
-    -ms-transform: scale(1.25);
-    transform: scale(1.25);
-}
-
-.notebook:not(.placeholder) {
-    cursor: pointer;
-}
-
-.notebook:not(.go-up) span {
-    margin-right: 15px;
-}
-
-.note {
-    background: #ffffff;
-}
-
-.note:hover {
-    box-shadow: 0 2px 15px rgba(0,0,0,0.5);
-    transition: all 0.2s ease;
-}
-
-.note-title {
-    font-size: 16px;
-    font-weight: bold;
-    padding: 10px 10px 0 15px;
-}
-
-.note-contents {
-    font-size: 12px;
-    min-height: 45px;
-    padding: 15px 15px 10px 15px;
-}
-
-.note-contents p {
-    vertical-align: middle;
-    min-height: 25px;
-    margin: 0;
-}
-
+// Visually distinguish the placeholder elements (where you create a new
+// notebook or note) from the other ones
 .placeholder {
-    opacity: 0.50;
+    .opacity(0.5);
 }
 
-.flipped {
-    transform: scaleX(-1);
-    -moz-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    -ms-transform: scaleX(-1);
-}
-
+// Help <div> and <span> display inline next to each other in a parent container
 .inline {
     display: inline-block;
 }
 
+// Help to visually denote that the contenteditable divs are editable
+// The 1px padding is Chrome hack to that the element displays a blinking cursor
 .edit {
-    padding-left: 1px;
     cursor: text;
+    padding-left: 1px;
 }
 
+// Get rid of the border on a focused contenteditable on some platforms
 [contenteditable]:focus {
     outline: 0px solid transparent;
+}
+
+// ---------------------- Notebook styles ------------------
+
+@notebook-bg-color: @cc-theme-trim;
+@notebook-fg-color: @off-white;
+
+@notebook-padding:    10px;
+@notebook-min-height: 40px;
+
+.notebook {
+    color:      @notebook-fg-color;
+    background: @notebook-bg-color;
+    padding:    @notebook-padding;
+    min-height: @notebook-min-height;
+
+    &:not(.placeholder) {
+        cursor: pointer;
+    }
+
+    &:not(.go-up) {
+        span {
+            margin-right: 15px;
+        }
+    }
+}
+
+@go-up-bg-color: #864141; 
+
+.go-up {
+    cursor:     pointer;
+    text-align: center;
+    background: @go-up-bg-color;
+
+    span {
+        margin: 0;
+        .transform(scale(1.25));
+    }
+}
+
+// ------------------------ Note styles --------------------
+
+@note-hover-shadow:     0 2px 15px rgba(0,0,0,0.5);
+@note-hover-transition: all 0.3s ease;
+
+@title-font-size:    16px;
+@title-font-weight:  bold;
+
+@title-pad-top:  10px;
+@title-pad-side: 15px;
+
+@contents-font-size:  12px;
+@contents-min-height: 45px;
+
+@contents-pad-top:    15px;
+@contents-pad-side:   15px;
+@contents-pad-bottom: 10px;
+
+@para-min-height: 25px;
+
+.note {
+    background: @off-white;
+
+    &:hover {
+        .box-shadow(@note-hover-shadow);
+        transition: @note-hover-transition;
+    }
+
+    .title {
+        font-size:      @title-font-size;
+        font-weight:    @title-font-weight;
+        padding-top:    @title-pad-top;
+        padding-right:  @title-pad-side;
+        padding-left:   @title-pad-side;
+        padding-bottom: 0;
+    }
+
+    .contents {
+        font-size:  @contents-font-size;
+        min-height: @contents-min-height;
+
+        padding-top:    @contents-pad-top;
+        padding-right:  @contents-pad-side;
+        padding-left:   @contents-pad-side;
+        padding-bottom: @contents-pad-bottom;
+
+        p {
+            margin: 0;
+            min-height: @para-min-height;
+        }
+    }
 }

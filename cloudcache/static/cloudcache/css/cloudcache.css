@@ -61,23 +61,26 @@
   -moz-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
+.placeholder {
+  -webkit-opacity: 0.5;
+  -moz-opacity: 0.5;
+  opacity: 0.5;
+}
+.inline {
+  display: inline-block;
+}
+.edit {
+  cursor: text;
+  padding-left: 1px;
+}
+[contenteditable]:focus {
+  outline: 0px solid transparent;
+}
 .notebook {
-  background: #446E9B;
-  color: #ffffff;
+  color: #F5F5F5;
+  background: #46637e;
   padding: 10px;
   min-height: 40px;
-}
-.go-up {
-  vertical-align: middle;
-  text-align: center;
-  background: #A85252;
-  cursor: pointer;
-}
-.go-up span {
-  margin: 0;
-  -webkit-transform: scale(1.25);
-  -ms-transform: scale(1.25);
-  transform: scale(1.25);
 }
 .notebook:not(.placeholder) {
   cursor: pointer;
@@ -85,46 +88,47 @@
 .notebook:not(.go-up) span {
   margin-right: 15px;
 }
+.go-up {
+  cursor: pointer;
+  text-align: center;
+  background: #864141;
+}
+.go-up span {
+  margin: 0;
+  -webkit-transform: scale(1.25);
+  -moz-transform: scale(1.25);
+  -ms-transform: scale(1.25);
+  -o-transform: scale(1.25);
+  transform: scale(1.25);
+}
 .note {
-  background: #ffffff;
+  background: #F5F5F5;
 }
 .note:hover {
+  -webkit-box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
-.note-title {
+.note .title {
   font-size: 16px;
   font-weight: bold;
-  padding: 10px 10px 0 15px;
+  padding-top: 10px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 0;
 }
-.note-contents {
+.note .contents {
   font-size: 12px;
   min-height: 45px;
-  padding: 15px 15px 10px 15px;
+  padding-top: 15px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 10px;
 }
-.note-contents p {
-  vertical-align: middle;
-  min-height: 25px;
+.note .contents p {
   margin: 0;
-}
-.placeholder {
-  opacity: 0.50;
-}
-.flipped {
-  transform: scaleX(-1);
-  -moz-transform: scaleX(-1);
-  -webkit-transform: scaleX(-1);
-  -ms-transform: scaleX(-1);
-}
-.inline {
-  display: inline-block;
-}
-.edit {
-  padding-left: 1px;
-  cursor: text;
-}
-[contenteditable]:focus {
-  outline: 0px solid transparent;
+  min-height: 25px;
 }
 .hamburger {
   display: block;

@@ -74,7 +74,7 @@ function notifyError(message)   { notify(message, 'exclamation-sign', 'danger', 
  **/
 function attachOnEditHandler(noteDiv) {
 
-    var noteTitle = noteDiv.children('.note-title').children('.inline');
+    var noteTitle = noteDiv.children('.title').children('.inline');
     noteTitle.on('keydown', function(e) { if (e.keyCode == 13) e.preventDefault(); });
 
     var editHandler = function() {
@@ -82,7 +82,7 @@ function attachOnEditHandler(noteDiv) {
         var $note = $(this);
 
         var content = '';
-        $note.children('.note-contents').children('p').each(function(index, element){
+        $note.children('.contents').children('p').each(function(index, element){
             content += '\r\n' + $(element).text();
         });
 
@@ -92,7 +92,7 @@ function attachOnEditHandler(noteDiv) {
             type: 'PUT',
             timeout: 1000,
             data: {
-                'title'    : $note.children('.note-title').text(),
+                'title'    : $note.children('.title').text(),
                 'notebook' : $note.attr('notebook-url'),
                 'content'  : content,
             },
@@ -113,7 +113,7 @@ function attachNewNoteHandler(noteDiv) {
     // Wire up a few event handlers to simulate the placeholder-text effect on a contenteditable div for the note title.
     // If the text in the div is the title placeholder text, focusing the div will clear the text. If the text is empty
     // when the div loses focus, it'll add back the placeholder text
-    var noteTitle = noteDiv.children('.note-title').children('.inline');
+    var noteTitle = noteDiv.children('.title').children('.inline');
     var titlePlaceholder = 'Take a note...';
 
     // Hack around a Chrome weirdness: if you focus a contenteditable element and immediately clear its text or html,
@@ -135,7 +135,7 @@ function attachNewNoteHandler(noteDiv) {
     // Wire up a few event handlers to simulate the placeholder-text effect on a contenteditable div for the note content.
     // If the text in the div is the title placeholder text, focusing the div will clear the text. If the text is empty
     // when the div loses focus, it'll add back the placeholder text
-    var noteContent = noteDiv.children('.note-contents');
+    var noteContent = noteDiv.children('.contents');
     var contentPlaceholder = 'Content goes here';
 
     // Same weird hack as above.
@@ -163,14 +163,14 @@ function attachNewNoteHandler(noteDiv) {
         var $note = $('.note.placeholder');
 
         var content = '';
-        $note.children('.note-contents').children('p').each(function(index, element){
+        $note.children('.contents').children('p').each(function(index, element){
             var txt = $(element).text();
             if (txt) {
                 content += '\r\n' + txt;
             }
         });
 
-        var title = $note.children('.note-title').text();
+        var title = $note.children('.title').text();
 
         // If either the title or content of the note is empty, or still has the placeholder value, assume it's still
         // a work-in-progress and don't save yet
@@ -202,8 +202,8 @@ function attachNewNoteHandler(noteDiv) {
     // -- HACK ALERT --
     //
     // Only want to fire the editHandler when the focus leaves the note div entirely, but focusout will fire when
-    // either note-title or note-contents loses focus. To deal with this, we maintain a global var 'stillInNewNote'.
-    // This var is set to false immediately whenever note sees a focusout event, but if the note-title or note-contents
+    // either title or contents loses focus. To deal with this, we maintain a global var 'stillInNewNote'.
+    // This var is set to false immediately whenever note sees a focusout event, but if the title or contents
     // receives focus, we immediately set it back to true. We delay editHandler here by 1/8 second, to make sure the
     // title and content focus-in handlers have time to set stillInNewNote back to true. If the editHandler sees that
     // this variable is false, we'll know that something else other than the placeholder note div has focus, and we can
@@ -225,8 +225,8 @@ function buildPlaceholderNote() {
     buildNote(note, true);
 }
 
-// Build up a note div which contains inner note-title and note-contents class divs, with the title and content
-// of a note object retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
+// Build up a note div which contains inner title and contents class divs, with the title and content of a note object
+// retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
 function buildNote(note, placeholder, addedNow) {
 
     addedNow = addedNow || false;
@@ -234,7 +234,7 @@ function buildNote(note, placeholder, addedNow) {
 
     // --- Note header stuff ---
     var header = $('<div>')
-        .addClass('note-title');
+        .addClass('title');
 
     $('<div>')
         .addClass('inline edit')
@@ -242,13 +242,9 @@ function buildNote(note, placeholder, addedNow) {
         .append(note.title)
         .appendTo(header);
 
-    $('<span>')
-        .addClass('glyphicon glyphicon-tag flipped pull-right inline')
-        .appendTo(header);
-
     // --- Note content stuff ---
     var content = $('<div>')
-        .addClass('note-contents')
+        .addClass('contents')
         .attr('contenteditable', true);
 
     // In the note content, split on each line, then stick that line in a paragraph and append to the content div
@@ -308,9 +304,8 @@ function buildNotebook(notebook) {
         .appendTo(notebookDiv);
 
     $('<span>')
-        .addClass('glyphicon glyphicon-folder-open pull-left inline hvr-pop-25')
+        .addClass('glyphicon glyphicon-folder-open pull-left hvr-pop-25')
         .appendTo(notebookDiv);
-
 
     // Wire up a few event handlers to simulate a placeholder in a contenteditable div for the notebook name.
     // If the text in the div is the notebook placeholder text, focusing the div will clear the text. If the text is
@@ -497,7 +492,7 @@ function buildPlaceholderNotebook(treeInitialized) {
         .appendTo(notebook);
 
     $('<span>')
-        .addClass('glyphicon glyphicon-folder-open pull-left inline')
+        .addClass('glyphicon glyphicon-folder-open pull-left')
         .appendTo(notebook);
 
     // Wire up a few event handlers to simulate a placeholder in a contenteditable div for the notebook name.
