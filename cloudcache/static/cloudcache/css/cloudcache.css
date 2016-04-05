@@ -18,6 +18,10 @@
 @media only screen and (max-device-width: 480px) {
   .cc-navbar {
     height: 102px;
+    border-bottom: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
   }
 }
 .hamburger {

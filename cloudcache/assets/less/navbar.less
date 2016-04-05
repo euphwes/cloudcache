@@ -8,8 +8,8 @@
 
 // Take the border thicknesses into account to ensure the navbar itself (without the borders)
 // are the desired size
-@navbar-height:         50px + @navbar-border-bottom-size;
-@navbar-height-mobile: 100px + @navbar-border-bottom-size;
+@navbar-height:        50px + @navbar-border-bottom-size;
+@navbar-height-mobile: 2 * @navbar-height;
 
 .cc-navbar {
 
@@ -41,7 +41,9 @@
 
     // Mobile styles
     .responsive-mobile({
-        height:           2 * @navbar-height;
+        height: @navbar-height-mobile;
+        border-bottom: none;
+        .box-shadow(none);
     });
 }
 
