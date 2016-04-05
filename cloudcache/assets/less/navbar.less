@@ -1,19 +1,17 @@
+// ---------------------------------------------------------
+//                           Navbar
+// ---------------------------------------------------------
 
-@import "core.less";
+@navbar-bg-color:             @off-white;    // Navbar background color
+@navbar-border-top-color:     @cc-theme;     // Navbar border-top color
+@navbar-border-bottom-color:  @light-grey;   // Navbar border-bottom color
+@navbar-border-top-size:      3px;           // Navbar border-top thickness
+@navbar-border-bottom-size:   1px;           // Navbar border-bottom thickness
 
-// Navbar background color, a subtle off-white
-@navbar-bg-grey: #F5F5F5;
-
-// Navbar border-top size
-@navbar-border-top-size: 3px;
-
-// Navbar border-bottom size
-@navbar-border-bottom-size: 1px;
-@navbar-border-bottom-color: #B0B0B0;
-
-// Navbar height
-@navbar-height: 50px;
-@navbar-height-mobile: 2 * @navbar-height;
+// Take the border thicknesses into account to ensure the navbar itself (without the borders)
+// are the desired size
+@navbar-height:         50px + @navbar-border-bottom-size + @navbar-border-top-size;
+@navbar-height-mobile: 100px + @navbar-border-bottom-size + @navbar-border-top-size;
 
 .box-shadow (@shadow) {
     -webkit-box-shadow:  @shadow;
@@ -22,21 +20,24 @@
 }
 
 .cc-navbar {
-    // Flexbox container for center child elements both vertically and horizontally
-    position: fixed;
-    z-index: 999;
 
+    // Flexbox container for centering child elements both vertically and horizontally
     display: flex;
     align-items: center;
     justify-content: center;
+
+    // Fixed so the navbar stays at the same place in the viewport at all times
+    // High z-index as to allow the box shadow to appear
+    z-index: 999;
+    position: fixed;
 
     .box-shadow(0px 1px 1px 0px rgba(50, 50, 50, 0.25));
 
     border-bottom: @navbar-border-bottom-size solid @navbar-border-bottom-color;
 
     // Coloring and borders
-    background: @navbar-bg-grey;
-    border-top: @navbar-border-top-size solid @cc-blue;
+    background: @navbar-bg-color;
+    border-top: @navbar-border-top-size solid @navbar-border-top-color;
 
     // Default to full-container width, 50px set height, for "regular" displays
     width: 100%;
@@ -45,96 +46,13 @@
     // Folder name element should float center horiz and vert because of flex positioning
     // Make the foreground color the normal cloudCache theme color
     .folder-name {
-        color: @cc-blue;
+        color: @cc-theme;
     }
 
     // Mobile styles
     .responsive-mobile({
-        height: @navbar-height * 2;
+        height:           2 * @navbar-height;
+        border-top-width: 2 * @navbar-border-top-size;
     });
 }
 
-// ---------------------------------------------------------
-//                        Hamburger icon
-// ---------------------------------------------------------
-
-.hamburger {
-    display: block;
-    position: absolute;
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
-    top: 0;
-    left: 0;
-    width: @navbar-height - @navbar-border-top-size - @navbar-border-bottom-size;
-    height: @navbar-height - @navbar-border-top-size - @navbar-border-bottom-size;
-    font-size: 0;
-    text-indent: -9999px;
-    background-color: @navbar-bg-grey;
-    appearance: none;
-    box-shadow: none;
-    border-radius: none;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s;
-
-    &:focus {
-        outline: none;
-    }
-
-    span {
-        display: block;
-        position: absolute;
-        top: 20px;
-        left: 9px;
-        right: 9px;
-        height: 4px;
-        background-color: @cc-blue;
-        border-radius: 3px;
-        transition: transform 0.3s;
-
-        &::before, &::after {
-            position: absolute;
-            display: block;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background-color: @cc-blue;
-            content: "";
-            border-radius: 3px;
-        }
-
-        &::before {
-            top: -10px;
-            transform-origin: top right;
-            transition: transform 0.3s, width 0.3s, top 0.3s;
-        }
-
-        &::after {
-            bottom: -10px;
-            transform-origin: bottom right;
-            transition: transform 0.3s, width 0.3s, bottom 0.3s;
-        }
-    }
-
-    &.active {
-
-        span {
-            transform: rotate(180deg);
-
-            &::before, &::after {
-                width: 50%;
-            }
-
-            &::before {
-                top: 0;
-                transform: translateX(18px) translateY(2px) rotate(45deg);
-            }
-
-            &::after {
-                bottom: 0;
-                transform: translateX(18px) translateY(-2px) rotate(-45deg);
-            }
-        }
-    }
-}

@@ -1,0 +1,113 @@
+// ---------------------------------------------------------
+//                        Hamburger icon
+// 
+// Gratefully borrowed and tweaked from:
+// http://callmenick.com/post/animating-css-only-hamburger-menu-icons
+// ---------------------------------------------------------
+
+// The values are below are somewhat hardcoded to work fitting in a navbar of fixed height of 50px
+@button-width:                50px;   // The width of the button area
+@button-height:      @button-width;   // The height of the button area
+@bar-thickness:                4px;   // The thickness of the button bars
+@button-pad:                  10px;   // The left/right padding between button area and bars.
+@button-bar-space:             6px;   // The spacing between button bars
+@button-transistion-duration: 0.3s;   // The transition duration
+
+.hamburger {
+
+    // Display as a fixed height/width square, absolutely positioned at the top-left of the
+    // parent container. Completely plain appearance: no padding, margin, border, shadow, etc
+    display: block;
+    position: absolute;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    width: @button-width;
+    height: @button-height;
+    font-size: 0;
+    text-indent: -9999px;
+    appearance: none;
+    background: transparent;
+    box-shadow: none;
+    border-radius: none;
+    border: none;
+    cursor: pointer;
+    transition: background @button-transistion-duration;
+
+    // Don't show the highlight-border-thing when clicked
+    &:focus {
+        outline: none;
+    }
+
+    // The internal span is a thin bar, with ::before and ::after pseudo-elements which
+    // mimic this span in apperance, but spaced to look like a menu 'hamburger' icon
+    span {
+        display: block;
+        position: absolute;
+        top: (@button-height / 2) + (@bar-thickness / 2) - 5;
+        left: @button-pad;
+        right: @button-pad;
+        height: @bar-thickness;
+        background-color: @cc-theme-trim;
+        border-radius: 3px;
+        transition: transform @button-transistion-duration;
+
+        &::before, &::after {
+            position: absolute;
+            display: block;
+            left: 0;
+            width: 100%;
+            height: @bar-thickness;
+            background-color: @cc-theme-trim;
+            content: "";
+            border-radius: 3px;
+        }
+
+        &::before {
+            top: -@bar-thickness - @button-bar-space;
+            transform-origin: top right;
+            transition: transform @button-transistion-duration, width @button-transistion-duration, top @button-transistion-duration;
+        }
+
+        &::after {
+            bottom: -@bar-thickness - @button-bar-space;
+            transform-origin: bottom right;
+            transition: transform @button-transistion-duration, width @button-transistion-duration, bottom @button-transistion-duration;
+        }
+    }
+
+    &.active {
+        span { transform: rotate(90deg); }
+    }
+
+    // Essentially beef everything up to 2x the size, since the navbar's responsive-mobile media query settings
+    // scale it 2x from 50px height to 100px
+    .responsive-mobile({
+
+        width: 2 * @button-width;
+        height: 2 * @button-height;
+
+        span {
+            top: (@button-height) + (@bar-thickness) - 8;
+            left: 2 * @button-pad;
+            right: 2 * @button-pad;
+            height: 2* @bar-thickness;
+            border-radius: 2px;
+
+            &::before, &::after {
+                height: 2 * @bar-thickness;
+                border-radius: 2px;
+            }
+
+            &::before {
+                top: 2 * (-@bar-thickness - @button-bar-space);
+            }
+
+            &::after {
+                bottom: 2 * (-@bar-thickness - @button-bar-space);
+            }
+        }
+    })
+}

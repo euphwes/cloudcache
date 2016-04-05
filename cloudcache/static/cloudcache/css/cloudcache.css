@@ -1,9 +1,9 @@
 .cc-navbar {
-  position: fixed;
-  z-index: 999;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 999;
+  position: fixed;
   -webkit-box-shadow: 0px 1px 1px 0px rgba(50, 50, 50, 0.25);
   -moz-box-shadow: 0px 1px 1px 0px rgba(50, 50, 50, 0.25);
   box-shadow: 0px 1px 1px 0px rgba(50, 50, 50, 0.25);
@@ -11,14 +11,15 @@
   background: #F5F5F5;
   border-top: 3px solid #446E9B;
   width: 100%;
-  height: 50px;
+  height: 54px;
 }
 .cc-navbar .folder-name {
   color: #446E9B;
 }
 @media only screen and (max-device-width: 480px) {
   .cc-navbar {
-    height: 100px;
+    height: 108px;
+    border-top-width: 6px;
   }
 }
 .hamburger {
@@ -29,12 +30,12 @@
   padding: 0;
   top: 0;
   left: 0;
-  width: 46px;
-  height: 46px;
+  width: 50px;
+  height: 50px;
   font-size: 0;
   text-indent: -9999px;
-  background-color: #F5F5F5;
   appearance: none;
+  background: transparent;
   box-shadow: none;
   border-radius: none;
   border: none;
@@ -44,19 +45,14 @@
 .hamburger:focus {
   outline: none;
 }
-@media only screen and (max-device-width: 480px) {
-  .hamburger {
-    transform: scale(2);
-  }
-}
 .hamburger span {
   display: block;
   position: absolute;
-  top: 20px;
-  left: 9px;
-  right: 9px;
+  top: 22px;
+  left: 10px;
+  right: 10px;
   height: 4px;
-  background-color: #446E9B;
+  background-color: #253c54;
   border-radius: 3px;
   transition: transform 0.3s;
 }
@@ -67,7 +63,7 @@
   left: 0;
   width: 100%;
   height: 4px;
-  background-color: #446E9B;
+  background-color: #253c54;
   content: "";
   border-radius: 3px;
 }
@@ -82,19 +78,31 @@
   transition: transform 0.3s, width 0.3s, bottom 0.3s;
 }
 .hamburger.active span {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
 }
-.hamburger.active span::before,
-.hamburger.active span::after {
-  width: 50%;
-}
-.hamburger.active span::before {
-  top: 0;
-  transform: translateX(18px) translateY(2px) rotate(45deg);
-}
-.hamburger.active span::after {
-  bottom: 0;
-  transform: translateX(18px) translateY(-2px) rotate(-45deg);
+@media only screen and (max-device-width: 480px) {
+  .hamburger {
+    width: 100px;
+    height: 100px;
+  }
+  .hamburger span {
+    top: 46px;
+    left: 20px;
+    right: 20px;
+    height: 8px;
+    border-radius: 2px;
+  }
+  .hamburger span::before,
+  .hamburger span::after {
+    height: 8px;
+    border-radius: 2px;
+  }
+  .hamburger span::before {
+    top: -20px;
+  }
+  .hamburger span::after {
+    bottom: -20px;
+  }
 }
 .login-container {
   margin-top: 50px;
