@@ -4,6 +4,8 @@
   justify-content: center;
   z-index: 999;
   position: fixed;
+  top: 0;
+  left: 0;
   -webkit-box-shadow: 0px 1px 1px 0px rgba(50, 50, 50, 0.25);
   -moz-box-shadow: 0px 1px 1px 0px rgba(50, 50, 50, 0.25);
   box-shadow: 0px 1px 1px 0px rgba(50, 50, 50, 0.25);
@@ -23,6 +25,69 @@
     -moz-box-shadow: none;
     box-shadow: none;
   }
+}
+body {
+  background: #E8E8E8;
+}
+.login-container {
+  margin-top: 102px;
+  min-height: 100%;
+}
+.login-container p {
+  font-size: 16px;
+  margin-top: 1.5em;
+  color: #757575;
+}
+.login-box {
+  color: #222f3c;
+  padding: 15px;
+  background-color: #F5F5F5;
+  border: 1px solid #D0D0D0;
+  border-radius: 6px;
+}
+.login-box .login-heading h3 {
+  margin-top: 0px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+.login-box .login-body form {
+  margin-bottom: 0px;
+}
+.login-box .login-body .form-group {
+  margin-bottom: 8px;
+}
+.login-box .login-body .form-control {
+  margin-bottom: 5px;
+  width: 100%;
+}
+.alert-auth {
+  padding: 6px;
+}
+.btn-auth {
+  margin-top: 20px;
+}
+.btn-login {
+  border: none;
+  background-color: #46637e;
+}
+.btn-login:hover {
+  background-color: #34495D;
+}
+.btn-register {
+  border-color: #017f62;
+  background-color: #019875;
+}
+.btn-register:hover {
+  border-color: #017f62;
+  background-color: #01b289;
+}
+.tooltip-inner {
+  width: 150px;
+}
+.sub-login-box {
+  margin-top: 10px;
+  color: #757575;
+  text-align: center;
 }
 .content-wrapper {
   padding-top: 51px;
@@ -397,59 +462,4 @@ body {
   animation-timing-function: linear;
   -webkit-animation-iteration-count: 1;
   animation-iteration-count: 1;
-}
-.login-container {
-  margin-top: 50px;
-}
-.description {
-  font-size: 16px;
-  margin-top: 1.5em;
-  color: #757575;
-}
-.login-box {
-  padding: 15px;
-  background-color: #F5F5F5;
-  border: 1px solid #D0D0D0;
-  border-radius: 6px;
-}
-.login-body > form {
-  margin-bottom: 0px;
-}
-.login-body .form-group {
-  margin-bottom: 8px;
-}
-.login-body .form-control {
-  margin-bottom: 5px;
-  width: 100%;
-}
-.login-heading > h3 {
-  margin-top: 0px;
-  margin-bottom: 30px;
-  text-align: center;
-}
-.alert-auth {
-  padding: 6px;
-}
-.btn-auth {
-  margin-top: 20px;
-}
-.btn-login {
-  background-color: #446E9B;
-}
-.btn-register {
-  border-color: #017f62;
-  background-color: #019875;
-}
-.btn-register:hover {
-  border-color: #017f62;
-  background-color: #01b289;
-}
-.tooltip-inner {
-  width: 150px;
-}
-.prepend-top-10 {
-  margin-top: 10px;
-}
-.grey-text {
-  color: #757575;
 }
