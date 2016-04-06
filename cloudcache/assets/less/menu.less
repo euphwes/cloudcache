@@ -1,0 +1,112 @@
+// ---------------------------------------------------------
+//                     Slideout menu stuff
+// ---------------------------------------------------------
+
+@tree-wrapper-margin-top: 15px;
+
+body {
+    width:  100%;
+    height: 100%;
+}
+
+.tree-wrapper {
+    margin-top: @tree-wrapper-margin-top;
+}
+
+// -----------  Styles required by Slideout.js -------------
+
+@menu-width: 250px;
+
+.slide-menu {
+    background-color: @cc-theme;
+}
+
+.slideout-menu {
+    left:    0;
+    top:     0;
+    bottom:  0;
+    right:   0;
+    z-index: 0;
+    width: @menu-width;
+    position: fixed;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: none;
+}
+
+.slideout-panel {
+    z-index: 1;
+    position:relative;
+    will-change: transform;
+}
+
+.slideout-open {
+    overflow: hidden;
+    body {
+        overflow: hidden;
+    }
+    .slideout-panel {
+        overflow: hidden;
+    }
+    .slideout-menu {
+        display: block;
+    }
+}
+
+#menu {
+    display: none;
+    header h3 {
+        color: @off-white;
+    }
+    ul li a {
+        color: @off-white;
+        &:hover {
+            border-radius: 0;
+            background-color: @cc-theme-trim;
+        }
+    }
+}
+
+// Override Bootstrap Treeview's styles here, so we can actually do
+// styling in the CSS, not in the Javascript to instantiate it
+
+@treeview-level-indent: 6px;
+
+@treeview-font-size:   10pt;
+
+@treeview-icon-size:   12px;
+@treeview-icon-width:   6px;
+
+.treeview > ul > li {
+
+    color:            @off-white;
+    background-color: @cc-theme;
+
+    padding: 5px 6px;
+    font-size: @treeview-font-size;
+
+    &:first-child, &:last-child {
+        border-radius: 0;
+    }
+
+    &:hover:not(.node-selected) {
+        background-color: @cc-theme-trim;
+    } 
+
+    span {
+        .indent {
+            margin-left:  @treeview-level-indent;
+            margin-right: @treeview-level-indent;
+        }
+        .icon {
+            width:     @treeview-icon-width;
+            font-size: @treeview-icon-size;
+        }
+    }
+
+    &.node-selected {
+        font-weight:      bold;
+        color:            @cc-theme !important;
+        background-color: @bg-grey  !important;
+    }
+}
