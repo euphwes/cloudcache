@@ -723,9 +723,29 @@ function getUserNotebooks(postNotebookLoadCallback) {
 }
 
 /**
+ * Since none of the Glyphicons are present in the page at page-load, Bootstrap doesn't need to load the Glyphicons
+ * web font until we retrieve notebooks via API, then build the notebooks DOM elements. Unfortunately, this causes
+ * the icon to not display until it loads for the first time, a fraction of a second later, causing a flashing effect.
+ *
+ * Here, we "preload" the Glyphicons before getting user notebooks by inserting, hiding, and immediately removing a DOM
+ * element which contains a Glypicon. For this to be effective, it needs to be called before calling getUserNotebooks()
+ * for the first time.
+ **/
+function horribleHackToPreloadGlyphicons(){
+    $('<div>')
+        .attr('style', 'height:0px; width:0px;')
+        .addClass('glyphicon glyphicon-folder-open')
+        .appendTo($('#panel'))
+        .hide()
+        .remove();
+}
+
+/**
  * On document-ready
  **/
 $(function(){
+
+    horribleHackToPreloadGlyphicons();
 
     // Set all ajax calls to send the CSRF token. Do *not* send the CSRF token if the request is cross-domain
     $.ajaxSetup({
