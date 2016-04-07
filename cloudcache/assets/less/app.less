@@ -70,6 +70,10 @@
 // notebook or note) from the other ones
 .placeholder {
     .opacity(0.5);
+
+    .contents p {
+        min-height: 1.5em;
+    }
 }
 
 // Help <div> and <span> display inline next to each other in a parent container
@@ -97,6 +101,8 @@
 @notebook-padding:    0.625em;
 @notebook-min-height: 4 * @notebook-padding;
 
+@notebook-font-size: 1em;
+
 .notebook {
     display: inline-flex;
     align-items: center;
@@ -108,7 +114,7 @@
     padding:    @notebook-padding;
     min-height: @notebook-min-height;
 
-    font-size: 1em;
+    font-size: @notebook-font-size;
 
     &:not(.placeholder) {
         cursor: pointer;
@@ -121,7 +127,7 @@
     }
 
     .responsive-mobile({
-        font-size: 2.75em;
+        font-size: 2.75 * @notebook-font-size;
     });
 }
 
@@ -142,23 +148,21 @@
 @note-hover-shadow:     0 2px 15px rgba(0,0,0,0.5);
 @note-hover-transition: all 0.3s ease;
 
-@title-font-size:    16px;
+@note-padding-top:  0.625em;
+@note-padding-side: 1em;
+
+@title-font-size:    1em;
 @title-font-weight:  bold;
 
-@title-pad-top:  10px;
-@title-pad-side: 15px;
+@contents-font-size:  0.75em;
+@contents-min-height: 1em;
 
-@contents-font-size:  12px;
-@contents-min-height: 45px;
-
-@contents-pad-top:    15px;
-@contents-pad-side:   15px;
-@contents-pad-bottom: 10px;
-
-@para-min-height: 25px;
+@para-margin-bottom: 0.75em;
 
 .note {
     background: @off-white;
+
+    padding: @note-padding-top @note-padding-side;
 
     &:hover {
         .box-shadow(@note-hover-shadow);
@@ -166,25 +170,13 @@
     }
 
     .title {
-        font-size:      @title-font-size;
-        font-weight:    @title-font-weight;
-        padding-top:    @title-pad-top;
-        padding-right:  @title-pad-side;
-        padding-left:   @title-pad-side;
-        padding-bottom: 0;
+        font-size:     @title-font-size;
+        font-weight:   @title-font-weight;
     }
 
     .contents {
         font-size:  @contents-font-size;
         min-height: @contents-min-height;
-
-        padding-top:    @contents-pad-top;
-        padding-bottom: @contents-pad-bottom;
-
-        // Need to use margin on the sides, not padding, so that overflow
-        // content isn't visible in it
-        margin-right:  @contents-pad-side;
-        margin-left:   @contents-pad-side;
 
         // Overflow is hidden and nothing is wrapped...
         overflow:    hidden;
@@ -197,8 +189,23 @@
         }
 
         p {
-            margin: 0;
-            min-height: @para-min-height;
+            margin-bottom: @para-margin-bottom;
+            &:first-of-type {
+                margin-top: 0.75em;
+            }
+            &:last-of-type {
+                margin-bottom: 0;
+            }
         }
     }
+
+    .responsive-mobile({
+        padding: (2.25 * @note-padding-top) (2.25 * @note-padding-side);
+        .title {
+            font-size: 2.75 * @title-font-size;
+        }
+        .contents {
+            font-size: 2.75 * @contents-font-size;
+        } 
+    })
 }

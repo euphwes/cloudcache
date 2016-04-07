@@ -12,19 +12,17 @@
 @navbar-height-mobile: 2 * @navbar-height;
 
 .cc-navbar {
-
-    // Flexbox container for centering child elements both vertically and horizontally
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     // Fixed so the navbar stays at the same place in the viewport at all times
     // High z-index as to allow the box shadow to appear
     z-index: 999;
     position: fixed;
-
     top: 0;
     left: 0;
+    
+    // Flexbox container for centering child elements both vertically and horizontally
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     .box-shadow(0px 1px 1px 0px rgba(50, 50, 50, 0.25));
 
