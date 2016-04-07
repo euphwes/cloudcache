@@ -16,9 +16,13 @@ body {
 // -----------  Styles required by Slideout.js -------------
 
 @menu-width: 250px;
+@menu-width-mobile: ~"calc(90% - @{button-width-mobile})";
 
 .slide-menu {
-    background-color: @cc-theme;
+    width: @menu-width;
+    .responsive-mobile({
+        width: @menu-width-mobile;
+    })
 }
 
 .slideout-menu {
@@ -27,11 +31,9 @@ body {
     bottom:  0;
     right:   0;
     z-index: 0;
-    width: @menu-width;
     position: fixed;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    display: none;
 }
 
 .slideout-panel {
@@ -54,6 +56,7 @@ body {
 }
 
 #menu {
+    background-color: @cc-theme;
     display: none;
     header h3 {
         color: @off-white;

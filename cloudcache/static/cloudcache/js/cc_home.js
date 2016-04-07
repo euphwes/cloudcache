@@ -731,10 +731,28 @@ function horribleHackToPreloadGlyphicons(){
         .remove();
 }
 
+function buildSlideoutMenuParamsAndAttach() {
+    var slideout = new Slideout({
+        'panel': document.getElementById('panel'),
+        'menu': document.getElementById('menu'),
+        'padding': $('.slide-menu').css('width'),
+        'tolerance': 70
+    });
+
+    $('.hamburger').on('click', function() {
+        $(this).toggleClass('active');
+        slideout.toggle();
+    });
+}
+
 /**
  * On document-ready
  **/
 $(function(){
+
+    // The menu starts off as display:none, so it doesn't flicker as displayed while the rest of the page loads
+    // Once the rest of the doc is ready, it's hidden by the main content panel, so we can "show" it
+    $('#menu').show();
 
     horribleHackToPreloadGlyphicons();
 
@@ -747,18 +765,13 @@ $(function(){
         }
     });
 
-    var slideout = new Slideout({
-        'panel': document.getElementById('panel'),
-        'menu': document.getElementById('menu'),
-        'padding': 250,
-        'tolerance': 70
-    });
-    $('#menu').show();
+    buildSlideoutMenuParamsAndAttach();
 
-
-    $('.hamburger').on('click', function() {
-        $(this).toggleClass('active');
-        slideout.toggle();
+    // register this with enquire.js so that if the the screen size changes and media queries are matched
+    // or unmatched, the slideout size params are rebuilt and the toggle mechanism is reattached to the button
+    enquire.register('only screen and (max-device-width: 480px)', {
+          match: buildSlideoutMenuParamsAndAttach,
+        unmatch: buildSlideoutMenuParamsAndAttach,
     });
 
     $.contextMenu({

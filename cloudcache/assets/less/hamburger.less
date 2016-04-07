@@ -24,6 +24,9 @@
 @button-transistion-duration: 0.3s;   // The transition duration
 
 
+@button-width-mobile: 2 * @button-width;
+@button-height-mobile: 2 * @button-height;
+
 .hamburger {
 
     // Display as a fixed height/width square, absolutely positioned at the top-left of the
@@ -97,8 +100,8 @@
     // scale it 2x from 50px height to 100px
     .responsive-mobile({
 
-        width: 2 * @button-width;
-        height: 2 * @button-height;
+        width:  @button-width-mobile;
+        height: @button-height-mobile;
 
         span {
             top: (@button-height) + (@bar-thickness) - 8;

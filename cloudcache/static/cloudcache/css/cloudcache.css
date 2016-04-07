@@ -300,7 +300,12 @@ body {
   margin-top: 15px;
 }
 .slide-menu {
-  background-color: #34495D;
+  width: 250px;
+}
+@media only screen and (max-device-width: 480px) {
+  .slide-menu {
+    width: calc(90% - 100px);
+  }
 }
 .slideout-menu {
   left: 0;
@@ -308,11 +313,9 @@ body {
   bottom: 0;
   right: 0;
   z-index: 0;
-  width: 250px;
   position: fixed;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  display: none;
 }
 .slideout-panel {
   z-index: 1;
@@ -332,6 +335,7 @@ body {
   display: block;
 }
 #menu {
+  background-color: #34495D;
   display: none;
 }
 #menu header h3 {
