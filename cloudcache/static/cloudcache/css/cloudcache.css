@@ -99,7 +99,7 @@ body {
 }
 @media only screen and (max-device-width: 480px) {
   .content-wrapper {
-    padding-top: 102px;
+    padding-top: 127.5px;
     padding-left: 5%;
     padding-right: 5%;
   }
@@ -146,8 +146,8 @@ body {
   align-items: center;
   color: #F5F5F5;
   background: #34495D;
-  padding: 10px;
-  min-height: 40px;
+  padding: 0.625em;
+  min-height: 2.5em;
   font-size: 1em;
 }
 .notebook span {
@@ -160,7 +160,12 @@ body {
   cursor: pointer;
 }
 .notebook:not(.go-up) span {
-  margin-right: 15px;
+  margin-right: 1em;
+}
+@media only screen and (max-device-width: 480px) {
+  .notebook {
+    font-size: 2.75em;
+  }
 }
 .go-up {
   cursor: pointer;
@@ -168,12 +173,7 @@ body {
   background: #864141;
 }
 .go-up span {
-  margin: 0;
-  -webkit-transform: scale(1.25);
-  -moz-transform: scale(1.25);
-  -ms-transform: scale(1.25);
-  -o-transform: scale(1.25);
-  transform: scale(1.25);
+  font-size: 1.25em;
 }
 .note {
   background: #F5F5F5;
