@@ -142,10 +142,19 @@ body {
   outline: 0px solid transparent;
 }
 .notebook {
+  display: inline-flex;
+  align-items: center;
   color: #F5F5F5;
   background: #34495D;
   padding: 10px;
   min-height: 40px;
+  font-size: 1em;
+}
+.notebook span {
+  order: 1;
+}
+.notebook div {
+  order: 2;
 }
 .notebook:not(.placeholder) {
   cursor: pointer;

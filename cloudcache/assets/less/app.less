@@ -98,10 +98,18 @@
 @notebook-min-height: 40px;
 
 .notebook {
+    display:     inline-flex;
+    align-items: center;
+
     color:      @notebook-fg-color;
     background: @notebook-bg-color;
     padding:    @notebook-padding;
     min-height: @notebook-min-height;
+
+    font-size: 1em;
+
+    span { order: 1; }
+     div { order: 2; }
 
     &:not(.placeholder) {
         cursor: pointer;

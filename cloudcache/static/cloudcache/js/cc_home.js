@@ -298,19 +298,19 @@ function buildNotebook(notebook) {
         .appendTo(getShortestColumn('#notebooks-wrapper'));
 
     $('<div>')
-        .addClass('inline edit')
+        .addClass('edit')
         .attr('contenteditable', true)
         .append(notebook.text)
         .appendTo(notebookDiv);
 
     $('<span>')
-        .addClass('glyphicon glyphicon-folder-open inline pull-left hvr-pop-25')
+        .addClass('glyphicon glyphicon-folder-open hvr-pop-25')
         .appendTo(notebookDiv);
 
     // Wire up a few event handlers to simulate a placeholder in a contenteditable div for the notebook name.
     // If the text in the div is the notebook placeholder text, focusing the div will clear the text. If the text is
     // empty when the div loses focus, it'll add back the placeholder text
-    var notebookName = notebookDiv.children('div.inline');
+    var notebookName = notebookDiv.children('div.edit');
 
     var originalName = notebookName.text();
 
@@ -486,19 +486,19 @@ function buildPlaceholderNotebook(treeInitialized) {
         .appendTo(getShortestColumn('#notebooks-wrapper'));
 
     $('<div>')
-        .addClass('inline edit')
+        .addClass('edit')
         .attr('contenteditable', true)
         .append(newNbPlaceholderText)
         .appendTo(notebook);
 
     $('<span>')
-        .addClass('glyphicon glyphicon-folder-open inline pull-left')
+        .addClass('glyphicon glyphicon-folder-open')
         .appendTo(notebook);
 
     // Wire up a few event handlers to simulate a placeholder in a contenteditable div for the notebook name.
     // If the text in the div is the notebook placeholder text, focusing the div will clear the text. If the text is
     // empty when the div loses focus, it'll add back the placeholder text
-    var notebookName = notebook.children('div.inline');
+    var notebookName = notebook.children('div.edit');
 
     // Hack around a Chrome weirdness: if you focus a contenteditable element and immediately clear its text or html,
     // it loses the focus. You have to click again to make the cursor come back. The workaround is to put the clear
@@ -615,7 +615,7 @@ function buildNestedNotebookElements(notebook) {
             $('#tree').treeview('selectNode', parseInt($(item).attr('nodeid')));
             clearTextSelection();
         })
-        .find('.inline')
+        .find('.edit')
         .click(function(e){ e.stopPropagation(); });
 
     });
