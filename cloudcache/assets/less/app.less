@@ -114,7 +114,7 @@
     }
 }
 
-@go-up-bg-color: #864141; 
+@go-up-bg-color: #864141;
 
 .go-up {
     cursor:     pointer;
@@ -169,9 +169,22 @@
         min-height: @contents-min-height;
 
         padding-top:    @contents-pad-top;
-        padding-right:  @contents-pad-side;
-        padding-left:   @contents-pad-side;
         padding-bottom: @contents-pad-bottom;
+
+        // Need to use margin on the sides, not padding, so that overflow
+        // content isn't visible in it
+        margin-right:  @contents-pad-side;
+        margin-left:   @contents-pad-side;
+
+        // Overflow is hidden and nothing is wrapped...
+        overflow:    hidden;
+        white-space: nowrap;
+
+        // ...but when hovered, you get scrollbars so that you scroll around and
+        // see the entirety of the content
+        &:hover {
+            overflow: auto;
+        }
 
         p {
             margin: 0;

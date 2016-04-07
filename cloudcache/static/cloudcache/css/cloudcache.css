@@ -187,9 +187,14 @@ body {
   font-size: 12px;
   min-height: 45px;
   padding-top: 15px;
-  padding-right: 15px;
-  padding-left: 15px;
   padding-bottom: 10px;
+  margin-right: 15px;
+  margin-left: 15px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.note .contents:hover {
+  overflow: auto;
 }
 .note .contents p {
   margin: 0;
