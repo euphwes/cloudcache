@@ -370,6 +370,16 @@ body {
   border-radius: 0;
   background-color: #46637e;
 }
+@media only screen and (max-device-width: 480px) {
+  #menu header h3 {
+    margin-top: 50px;
+    font-size: 4.125em;
+  }
+  #menu ul {
+    margin-top: 1em;
+    font-size: 2.25em;
+  }
+}
 .treeview > ul > li {
   color: #F5F5F5;
   background-color: #34495D;
@@ -384,8 +394,8 @@ body {
   background-color: #46637e;
 }
 .treeview > ul > li span .indent {
-  margin-left: 6px;
-  margin-right: 6px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 .treeview > ul > li span .icon {
   width: 6px;
@@ -395,6 +405,23 @@ body {
   font-weight: bold;
   color: #34495D !important;
   background-color: #E8E8E8 !important;
+}
+@media only screen and (max-device-width: 480px) {
+  .treeview > ul > li {
+    padding: 14px 17px;
+    font-size: 27.5pt;
+  }
+}
+@media only screen and (max-device-width: 480px) {
+  #tree > ul > li span.indent {
+    margin-left: 27.5px;
+    margin-right: 27.5px;
+  }
+  #tree > ul > li span.icon {
+    width: 16.5px;
+    font-size: 33px;
+    margin-right: 15px;
+  }
 }
 .hvr {
   display: inline-block;

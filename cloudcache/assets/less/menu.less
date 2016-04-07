@@ -63,12 +63,23 @@
             background-color: @cc-theme-trim;
         }
     }
+
+    .responsive-mobile({
+        header h3 {
+            margin-top: 50px;
+            font-size: 4.125em;
+        }
+        ul {
+            margin-top:  1em;
+            font-size: 2.25em;
+        }
+    });
 }
 
 // Override Bootstrap Treeview's styles here, so we can actually do
 // styling in the CSS, not in the Javascript to instantiate it
 
-@treeview-level-indent: 6px;
+@treeview-level-indent: 10px;
 
 @treeview-font-size:   10pt;
 
@@ -107,4 +118,27 @@
         color:            @cc-theme !important;
         background-color: @bg-grey  !important;
     }
+
+    .responsive-mobile({
+        padding: 14px 17px;
+        font-size: 2.75 * @treeview-font-size;
+    })
+}
+
+#tree > ul > li {
+    .responsive-mobile({
+        span { 
+            &.indent {
+                margin-left:  2.75 * @treeview-level-indent;
+                margin-right: 2.75 * @treeview-level-indent;
+            }
+        }
+        span {
+            &.icon {
+                width:        2.75 * @treeview-icon-width;
+                font-size:    2.75 * @treeview-icon-size;
+                margin-right: 15px;
+            }
+        }
+    })
 }
