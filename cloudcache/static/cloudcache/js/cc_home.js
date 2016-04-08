@@ -385,17 +385,17 @@ function buildBreadcrumbs(notebook) {
         return;
     }
 
-    $breadcrumbs.prepend(notebook.text);
+    $breadcrumbs.append(notebook.text);
 
     // Keep climbing the tree, finding each parent notebook, until we reach the top. For each parent notebook, prepend
     // the parent's name
     var parent = $('#tree').treeview('getParent', notebook);
     while (parent.selector != '#tree') {
-        $breadcrumbs.prepend(' ▶ ');
+        $breadcrumbs.append(' ▶ ');
         $("<a href='#'>")
             .append(parent.text)
             .attr('data_id', parent.nodeId)
-            .prependTo($breadcrumbs);
+            .appendTo($breadcrumbs);
         parent = $('#tree').treeview('getParent', parent);
     }
 
@@ -407,8 +407,8 @@ function buildBreadcrumbs(notebook) {
         });
     });
 
-    $breadcrumbs.prepend(' ▶ ');
-    $breadcrumbs.prepend($rootLink);
+    $breadcrumbs.append(' ▶ ');
+    $breadcrumbs.append($rootLink);
 }
 
 /**

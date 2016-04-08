@@ -36,21 +36,27 @@
 
     .breadcrumbs {
 
+        display: flex;
+        align-items: center;
+
         // Right-to-left with hidden overflow and no wrap has the effect of
         // truncating long breadcrumbs from the left, not from the right
         direction: rtl;
         overflow: hidden;
         white-space: nowrap;
 
+        max-height: 80%;
         max-width: 75%;
 
         font-size: 1.125em;
         color: @off-white;
 
         a, a:active, a:focus {
-            font-size: 1.25em;
-
+            font-size: 1.125em;
+            line-height: 100%;
             padding: 5px;
+            margin-left: 0.25em;
+            margin-right: 0.25em;
             .border-radius();
             color: @cc-theme;
             background-color: @off-white;

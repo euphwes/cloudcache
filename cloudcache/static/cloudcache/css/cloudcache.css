@@ -20,9 +20,12 @@ body {
   height: 51px;
 }
 .cc-navbar .breadcrumbs {
+  display: flex;
+  align-items: center;
   direction: rtl;
   overflow: hidden;
   white-space: nowrap;
+  max-height: 80%;
   max-width: 75%;
   font-size: 1.125em;
   color: #F5F5F5;
@@ -30,8 +33,11 @@ body {
 .cc-navbar .breadcrumbs a,
 .cc-navbar .breadcrumbs a:active,
 .cc-navbar .breadcrumbs a:focus {
-  font-size: 1.25em;
+  font-size: 1.125em;
+  line-height: 100%;
   padding: 5px;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
