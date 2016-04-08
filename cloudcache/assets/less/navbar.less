@@ -34,42 +34,40 @@
     width: 100%;
     height: @navbar-height;
 
-    // The bc-wrapper with overflow hidden and max-width limits the visible portion of the breadcrumbs
-    .bc-wrapper {
+    .breadcrumbs {
+
+        // Right-to-left with hidden overflow and no wrap has the effect of
+        // truncating long breadcrumbs from the left, not from the right
+        direction: rtl;
         overflow: hidden;
+        white-space: nowrap;
+
         max-width: 75%;
 
-        // Use an inner div that will float right, to give the appearance of long breadcrumbs being
-        // truncated from the left
-        .breadcrumbs {
-            font-size: 1.125em;
-            color: @off-white;
+        font-size: 1.125em;
+        color: @off-white;
 
-            white-space: nowrap;
-            float: right;
+        a, a:active, a:focus {
+            font-size: 1.25em;
 
-            a, a:active, a:focus {
-                font-size: 1.25em;
+            padding: 5px;
+            .border-radius();
+            color: @cc-theme;
+            background-color: @off-white;
+            text-decoration: none;
 
-                padding: 5px;
-                .border-radius();
-                color: @cc-theme;
-                background-color: @off-white;
-                text-decoration: none;
-
-                &:hover {
-                    background-color: @bg-grey;
-                }
+            &:hover {
+                background-color: @bg-grey;
             }
-
-            .responsive-mobile({
-                font-size: 2.5em;
-                a {
-                    font-size: 1.25em;
-                    .border-radius(15px);
-                }
-            });
         }
+
+        .responsive-mobile({
+            font-size: 2.5em;
+            a {
+                font-size: 1.25em;
+                .border-radius(15px);
+            }
+        });
     }
 
     // Mobile styles
