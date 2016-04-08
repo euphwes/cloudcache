@@ -366,56 +366,49 @@ function buildNotebook(notebook) {
 
 /**
  * Build up the breadcrumbs for the current notebook structure. Start at the current notebook, then keep working up the
- * tree until you reach the root. At each notebook, prepend an ol->li element with the notebook's name. All notebooks
+ * tree until you reach the root. At each notebook, prepend a link element with the notebook's name. All notebooks
  * fall under a root element here which we'll call 'Notebooks'.
  **/
 function buildBreadcrumbs(notebook) {
 
-    $('#breadcrumbs').empty();
+    var $breadcrumbs = $('.breadcrumbs').empty();
 
-    // If no notebook is provided, only put the 'Notebooks' crumb at the root, set it as active, and bail out early
+    var $rootLink = $('<a href="#">')
+        .append('Home')
+        .click(function() {
+            $('#tree').treeview('unselectNode', $('#tree').treeview('getSelected')[0]);
+        });
+
+    // If no notebook is provided, only put the 'Home' crumb at the root and bail out early
     if (notebook == null) {
-        $('<li>')
-            .addClass('active')
-            .append('Notebooks')
-            .prependTo('#breadcrumbs');
+        $breadcrumbs.append($rootLink);
         return;
     }
 
-    // Make the last element the active element with the current notebook's name
-    $('<li>')
-        .addClass('active')
-        .append(notebook.text)
-        .prependTo('#breadcrumbs');
+    $breadcrumbs.prepend(notebook.text);
 
     // Keep climbing the tree, finding each parent notebook, until we reach the top. For each parent notebook, prepend
-    // an ol->li element with that notebook's name
+    // the parent's name
     var parent = $('#tree').treeview('getParent', notebook);
     while (parent.selector != '#tree') {
-        var anchor = $('<a href="#">')
-            .attr('id', 'crumb' + parent.nodeId)
-            .append(parent.text);
-        $('<li>')
-            .append(anchor)
-            .prependTo('#breadcrumbs');
+        $breadcrumbs.prepend(' ▶ ');
+        $("<a href='#'>")
+            .append(parent.text)
+            .attr('data_id', parent.nodeId)
+            .prependTo($breadcrumbs);
         parent = $('#tree').treeview('getParent', parent);
     }
 
     // Wire up click handlers for each anchor
-    $('#breadcrumbs li a').each(function(index, element){
-        var nodeId = $(this).attr('id').replace('crumb','');
+    $breadcrumbs.children('a').each(function(index, element){
+        var nodeId = parseInt($(this).attr('data_id'));
         $(this).click(function() {
-            $('#tree').treeview('selectNode', parseInt(nodeId));
+            $('#tree').treeview('selectNode', nodeId);
         });
     });
 
-    // Prepend the root element in the breadcrumbs, which we'll call "Notebooks"
-    var anchor = $('<a href="#">').append('Notebooks');
-    var crumb = $('<li>').append(anchor);
-    anchor.click(function() {
-        $('#tree').treeview('unselectNode', $('#tree').treeview('getSelected')[0]);
-    });
-    $('#breadcrumbs').prepend(crumb);
+    $breadcrumbs.prepend(' ▶ ');
+    $breadcrumbs.prepend($rootLink);
 }
 
 /**
@@ -838,5 +831,6 @@ $(function(){
     });
 
     getUserNotebooks();
+    buildBreadcrumbs();
 });
 

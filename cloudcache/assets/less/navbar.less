@@ -1,6 +1,6 @@
-// ---------------------------------------------------------
-//                           Navbar
-// ---------------------------------------------------------
+// ----------------------------------------------------------------------------
+//                                    Navbar
+// ----------------------------------------------------------------------------
 
 @navbar-bg-color:             @cc-theme-trim;     // Navbar background color
 @navbar-border-bottom-color:  @light-grey;   // Navbar border-bottom color
@@ -18,7 +18,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    
+
     // Flexbox container for centering child elements both vertically and horizontally
     display: flex;
     align-items: center;
@@ -36,8 +36,23 @@
 
     // Folder name element should float center horiz and vert because of flex positioning
     // Make the foreground color the normal cloudCache theme color
-    .folder-name {
-        color: @cc-theme;
+    .breadcrumbs {
+        font-size: 1.125em;
+        color: @off-white;
+
+        a, a:active, a:focus {
+            font-size: 1.25em;
+
+            padding: 5px;
+            .border-radius();
+            color: @cc-theme;
+            background-color: @off-white;
+            text-decoration: none;
+
+            &:hover {
+                background-color: @bg-grey;
+            }
+        }
     }
 
     // Mobile styles
