@@ -74,7 +74,7 @@ function notifyError(message)   { notify(message, 'exclamation-sign', 'danger', 
  **/
 function attachOnEditHandler(noteDiv) {
 
-    var noteTitle = noteDiv.children('.note-title').children('.inline');
+    var noteTitle = noteDiv.children('.title').children('.inline');
     noteTitle.on('keydown', function(e) { if (e.keyCode == 13) e.preventDefault(); });
 
     var editHandler = function() {
@@ -82,7 +82,7 @@ function attachOnEditHandler(noteDiv) {
         var $note = $(this);
 
         var content = '';
-        $note.children('.note-contents').children('p').each(function(index, element){
+        $note.children('.contents').children('p').each(function(index, element){
             content += '\r\n' + $(element).text();
         });
 
@@ -92,7 +92,7 @@ function attachOnEditHandler(noteDiv) {
             type: 'PUT',
             timeout: 1000,
             data: {
-                'title'    : $note.children('.note-title').text(),
+                'title'    : $note.children('.title').text(),
                 'notebook' : $note.attr('notebook-url'),
                 'content'  : content,
             },
@@ -113,7 +113,7 @@ function attachNewNoteHandler(noteDiv) {
     // Wire up a few event handlers to simulate the placeholder-text effect on a contenteditable div for the note title.
     // If the text in the div is the title placeholder text, focusing the div will clear the text. If the text is empty
     // when the div loses focus, it'll add back the placeholder text
-    var noteTitle = noteDiv.children('.note-title').children('.inline');
+    var noteTitle = noteDiv.children('.title').children('.inline');
     var titlePlaceholder = 'Take a note...';
 
     // Hack around a Chrome weirdness: if you focus a contenteditable element and immediately clear its text or html,
@@ -135,7 +135,7 @@ function attachNewNoteHandler(noteDiv) {
     // Wire up a few event handlers to simulate the placeholder-text effect on a contenteditable div for the note content.
     // If the text in the div is the title placeholder text, focusing the div will clear the text. If the text is empty
     // when the div loses focus, it'll add back the placeholder text
-    var noteContent = noteDiv.children('.note-contents');
+    var noteContent = noteDiv.children('.contents');
     var contentPlaceholder = 'Content goes here';
 
     // Same weird hack as above.
@@ -163,14 +163,14 @@ function attachNewNoteHandler(noteDiv) {
         var $note = $('.note.placeholder');
 
         var content = '';
-        $note.children('.note-contents').children('p').each(function(index, element){
+        $note.children('.contents').children('p').each(function(index, element){
             var txt = $(element).text();
             if (txt) {
                 content += '\r\n' + txt;
             }
         });
 
-        var title = $note.children('.note-title').text();
+        var title = $note.children('.title').text();
 
         // If either the title or content of the note is empty, or still has the placeholder value, assume it's still
         // a work-in-progress and don't save yet
@@ -202,8 +202,8 @@ function attachNewNoteHandler(noteDiv) {
     // -- HACK ALERT --
     //
     // Only want to fire the editHandler when the focus leaves the note div entirely, but focusout will fire when
-    // either note-title or note-contents loses focus. To deal with this, we maintain a global var 'stillInNewNote'.
-    // This var is set to false immediately whenever note sees a focusout event, but if the note-title or note-contents
+    // either title or contents loses focus. To deal with this, we maintain a global var 'stillInNewNote'.
+    // This var is set to false immediately whenever note sees a focusout event, but if the title or contents
     // receives focus, we immediately set it back to true. We delay editHandler here by 1/8 second, to make sure the
     // title and content focus-in handlers have time to set stillInNewNote back to true. If the editHandler sees that
     // this variable is false, we'll know that something else other than the placeholder note div has focus, and we can
@@ -225,8 +225,8 @@ function buildPlaceholderNote() {
     buildNote(note, true);
 }
 
-// Build up a note div which contains inner note-title and note-contents class divs, with the title and content
-// of a note object retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
+// Build up a note div which contains inner title and contents class divs, with the title and content of a note object
+// retrieved from the API. Do a replace-all on note.content to turn newlines into HTML line breaks
 function buildNote(note, placeholder, addedNow) {
 
     addedNow = addedNow || false;
@@ -234,7 +234,7 @@ function buildNote(note, placeholder, addedNow) {
 
     // --- Note header stuff ---
     var header = $('<div>')
-        .addClass('note-title');
+        .addClass('title');
 
     $('<div>')
         .addClass('inline edit')
@@ -242,13 +242,9 @@ function buildNote(note, placeholder, addedNow) {
         .append(note.title)
         .appendTo(header);
 
-    $('<span>')
-        .addClass('glyphicon glyphicon-tag flipped pull-right inline')
-        .appendTo(header);
-
     // --- Note content stuff ---
     var content = $('<div>')
-        .addClass('note-contents')
+        .addClass('contents')
         .attr('contenteditable', true);
 
     // In the note content, split on each line, then stick that line in a paragraph and append to the content div
@@ -302,20 +298,19 @@ function buildNotebook(notebook) {
         .appendTo(getShortestColumn('#notebooks-wrapper'));
 
     $('<div>')
-        .addClass('inline edit')
+        .addClass('edit')
         .attr('contenteditable', true)
         .append(notebook.text)
         .appendTo(notebookDiv);
 
     $('<span>')
-        .addClass('glyphicon glyphicon-folder-open pull-left inline hvr-pop-25')
+        .addClass('glyphicon glyphicon-folder-open hvr-pop-25')
         .appendTo(notebookDiv);
-
 
     // Wire up a few event handlers to simulate a placeholder in a contenteditable div for the notebook name.
     // If the text in the div is the notebook placeholder text, focusing the div will clear the text. If the text is
     // empty when the div loses focus, it'll add back the placeholder text
-    var notebookName = notebookDiv.children('div.inline');
+    var notebookName = notebookDiv.children('div.edit');
 
     var originalName = notebookName.text();
 
@@ -371,56 +366,49 @@ function buildNotebook(notebook) {
 
 /**
  * Build up the breadcrumbs for the current notebook structure. Start at the current notebook, then keep working up the
- * tree until you reach the root. At each notebook, prepend an ol->li element with the notebook's name. All notebooks
+ * tree until you reach the root. At each notebook, prepend a link element with the notebook's name. All notebooks
  * fall under a root element here which we'll call 'Notebooks'.
  **/
 function buildBreadcrumbs(notebook) {
 
-    $('#breadcrumbs').empty();
+    var $breadcrumbs = $('.breadcrumbs').empty();
 
-    // If no notebook is provided, only put the 'Notebooks' crumb at the root, set it as active, and bail out early
+    var $rootLink = $('<a href="#">')
+        .append('Home')
+        .click(function() {
+            $('#tree').treeview('unselectNode', $('#tree').treeview('getSelected')[0]);
+        });
+
+    // If no notebook is provided, only put the 'Home' crumb at the root and bail out early
     if (notebook == null) {
-        $('<li>')
-            .addClass('active')
-            .append('Notebooks')
-            .prependTo('#breadcrumbs');
+        $breadcrumbs.append($rootLink);
         return;
     }
 
-    // Make the last element the active element with the current notebook's name
-    $('<li>')
-        .addClass('active')
-        .append(notebook.text)
-        .prependTo('#breadcrumbs');
+    $breadcrumbs.append(notebook.text);
 
     // Keep climbing the tree, finding each parent notebook, until we reach the top. For each parent notebook, prepend
-    // an ol->li element with that notebook's name
+    // the parent's name
     var parent = $('#tree').treeview('getParent', notebook);
     while (parent.selector != '#tree') {
-        var anchor = $('<a href="#">')
-            .attr('id', 'crumb' + parent.nodeId)
-            .append(parent.text);
-        $('<li>')
-            .append(anchor)
-            .prependTo('#breadcrumbs');
+        $breadcrumbs.append(' ▶ ');
+        $("<a href='#'>")
+            .append(parent.text)
+            .attr('data_id', parent.nodeId)
+            .appendTo($breadcrumbs);
         parent = $('#tree').treeview('getParent', parent);
     }
 
     // Wire up click handlers for each anchor
-    $('#breadcrumbs li a').each(function(index, element){
-        var nodeId = $(this).attr('id').replace('crumb','');
+    $breadcrumbs.children('a').each(function(index, element){
+        var nodeId = parseInt($(this).attr('data_id'));
         $(this).click(function() {
-            $('#tree').treeview('selectNode', parseInt(nodeId));
+            $('#tree').treeview('selectNode', nodeId);
         });
     });
 
-    // Prepend the root element in the breadcrumbs, which we'll call "Notebooks"
-    var anchor = $('<a href="#">').append('Notebooks');
-    var crumb = $('<li>').append(anchor);
-    anchor.click(function() {
-        $('#tree').treeview('unselectNode', $('#tree').treeview('getSelected')[0]);
-    });
-    $('#breadcrumbs').prepend(crumb);
+    $breadcrumbs.append(' ▶ ');
+    $breadcrumbs.append($rootLink);
 }
 
 /**
@@ -491,19 +479,19 @@ function buildPlaceholderNotebook(treeInitialized) {
         .appendTo(getShortestColumn('#notebooks-wrapper'));
 
     $('<div>')
-        .addClass('inline edit')
+        .addClass('edit')
         .attr('contenteditable', true)
         .append(newNbPlaceholderText)
         .appendTo(notebook);
 
     $('<span>')
-        .addClass('glyphicon glyphicon-folder-open pull-left inline')
+        .addClass('glyphicon glyphicon-folder-open')
         .appendTo(notebook);
 
     // Wire up a few event handlers to simulate a placeholder in a contenteditable div for the notebook name.
     // If the text in the div is the notebook placeholder text, focusing the div will clear the text. If the text is
     // empty when the div loses focus, it'll add back the placeholder text
-    var notebookName = notebook.children('div.inline');
+    var notebookName = notebook.children('div.edit');
 
     // Hack around a Chrome weirdness: if you focus a contenteditable element and immediately clear its text or html,
     // it loses the focus. You have to click again to make the cursor come back. The workaround is to put the clear
@@ -620,7 +608,7 @@ function buildNestedNotebookElements(notebook) {
             $('#tree').treeview('selectNode', parseInt($(item).attr('nodeid')));
             clearTextSelection();
         })
-        .find('.inline')
+        .find('.edit')
         .click(function(e){ e.stopPropagation(); });
 
     });
@@ -693,15 +681,6 @@ function buildTreeviewForNotebooks(notebooks, postNotebookLoadCallback) {
     $('#tree').treeview({
         data: notebooks,
         levels: 2,
-
-        color: '#FFFFFF',
-        backColor: '#446E9B',
-
-        selectedColor: '#446E9B',
-        selectedBackColor: '#E8E8E8',
-
-        onhoverColor: '#5488BF',
-
         showBorder: false,
         expandIcon: 'glyphicon glyphicon-triangle-right',
         collapseIcon: 'glyphicon glyphicon-triangle-bottom',
@@ -728,9 +707,47 @@ function getUserNotebooks(postNotebookLoadCallback) {
 }
 
 /**
+ * Since none of the Glyphicons are present in the page at page-load, Bootstrap doesn't need to load the Glyphicons
+ * web font until we retrieve notebooks via API, then build the notebooks DOM elements. Unfortunately, this causes
+ * the icon to not display until it loads for the first time, a fraction of a second later, causing a flashing effect.
+ *
+ * Here, we "preload" the Glyphicons before getting user notebooks by inserting, hiding, and immediately removing a DOM
+ * element which contains a Glypicon. For this to be effective, it needs to be called before calling getUserNotebooks()
+ * for the first time.
+ **/
+function horribleHackToPreloadGlyphicons(){
+    $('<div>')
+        .attr('style', 'height:0px; width:0px;')
+        .addClass('glyphicon glyphicon-folder-open')
+        .appendTo($('#panel'))
+        .hide()
+        .remove();
+}
+
+function buildSlideoutMenuParamsAndAttach() {
+    var slideout = new Slideout({
+        'panel': document.getElementById('panel'),
+        'menu': document.getElementById('menu'),
+        'padding': $('.slide-menu').css('width'),
+        'tolerance': 70
+    });
+
+    $('.hamburger').on('click', function() {
+        $(this).toggleClass('active');
+        slideout.toggle();
+    });
+}
+
+/**
  * On document-ready
  **/
 $(function(){
+
+    // The menu starts off as display:none, so it doesn't flicker as displayed while the rest of the page loads
+    // Once the rest of the doc is ready, it's hidden by the main content panel, so we can "show" it
+    $('#menu').show();
+
+    horribleHackToPreloadGlyphicons();
 
     // Set all ajax calls to send the CSRF token. Do *not* send the CSRF token if the request is cross-domain
     $.ajaxSetup({
@@ -741,18 +758,13 @@ $(function(){
         }
     });
 
-    var slideout = new Slideout({
-        'panel': document.getElementById('panel'),
-        'menu': document.getElementById('menu'),
-        'padding': 250,
-        'tolerance': 70
-    });
-    $('#menu').show();
+    buildSlideoutMenuParamsAndAttach();
 
-
-    $('.c-hamburger').on('click', function() {
-        $(this).toggleClass('is-active');
-        slideout.toggle();
+    // register this with enquire.js so that if the the screen size changes and media queries are matched
+    // or unmatched, the slideout size params are rebuilt and the toggle mechanism is reattached to the button
+    enquire.register('only screen and (max-device-width: 480px)', {
+          match: buildSlideoutMenuParamsAndAttach,
+        unmatch: buildSlideoutMenuParamsAndAttach,
     });
 
     $.contextMenu({
@@ -819,5 +831,6 @@ $(function(){
     });
 
     getUserNotebooks();
+    buildBreadcrumbs();
 });
 

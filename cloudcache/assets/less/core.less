@@ -1,0 +1,52 @@
+// ----------------------------------------------------------------------------
+//                                    Colors
+// ----------------------------------------------------------------------------
+
+// original @cc-theme: #446E9B
+
+// other dark steely grey/blue colors
+// #2C3E50
+// #34495D
+
+@cc-theme:      #34495D;                 // cloudCache main color
+@cc-theme-trim: lighten(@cc-theme, 10%); // and lightened for trim
+
+@bg-grey:    #E8E8E8;   // Core background color, medium grey
+@light-grey: #B0B0B0;
+@off-white:  #F5F5F5;   // Very light off-white, nearly pure white
+
+// ----------------------------------------------------------------------------
+//                                 Global stuff
+// ----------------------------------------------------------------------------
+
+body {
+    width:  100%;
+    height: 100%;
+    font-size: 16px;
+}
+
+// ----------------------------------------------------------------------------
+//                        Media query breakpoint mixins
+// ----------------------------------------------------------------------------
+
+@screen-xs:       480px;
+@screen-xs-min:   @screen-xs;
+@screen-sm:       768px;
+@screen-sm-min:   @screen-sm;
+@screen-md:       992px;
+@screen-md-min:   @screen-md;
+@screen-lg:       1200px;
+@screen-lg-min:   @screen-lg;
+@screen-xl:       1600px;
+@screen-xl-min:   @screen-xl;
+@screen-xs-max:   ( @screen-sm-min - 1 );
+@screen-sm-max:   ( @screen-md-min - 1 );
+@screen-md-max:   ( @screen-lg-min - 1 );
+@screen-lg-max:   ( @screen-xl-min - 1 );
+
+// Small mobile devices like phones
+.responsive-mobile(@rules) {
+	@media only screen and (max-device-width: @screen-xs) {
+		@rules();
+	}
+}

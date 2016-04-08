@@ -1,0 +1,83 @@
+// ----------------------------------------------------------------------------
+//                      Login / registration common styles
+// ----------------------------------------------------------------------------
+
+body {
+    background: @bg-grey;
+}
+
+.login-container {  
+    margin-top: 2 * @navbar-height;
+    min-height: 100%;
+
+    p {
+        font-size: 16px;
+        margin-top: 1.5em;
+        color: #757575;
+    }
+}
+
+.login-box {
+    color: darken(@cc-theme, 10%);
+
+    padding: 15px;
+    background-color: @off-white;
+    border: 1px solid #D0D0D0;
+    border-radius: 6px;
+
+    .login-heading {
+        h3 {
+            margin-top: 0px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+    }
+
+    .login-body {
+        form {
+            margin-bottom: 0px;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            margin-bottom: 5px;
+            width: 100%;
+        }
+    }
+}
+
+.alert-auth {
+    padding: 6px;
+}
+.btn-auth {
+    margin-top: 20px;
+}
+.btn-login {
+    border: none;
+    background-color: @cc-theme-trim;
+    &:hover {
+        background-color: @cc-theme;
+    }
+}
+.btn-register {
+    border-color: #017f62;
+    background-color: #019875;
+
+    &:hover {
+        border-color: #017f62;
+        background-color: #01b289;
+    }
+}
+
+.tooltip-inner {
+    width: 150px;
+}
+
+.sub-login-box {
+    margin-top: 10px;
+    color: #757575;
+    text-align: center;
+}

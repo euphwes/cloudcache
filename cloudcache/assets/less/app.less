@@ -1,0 +1,211 @@
+// ----------------------------------------------------------------------------
+//                          App page container styles
+// ----------------------------------------------------------------------------
+
+// --------------------------- Main content wrapper ---------------------------
+
+// Pad the main content wrapper to the same height as the navbar
+// so that all content falls underneath the navbar
+@content-padding-top:        @navbar-height;
+@content-padding-top-mobile: 1.25 * @navbar-height-mobile;
+
+// Pad the sides so that
+@content-padding-side:        10%;
+@content-padding-side-mobile:  5%;
+
+.content-wrapper {
+    padding-top:    @content-padding-top;
+    padding-left:   @content-padding-side;
+    padding-right:  @content-padding-side;
+    padding-bottom: 0;
+
+    background-color: @bg-grey;
+    min-height: 100%;
+
+    .responsive-mobile({
+        padding-top:    @content-padding-top-mobile;
+        padding-left:   @content-padding-side-mobile;
+        padding-right:  @content-padding-side-mobile;
+    })
+}
+
+
+// ----------------------------- Section wrappers -----------------------------
+
+@section-padding: 10px;
+
+// Both notebook and note sections get top/bottom padding
+.section-wrapper {
+    padding-top:    @section-padding;
+    padding-bottom: @section-padding;
+}
+
+// Notebooks wrapper gets an additional chunk of padding at the top
+// to further separate it from the navbar
+#notebooks-wrapper {
+    padding-top: @section-padding;
+}
+
+
+// --------------------- Note and notebook common styles ----------------------
+
+@cc-el-side-margin:          0;  // Unnecessary because of Bootstrap's column sidepadding
+@cc-el-top-bottom-margin: 10px;  // Match Bootstrap's column 10px side padding, create equal spacing on all sides
+@cc-el-border-radius:      2px;
+
+@cc-el-transition: all 0.3s ease;
+@cc-el-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.2), 0 1px 5px 0 rgba(0,0,0,0.12);
+
+.cc-element {
+    display: inline-block;
+    width: 100%;
+    margin: @cc-el-top-bottom-margin @cc-el-side-margin;
+    transition: @cc-el-transition;
+
+    .border-radius(@cc-el-border-radius);
+    .box-shadow(@cc-el-shadow);
+}
+
+// Visually distinguish the placeholder elements (where you create a new
+// notebook or note) from the other ones
+.placeholder {
+    .opacity(0.5);
+
+    .contents p {
+        min-height: 1.5em;
+    }
+}
+
+// Help <div> and <span> display inline next to each other in a parent container
+.inline {
+    display: inline-block;
+}
+
+// Help to visually denote that the contenteditable divs are editable
+// The 1px padding is Chrome hack to that the element displays a blinking cursor
+.edit {
+    cursor: text;
+    padding-left: 1px;
+}
+
+// Get rid of the border on a focused contenteditable on some platforms
+[contenteditable]:focus {
+    outline: 0px solid transparent;
+}
+
+// ----------------------------- Notebook styles ------------------------------
+
+@notebook-bg-color: @cc-theme;
+@notebook-fg-color: @off-white;
+
+@notebook-padding:    0.625em;
+@notebook-min-height: 4 * @notebook-padding;
+
+@notebook-font-size: 1em;
+
+.notebook {
+    display: inline-flex;
+    align-items: center;
+    span { order: 1; }
+     div { order: 2; }
+
+    color:      @notebook-fg-color;
+    background: @notebook-bg-color;
+    padding:    @notebook-padding;
+    min-height: @notebook-min-height;
+
+    font-size: @notebook-font-size;
+
+    &:not(.placeholder) {
+        cursor: pointer;
+    }
+
+    &:not(.go-up) {
+        span {
+            margin-right: 1em;
+        }
+    }
+
+    .responsive-mobile({
+        font-size: 2.75 * @notebook-font-size;
+    });
+}
+
+@go-up-bg-color: #864141;
+
+.go-up {
+    cursor:     pointer;
+    text-align: center;
+    background: @go-up-bg-color;
+
+    span {
+        font-size: 1.25em;
+    }
+}
+
+// ------------------------------- Note styles --------------------------------
+
+@note-hover-shadow:     0 2px 15px rgba(0,0,0,0.5);
+@note-hover-transition: all 0.3s ease;
+
+@note-padding-top:  0.625em;
+@note-padding-side: 1em;
+
+@title-font-size:    1em;
+@title-font-weight:  bold;
+
+@contents-font-size:  0.75em;
+@contents-min-height: 1em;
+
+@para-margin-bottom: 0.75em;
+
+.note {
+    background: @off-white;
+
+    padding: @note-padding-top @note-padding-side;
+
+    &:hover {
+        .box-shadow(@note-hover-shadow);
+        transition: @note-hover-transition;
+    }
+
+    .title {
+        font-size:     @title-font-size;
+        font-weight:   @title-font-weight;
+    }
+
+    .contents {
+        font-size:  @contents-font-size;
+        min-height: @contents-min-height;
+
+        // Overflow is hidden and nothing is wrapped...
+        overflow:    hidden;
+        white-space: nowrap;
+
+        // ...but when hovered, you get scrollbars so that you scroll around and
+        // see the entirety of the content
+        &:hover {
+            overflow: auto;
+        }
+
+        p {
+            margin-bottom: @para-margin-bottom;
+            &:first-of-type {
+                margin-top: 0.75em;
+            }
+            &:last-of-type {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    .responsive-mobile({
+        padding: (2.25 * @note-padding-top) (2.25 * @note-padding-side);
+        .title {
+            font-size: 2.75 * @title-font-size;
+        }
+        .contents {
+            font-size: 2.75 * @contents-font-size;
+        } 
+    })
+}

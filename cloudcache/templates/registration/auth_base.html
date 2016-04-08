@@ -8,11 +8,11 @@
     <link rel="shortcut icon" href="{% static 'cloudcache/favicon.ico' %}">
 
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'cloudcache/css/core.css' %}" rel="stylesheet">
+    <link href="{% static 'cloudcache/css/cloudcache.css' %}" rel="stylesheet">
 </head>
 <body>
 
-    {% include 'registration/basic_navbar.html' %}
+    <header class="cc-navbar"></header>
 
     {% block content %}
     {% endblock %}
