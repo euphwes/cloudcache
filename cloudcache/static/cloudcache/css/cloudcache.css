@@ -19,13 +19,19 @@ body {
   width: 100%;
   height: 51px;
 }
-.cc-navbar .breadcrumbs {
+.cc-navbar .bc-wrapper {
+  overflow: hidden;
+  max-width: 75%;
+}
+.cc-navbar .bc-wrapper .breadcrumbs {
   font-size: 1.125em;
   color: #F5F5F5;
+  white-space: nowrap;
+  float: right;
 }
-.cc-navbar .breadcrumbs a,
-.cc-navbar .breadcrumbs a:active,
-.cc-navbar .breadcrumbs a:focus {
+.cc-navbar .bc-wrapper .breadcrumbs a,
+.cc-navbar .bc-wrapper .breadcrumbs a:active,
+.cc-navbar .bc-wrapper .breadcrumbs a:focus {
   font-size: 1.25em;
   padding: 5px;
   -webkit-border-radius: 5px;
@@ -38,10 +44,24 @@ body {
   background-color: #F5F5F5;
   text-decoration: none;
 }
-.cc-navbar .breadcrumbs a:hover,
-.cc-navbar .breadcrumbs a:active:hover,
-.cc-navbar .breadcrumbs a:focus:hover {
+.cc-navbar .bc-wrapper .breadcrumbs a:hover,
+.cc-navbar .bc-wrapper .breadcrumbs a:active:hover,
+.cc-navbar .bc-wrapper .breadcrumbs a:focus:hover {
   background-color: #E8E8E8;
+}
+@media only screen and (max-device-width: 480px) {
+  .cc-navbar .bc-wrapper .breadcrumbs {
+    font-size: 2.5em;
+  }
+  .cc-navbar .bc-wrapper .breadcrumbs a {
+    font-size: 1.25em;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    -moz-background-clip: padding;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+  }
 }
 @media only screen and (max-device-width: 480px) {
   .cc-navbar {
