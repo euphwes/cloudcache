@@ -111,7 +111,13 @@ body {
   width: 100%;
 }
 .alert-auth {
+  margin-top: 51px;
   padding: 6px;
+}
+@media only screen and (max-device-width: 480px) {
+  .alert-auth {
+    margin-top: 102px;
+  }
 }
 .btn-auth {
   margin-top: 20px;

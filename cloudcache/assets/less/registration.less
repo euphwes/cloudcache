@@ -6,7 +6,7 @@ body {
     background: @bg-grey;
 }
 
-.login-container {  
+.login-container {
     margin-top: 2 * @navbar-height;
     min-height: 100%;
 
@@ -50,7 +50,12 @@ body {
 }
 
 .alert-auth {
+    margin-top: @navbar-height;
     padding: 6px;
+
+    .responsive-mobile({
+        margin-top: 2* @navbar-height;
+    })
 }
 .btn-auth {
     margin-top: 20px;
