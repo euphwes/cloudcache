@@ -78,7 +78,12 @@ $(function(){
     // -----------------------------------------------------------------------------------------------------------------
     var App = {
 
+        tree: null,
+
+        currNotebook: null,
+
         notebooks: [],
+        notes: [],
 
         // Initialize the app controller, perform all the setup stuff necessary
         init: function() {
@@ -98,12 +103,14 @@ $(function(){
             });
         },
 
-        /**
-         * Kick off the process to get the user's notebooks and parse into a tree for navigation in the sidebar, by
-         * making an API call to the endpoint for listing all notebooks
-         **/
-        async_loadNotebooks: function () {
+        // Handle a click of a row in the tree view
+        handleTreeClick: function(e, notebook) {
+            this.notebook = notebook;
+        },
 
+        // Kick off the process to get the user's notebooks and parse into a tree for navigation in the sidebar, by
+        // making an API call to the endpoint for listing all notebooks
+        async_loadNotebooks: function () {
             return $.ajax({
                 context: this,
                 url: '/api/notebooks/',
@@ -112,17 +119,10 @@ $(function(){
             }).then(util.massageNotebookFormat);
         },
 
-        /**
-         * Build a hierarchical structure of notebooks, so that the Bootstrap-Treeview library can display a tree in the
-         * sidebar. Pre- and post- processes the notebook objects to make sure they're suitable (proper field names, etc)
-         **/
+        // Build notebook treeview in the sidebar.
         buildTree: function() {
-            if (this.notebooks.length == 0) {
-                //buildPlaceholderNotebook(false);
-                return;
-            }
+            if (this.notebooks.length == 0) return;
 
-            // Build the treeview in the #tree div in the sidebar, with specific options
             $('#tree').treeview({
                 data: this.notebooks,
                 levels: 2,
@@ -131,24 +131,24 @@ $(function(){
                 collapseIcon: 'glyphicon glyphicon-triangle-bottom',
             });
 
-            //wireTreeEvents();
-            //buildNestedNotebookElements(null);
+            $('#tree').on('nodeSelected', this.handleTreeClick);
+            this.tree = $('#tree').treeview(true);
         },
 
-        /**
-         * Build the slide-out menu, and attach a click handler to the hamburger icon.
-         **/
+        // Build the slide-out menu, and attach a click handler to the hamburger icon.
         buildMenu: function() {
             var slideout = new Slideout({
-                'panel': document.getElementById('panel'),
-                'menu': document.getElementById('menu'),
+                'panel': $('#panel')[0],
+                'menu': $('#menu')[0],
                 'padding': $('.slide-menu').css('width'),
                 'tolerance': 70
             });
-            $('.hamburger').off('click').on('click', function() {
-                $(this).toggleClass('active');
-                slideout.toggle();
-            });
+            $('.hamburger')
+                .off('click')
+                .on('click', function() {
+                    $(this).toggleClass('active');
+                    slideout.toggle();
+                });
             $('#menu').show();
         },
     };
