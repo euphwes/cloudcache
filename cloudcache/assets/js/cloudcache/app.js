@@ -71,6 +71,20 @@ $(function(){
             return notebooks;
         },
 
+        // We want to get the shortest column in the content pane, to append the current note to the end of that.
+        // Check the height of each of the note-col divs inside the #notes-wrapper, find the shortest, and return that
+        getShortestColumn: function(selector) {
+            var minHeight = 9999999;
+            var shortColumn;
+            $(selector).children().each(function() {
+                if ($(this).height() < minHeight) {
+                    minHeight = $(this).height();
+                    shortColumn = $(this);
+                }
+            });
+            return shortColumn;
+        },
+
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -85,8 +99,12 @@ $(function(){
         notebooks: [],
         notes: [],
 
+        notebookTemplate: null,
+
         // Initialize the app controller, perform all the setup stuff necessary
         init: function() {
+
+            this.notebookTemplate = Handlebars.compile($('#notebook-template').html());
 
             // Register with enquire.js so that if the the screen size changes and media queries are matched or
             // unmatched, the slideout menu size params are rebuilt and the toggle mechanism is reattached to the button
@@ -96,6 +114,8 @@ $(function(){
                 unmatch: this.buildMenu,
             });
 
+            this.wireEvents();
+
             // Do an initial load of the notebooks, and build the tree
             this.async_loadNotebooks().done(function(data){
                 this.notebooks = data;
@@ -103,9 +123,37 @@ $(function(){
             });
         },
 
-        // Handle a click of a row in the tree view
-        handleTreeClick: function(e, notebook) {
-            this.notebook = notebook;
+        // Handle a new notebook being selected, firing off everything that needs to happen when a notebook is selected
+        handleNotebookSelect: function() {
+            $('#notebooks-wrapper').children().empty();
+            if (this.notebook.nodes) {
+                var template = this.notebookTemplate;
+                $.each(this.notebook.nodes, function(i, nb){
+                    util.getShortestColumn('#notebooks-wrapper').append(template(nb));
+                });
+            }
+        },
+
+        // Handle a click of a row in the tree view.
+        handleTreeClick: function(e, notebookNode) {
+            this.notebook = notebookNode;
+            this.handleNotebookSelect();
+        },
+
+        // Handle a click of a notebook button. Get the associated treeview node for that button, set that as the
+        // current notebook, then fire off the notebook-selected function.
+        handleNotebookClick: function($notebook) {
+            this.notebook = this.tree.getNode($notebook.attr('data-nodeId'));
+            this.tree.selectNode(this.notebook, {silent: true});
+            this.tree.revealNode(this.notebook, {silent: true});
+            this.handleNotebookSelect();
+        },
+
+        // Wire up events for notebooks and notes
+        wireEvents: function() {
+            $('#notebooks-wrapper').on('click', '.notebook', function(e) {
+                this.handleNotebookClick($(e.target));
+            }.bind(this))
         },
 
         // Kick off the process to get the user's notebooks and parse into a tree for navigation in the sidebar, by
@@ -131,7 +179,7 @@ $(function(){
                 collapseIcon: 'glyphicon glyphicon-triangle-bottom',
             });
 
-            $('#tree').on('nodeSelected', this.handleTreeClick);
+            $('#tree').on('nodeSelected', this.handleTreeClick.bind(this));
             this.tree = $('#tree').treeview(true);
         },
 

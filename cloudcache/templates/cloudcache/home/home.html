@@ -51,6 +51,16 @@
         </div>
     </main>
 
+    <!-- Handlebars.js notebook template -->
+    {% verbatim %}
+    <script id='notebook-template' type='text/x-handlebars-template'>
+        <div data-url="{{url}}" data-nodeId="{{nodeId}}" class="cc-element notebook">
+            <div class="edit" contenteditable="true">{{text}}</div>
+            <span class="glyphicon glyphicon-folder-open hvr-pop-25"></span>
+        </div>
+    </script>
+    {% endverbatim %}
+
     <script src="{% static 'js/cc.min.js' %}"></script>
 </body>
 </html>
