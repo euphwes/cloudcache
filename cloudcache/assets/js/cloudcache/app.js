@@ -154,9 +154,15 @@ $(function(){
             }
         },
 
-        // Handle a click of a row in the tree view.
+        // Handle a click of a row in the tree view
         handleTreeClick: function(e, notebookNode) {
             this.currNotebook = notebookNode;
+            this.handleNotebookSelect();
+        },
+
+        // Handle deselecting a row in the tree view
+        handleTreeUnselect: function(e, notebookNode) {
+            this.currNotebook = null;
             this.handleNotebookSelect();
         },
 
@@ -228,7 +234,10 @@ $(function(){
                 collapseIcon: 'glyphicon glyphicon-triangle-bottom',
             });
 
-            $('#tree').on('nodeSelected', this.handleTreeClick.bind(this));
+            $('#tree')
+                .on('nodeSelected', this.handleTreeClick.bind(this))
+                .on('nodeUnselected', this.handleTreeUnselect.bind(this));
+
             this.tree = $('#tree').treeview(true);
         },
 
