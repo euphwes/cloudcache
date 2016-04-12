@@ -113,11 +113,13 @@ $(function(){
         notes: [],
 
         notebookTemplate: null,
+        goUpTemplate: null,
 
         // Initialize the app controller, perform all the setup stuff necessary
         init: function() {
 
             this.notebookTemplate = Handlebars.compile($('#notebook-template').html());
+            this.goUpTemplate     = Handlebars.compile($('#go-up-template').html());
 
             // Register with enquire.js so that if the the screen size changes and media queries are matched or
             // unmatched, the slideout menu size params are rebuilt and the toggle mechanism is reattached to the button
@@ -139,9 +141,14 @@ $(function(){
         // Handle a new notebook being selected, firing off everything that needs to happen when a notebook is selected
         handleNotebookSelect: function() {
             $('#notebooks-wrapper').children().empty();
-            if (this.notebook.nodes) {
+
+            if (!this.currNotebook) return;
+
+            util.getShortestColumn('#notebooks-wrapper').append(this.goUpTemplate({}));
+
+            if (this.currNotebook.nodes) {
                 var template = this.notebookTemplate;
-                $.each(this.notebook.nodes, function(i, nb){
+                $.each(this.currNotebook.nodes, function(i, nb){
                     util.getShortestColumn('#notebooks-wrapper').append(template(nb));
                 });
             }
@@ -149,34 +156,53 @@ $(function(){
 
         // Handle a click of a row in the tree view.
         handleTreeClick: function(e, notebookNode) {
-            this.notebook = notebookNode;
+            this.currNotebook = notebookNode;
             this.handleNotebookSelect();
         },
 
         // Handle a click of a notebook button. Get the associated treeview node for that button, set that as the
         // current notebook, then fire off the notebook-selected function.
-        handleNotebookClick: function($notebook) {
+        handleNotebookClick: function(e) {
+
+            util.clearTextSelection();
+
+            var $notebook = $(e.target);
 
             // If the user clicked the folder icon/span instead, get the parent element (the notebook itself)
             if ($notebook.prop('tagName') == 'SPAN') $notebook = $notebook.parent();
 
-            this.notebook = this.tree.getNode($notebook.attr('data-nodeId'));
-            this.tree.selectNode(this.notebook, {silent: true});
-            this.tree.revealNode(this.notebook, {silent: true});
+            this.currNotebook = this.tree.getNode($notebook.attr('data-nodeId'));
+            this.tree.selectNode(this.currNotebook, {silent: true});
+            this.tree.revealNode(this.currNotebook, {silent: true});
+            this.handleNotebookSelect();
+        },
+
+        // Handle clicking on the "go up" button, navigating the user back up the notebook structure
+        handleGoUpClick: function() {
+
+            this.currNotebook = this.tree.getParent(this.currNotebook.nodeId);
+
+            if (!this.currNotebook) {
+                this.currNotebook = null;
+                this.tree.unselectNode(this.tree.getSelected()[0], {silent: true});
+            } else {
+                this.tree.selectNode(this.currNotebook, {silent: true});
+                this.tree.revealNode(this.currNotebook, {silent: true});
+            }
+
             this.handleNotebookSelect();
         },
 
         // Wire up events for notebooks and notes
         wireEvents: function() {
 
-            var notebookClick = function(e) {
-                this.handleNotebookClick($(e.target));
-                util.clearTextSelection();
-            }.bind(this);
-
-            $('#notebooks-wrapper').on('click', '.notebook', notebookClick)
+            // Wire the notebook-click event, but disable the event firing if the user clicks on the edit text
+            // inside the notebook element
+            $('#notebooks-wrapper').on('click', '.notebook:not(.go-up)', this.handleNotebookClick.bind(this))
                 .find('.edit')
                 .click(function(e){ e.stopPropagation(); });
+
+            $('#notebooks-wrapper').on('click', '.go-up', this.handleGoUpClick.bind(this));
         },
 
         // Kick off the process to get the user's notebooks and parse into a tree for navigation in the sidebar, by
