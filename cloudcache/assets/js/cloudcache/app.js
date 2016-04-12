@@ -5,6 +5,19 @@ $(function(){
     // -----------------------------------------------------------------------------------------------------------------
     var util = {
 
+        // Clear any text selection in the browser. Should work cross-browser
+        clearTextSelection: function() {
+            if (window.getSelection) {
+              if (window.getSelection().empty) {  // Chrome
+                window.getSelection().empty();
+              } else if (window.getSelection().removeAllRanges) {  // Firefox
+                window.getSelection().removeAllRanges();
+              }
+            } else if (document.selection) {  // IE?
+              document.selection.empty();
+            }
+        },
+
         /**
          * General utility function for turning a flat list of objects into a nested structure. The ID, parent, and
          * children attribute names are configurable, but it's assumed that each object coming in has a unique ID, and
@@ -143,6 +156,10 @@ $(function(){
         // Handle a click of a notebook button. Get the associated treeview node for that button, set that as the
         // current notebook, then fire off the notebook-selected function.
         handleNotebookClick: function($notebook) {
+
+            // If the user clicked the folder icon/span instead, get the parent element (the notebook itself)
+            if ($notebook.prop('tagName') == 'SPAN') $notebook = $notebook.parent();
+
             this.notebook = this.tree.getNode($notebook.attr('data-nodeId'));
             this.tree.selectNode(this.notebook, {silent: true});
             this.tree.revealNode(this.notebook, {silent: true});
@@ -151,9 +168,15 @@ $(function(){
 
         // Wire up events for notebooks and notes
         wireEvents: function() {
-            $('#notebooks-wrapper').on('click', '.notebook', function(e) {
+
+            var notebookClick = function(e) {
                 this.handleNotebookClick($(e.target));
-            }.bind(this))
+                util.clearTextSelection();
+            }.bind(this);
+
+            $('#notebooks-wrapper').on('click', '.notebook', notebookClick)
+                .find('.edit')
+                .click(function(e){ e.stopPropagation(); });
         },
 
         // Kick off the process to get the user's notebooks and parse into a tree for navigation in the sidebar, by
