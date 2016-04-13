@@ -58,16 +58,6 @@
     .box-shadow(@cc-el-shadow);
 }
 
-// Visually distinguish the placeholder elements (where you create a new
-// notebook or note) from the other ones
-.placeholder {
-    .opacity(0.5);
-
-    .contents p {
-        min-height: 1.5em;
-    }
-}
-
 // Help <div> and <span> display inline next to each other in a parent container
 .inline {
     display: inline-block;
@@ -166,7 +156,8 @@
 
         // Overflow is hidden and nothing is wrapped...
         //overflow:    hidden;
-        //white-space: nowrap;
+        //white-space: normal;
+        word-break: break-all;
 
         // ...but when hovered, you get scrollbars so that you scroll around and
         // see the entirety of the content
@@ -190,6 +181,15 @@
         span {
             transition: opacity 0.3s ease;
             opacity: 0.0;
+
+            &:hover {
+                transition: all 0.25s ease;
+                opacity: 1;
+            }
+        }
+
+        .glyphicon-trash:hover {
+            color: #660000;
         }
     }
 
