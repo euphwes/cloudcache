@@ -5,6 +5,16 @@ $(function(){
     // -----------------------------------------------------------------------------------------------------------------
     var util = {
 
+        renderContents: function(contents) {
+            var $tmp = $('<div>');
+            $.each(contents.split('\r\n'), function(i, line){
+                $('<p>')
+                    .append(line)
+                    .appendTo($tmp);
+            });
+            return new Handlebars.SafeString($tmp.html());
+        },
+
         // Clear any text selection in the browser. Should work cross-browser
         clearTextSelection: function() {
             if (window.getSelection) {
@@ -118,8 +128,11 @@ $(function(){
         // Initialize the app controller, perform all the setup stuff necessary
         init: function() {
 
+            Handlebars.registerHelper('render', util.renderContents);
+
             this.notebookTemplate = Handlebars.compile($('#notebook-template').html());
             this.goUpTemplate     = Handlebars.compile($('#go-up-template').html());
+            this.noteTemplate     = Handlebars.compile($('#note-template').html());
 
             // Register with enquire.js so that if the the screen size changes and media queries are matched or
             // unmatched, the slideout menu size params are rebuilt and the toggle mechanism is reattached to the button
@@ -132,14 +145,14 @@ $(function(){
             this.wireEvents();
 
             // Do an initial load of the notebooks, and build the tree
-            this.async_loadNotebooks().done(function(data){
-                this.notebooks = data;
+            this.async_loadNotebooks().done(function(notebooks){
+                this.notebooks = notebooks;
                 this.buildTree();
             });
         },
 
         // Handle a new notebook being selected, firing off everything that needs to happen when a notebook is selected
-        handleNotebookSelect: function() {
+        buildNestedNotebooks: function() {
             $('#notebooks-wrapper').children().empty();
 
             if (!this.currNotebook) return;
@@ -157,13 +170,20 @@ $(function(){
         // Handle a click of a row in the tree view
         handleTreeClick: function(e, notebookNode) {
             this.currNotebook = notebookNode;
-            this.handleNotebookSelect();
+            this.buildNestedNotebooks();
+
+            $('#notes-wrapper').children().empty();
+            this.async_loadNotes().done(function(notes){
+                this.notes = notes;
+                this.buildNotes();
+            });
         },
 
         // Handle deselecting a row in the tree view
         handleTreeUnselect: function(e, notebookNode) {
             this.currNotebook = null;
-            this.handleNotebookSelect();
+            this.buildNestedNotebooks();
+            $('#notes-wrapper').children().empty();
         },
 
         // Handle a click of a notebook button. Get the associated treeview node for that button, set that as the
@@ -173,14 +193,19 @@ $(function(){
             util.clearTextSelection();
 
             var $notebook = $(e.target);
-
             // If the user clicked the folder icon/span instead, get the parent element (the notebook itself)
             if ($notebook.prop('tagName') == 'SPAN') $notebook = $notebook.parent();
 
             this.currNotebook = this.tree.getNode($notebook.attr('data-nodeId'));
             this.tree.selectNode(this.currNotebook, {silent: true});
             this.tree.revealNode(this.currNotebook, {silent: true});
-            this.handleNotebookSelect();
+            this.buildNestedNotebooks();
+
+            $('#notes-wrapper').children().empty();
+            this.async_loadNotes().done(function(notes){
+                this.notes = notes;
+                this.buildNotes();
+            });
         },
 
         // Handle clicking on the "go up" button, navigating the user back up the notebook structure
@@ -211,6 +236,15 @@ $(function(){
             $('#notebooks-wrapper').on('click', '.go-up', this.handleGoUpClick.bind(this));
         },
 
+        buildNotes: function() {
+            var template = this.noteTemplate;
+            $.each(this.notes, function(i, note){
+                $(template(note))
+                    .appendTo(util.getShortestColumn('#notes-wrapper'))
+                    .animateCss('fadeIn');
+            });
+        },
+
         // Kick off the process to get the user's notebooks and parse into a tree for navigation in the sidebar, by
         // making an API call to the endpoint for listing all notebooks
         async_loadNotebooks: function () {
@@ -220,6 +254,16 @@ $(function(){
                 type: 'GET',
                 timeout: 5000,
             }).then(util.massageNotebookFormat);
+        },
+
+        // Load all the notes for the current notebook
+        async_loadNotes: function() {
+            return $.ajax({
+                context: this,
+                url: this.currNotebook.url + 'notes/',
+                type: 'GET',
+                timeout: 1000,
+            });
         },
 
         // Build notebook treeview in the sidebar.

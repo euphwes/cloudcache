@@ -65,6 +65,15 @@
             <span class="glyphicon glyphicon-level-up"></span>
         </div>
     </script>
+
+    <script id='note-template' type='text/x-handlebars-template'>
+        <div class="cc-element note" data-url="{{url}}" data-notebook-url="{{notebook}}">
+            <div class="title">
+                <div class="inline edit" contenteditable="true">{{title}}</div>
+            </div>
+            <div class="contents" contenteditable="true">{{render content}}</div>
+        </div>
+    </script>
     {% endverbatim %}
 
     <script src="{% static 'js/cc.min.js' %}"></script>
