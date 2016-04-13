@@ -123,22 +123,10 @@
     });
 }
 
-@go-up-bg-color: #864141;
-
-.go-up {
-    cursor:     pointer;
-    text-align: center;
-    background: @go-up-bg-color;
-
-    span {
-        font-size: 1.25em;
-    }
-}
-
 // ------------------------------- Note styles --------------------------------
 
-@note-hover-shadow:     0 2px 15px rgba(0,0,0,0.5);
-@note-hover-transition: all 0.3s ease;
+@note-hover-shadow:     0 2px 15px rgba(0,0,0,0.30);
+@note-hover-transition: box-shadow 0.3s ease;
 
 @note-padding-top:  0.625em;
 @note-padding-side: 1em;
@@ -157,8 +145,14 @@
     padding: @note-padding-top @note-padding-side;
 
     &:hover {
-        .box-shadow(@note-hover-shadow);
         transition: @note-hover-transition;
+        .box-shadow(@note-hover-shadow);
+
+        .toolbar span {
+            transition: opacity 0.3s ease;
+            opacity: 0.75;
+            cursor: pointer;
+        }
     }
 
     .title {
@@ -171,14 +165,14 @@
         min-height: @contents-min-height;
 
         // Overflow is hidden and nothing is wrapped...
-        overflow:    hidden;
-        white-space: nowrap;
+        //overflow:    hidden;
+        //white-space: nowrap;
 
         // ...but when hovered, you get scrollbars so that you scroll around and
         // see the entirety of the content
-        &:hover {
-            overflow: auto;
-        }
+        //&:hover {
+        //    overflow: auto;
+        //}
 
         p {
             margin-bottom: @para-margin-bottom;
@@ -188,6 +182,14 @@
             &:last-of-type {
                 margin-bottom: 0;
             }
+        }
+    }
+
+    .toolbar {
+        margin-top: 1em;
+        span {
+            transition: opacity 0.3s ease;
+            opacity: 0.0;
         }
     }
 
