@@ -6,7 +6,7 @@
 
 // Pad the main content wrapper to the same height as the navbar
 // so that all content falls underneath the navbar
-@content-padding-top:        @navbar-height;
+@content-padding-top:        1.25 * @navbar-height;
 @content-padding-top-mobile: 1.25 * @navbar-height-mobile;
 
 // Pad the sides so that
@@ -32,20 +32,12 @@
 
 // ----------------------------- Section wrappers -----------------------------
 
-@section-padding: 10px;
+@section-padding: 20px;
 
 // Both notebook and note sections get top/bottom padding
 .section-wrapper {
     padding-top:    @section-padding;
-    padding-bottom: @section-padding;
 }
-
-// Notebooks wrapper gets an additional chunk of padding at the top
-// to further separate it from the navbar
-#notebooks-wrapper {
-    padding-top: @section-padding;
-}
-
 
 // --------------------- Note and notebook common styles ----------------------
 
