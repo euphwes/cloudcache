@@ -123,7 +123,7 @@ $(function(){
         notes: [],
 
         notebookTemplate: null,
-        goUpTemplate: null,
+        noteTemplate: null,
 
         // Initialize the app controller, perform all the setup stuff necessary
         init: function() {
@@ -131,7 +131,6 @@ $(function(){
             Handlebars.registerHelper('render', util.renderContents);
 
             this.notebookTemplate = Handlebars.compile($('#notebook-template').html());
-            this.goUpTemplate     = Handlebars.compile($('#go-up-template').html());
             this.noteTemplate     = Handlebars.compile($('#note-template').html());
 
             // Register with enquire.js so that if the the screen size changes and media queries are matched or
@@ -148,19 +147,64 @@ $(function(){
             this.async_loadNotebooks().done(function(notebooks){
                 this.notebooks = notebooks;
                 this.buildTree();
+                this.buildNestedNotebooks();
+                this.buildBreadcrumbs();
             });
+        },
+
+        /**
+         * Build up the breadcrumbs for the current notebook structure. Start at the current notebook, then keep working up the
+         * tree until you reach the root. At each notebook, prepend a link element with the notebook's name. All notebooks
+         * fall under a root element here which we'll call 'Notebooks'.
+         **/
+        buildBreadcrumbs: function() {
+
+            var $breadcrumbs = $('.breadcrumbs').empty();
+
+            var $rootLink = $('<a href="#">')
+                .addClass('bc-root')
+                .append('Home');
+
+            // If no notebook is provided, only put the 'Home' crumb at the root and bail out early
+            if (this.currNotebook == null) {
+                $breadcrumbs.append($rootLink);
+                return;
+            }
+
+            $breadcrumbs.append(this.currNotebook.text);
+
+            // Keep climbing the tree, finding each parent notebook, until we reach the top. For each parent notebook, prepend
+            // the parent's name
+            var parent = this.tree.getParent(this.currNotebook);
+            while (parent) {
+                $breadcrumbs.append(' ▶ ');
+                $("<a href='#'>")
+                    .append(parent.text)
+                    .addClass('bc-crumb')
+                    .attr('data-nodeId', parent.nodeId)
+                    .appendTo($breadcrumbs);
+                parent = this.tree.getParent(parent);
+            }
+
+            $breadcrumbs.append(' ▶ ');
+            $breadcrumbs.append($rootLink);
         },
 
         // Handle a new notebook being selected, firing off everything that needs to happen when a notebook is selected
         buildNestedNotebooks: function() {
-            $('#notebooks-wrapper').children().empty();
 
-            if (!this.currNotebook) return;
+            var template = this.notebookTemplate;
 
-            util.getShortestColumn('#notebooks-wrapper').append(this.goUpTemplate({}));
+            if (!this.currNotebook) {
+                var rootNotebooks = this.tree.getSiblings(0);
+                rootNotebooks.unshift(this.tree.getNode(0));
+                $.each(rootNotebooks, function(i, nb){
+                    util.getShortestColumn('#notebooks-wrapper').append(template(nb));
+                });
+                return;
+            }
 
             if (this.currNotebook.nodes) {
-                var template = this.notebookTemplate;
                 $.each(this.currNotebook.nodes, function(i, nb){
                     util.getShortestColumn('#notebooks-wrapper').append(template(nb));
                 });
@@ -170,6 +214,8 @@ $(function(){
         // Handle a click of a row in the tree view
         handleTreeClick: function(e, notebookNode) {
             this.currNotebook = notebookNode;
+
+            $('#notebooks-wrapper').children().empty();
             this.buildNestedNotebooks();
 
             $('#notes-wrapper').children().empty();
@@ -177,13 +223,19 @@ $(function(){
                 this.notes = notes;
                 this.buildNotes();
             });
+
+            this.buildBreadcrumbs();
         },
 
         // Handle deselecting a row in the tree view
         handleTreeUnselect: function(e, notebookNode) {
             this.currNotebook = null;
+
+            $('#notebooks-wrapper').children().empty();
             this.buildNestedNotebooks();
+
             $('#notes-wrapper').children().empty();
+            this.buildBreadcrumbs();
         },
 
         // Handle a click of a notebook button. Get the associated treeview node for that button, set that as the
@@ -199,6 +251,8 @@ $(function(){
             this.currNotebook = this.tree.getNode($notebook.attr('data-nodeId'));
             this.tree.selectNode(this.currNotebook, {silent: true});
             this.tree.revealNode(this.currNotebook, {silent: true});
+
+            $('#notebooks-wrapper').children().empty();
             this.buildNestedNotebooks();
 
             $('#notes-wrapper').children().empty();
@@ -206,22 +260,40 @@ $(function(){
                 this.notes = notes;
                 this.buildNotes();
             });
+
+            this.buildBreadcrumbs();
         },
 
-        // Handle clicking on the "go up" button, navigating the user back up the notebook structure
-        handleGoUpClick: function() {
+        handleRootBreadcrumbClick: function() {
 
-            this.currNotebook = this.tree.getParent(this.currNotebook.nodeId);
+            this.currNotebook = null;
+            this.tree.unselectNode(this.tree.getSelected()[0], {silent: true});
 
-            if (!this.currNotebook) {
-                this.currNotebook = null;
-                this.tree.unselectNode(this.tree.getSelected()[0], {silent: true});
-            } else {
-                this.tree.selectNode(this.currNotebook, {silent: true});
-                this.tree.revealNode(this.currNotebook, {silent: true});
-            }
+            $('#notebooks-wrapper').children().empty();
+            this.buildNestedNotebooks();
 
-            this.handleNotebookSelect();
+            $('#notes-wrapper').children().empty();
+            this.buildBreadcrumbs();
+        },
+
+        handleBreadcrumbClick: function(e) {
+
+            var $notebook = $(e.target);
+
+            this.currNotebook = this.tree.getNode($notebook.attr('data-nodeId'));
+            this.tree.selectNode(this.currNotebook, {silent: true});
+            this.tree.revealNode(this.currNotebook, {silent: true});
+
+            $('#notebooks-wrapper').children().empty();
+            this.buildNestedNotebooks();
+
+            $('#notes-wrapper').children().empty();
+            this.async_loadNotes().done(function(notes){
+                this.notes = notes;
+                this.buildNotes();
+            });
+
+            this.buildBreadcrumbs();
         },
 
         // Wire up events for notebooks and notes
@@ -229,11 +301,13 @@ $(function(){
 
             // Wire the notebook-click event, but disable the event firing if the user clicks on the edit text
             // inside the notebook element
-            $('#notebooks-wrapper').on('click', '.notebook:not(.go-up)', this.handleNotebookClick.bind(this))
+            $('#notebooks-wrapper').on('click', '.notebook', this.handleNotebookClick.bind(this))
                 .find('.edit')
                 .click(function(e){ e.stopPropagation(); });
 
-            $('#notebooks-wrapper').on('click', '.go-up', this.handleGoUpClick.bind(this));
+            $('.breadcrumbs').on('click', '.bc-root', this.handleRootBreadcrumbClick.bind(this));
+
+            $('.breadcrumbs').on('click', '.bc-crumb', this.handleBreadcrumbClick.bind(this));
         },
 
         buildNotes: function() {
