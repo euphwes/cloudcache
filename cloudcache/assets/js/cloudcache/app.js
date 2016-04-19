@@ -345,13 +345,11 @@ $(function(){
         wireEvents: function() {
 
             // Wire the notebook-click event, except if the text itself inside the notebook is clicked
-            $('#notebooks-wrapper').on('click', '.notebook', this.handleNotebookClick.bind(this))
-                .find('.edit')
-                .click(function(e){ e.stopPropagation(); });
+            $('#notebooks-wrapper').on('click', '.notebook', this.handleNotebookClick.bind(this));
+            $('#notebooks-wrapper').on('click', '.edit', function(e){ e.stopPropagation(); });
 
-            $('#notes-wrapper').on('click', '.note', this.handleNoteClick.bind(this))
-                .find('.glyphicon-trash')
-                .click(function(e){ e.stopPropagation(); });
+            $('#notes-wrapper').on('click', '.note', this.handleNoteClick.bind(this));
+            $('#notes-wrapper').on('click', '.glyphicon-trash', function(e){ e.stopPropagation(); });
 
             $('.breadcrumbs').on('click', '.bc-root', this.handleRootBreadcrumbClick.bind(this));
 
