@@ -264,6 +264,41 @@ $(function(){
             this.buildBreadcrumbs();
         },
 
+        handleNoteClick: function(e) {
+
+            var $note = $(e.target).closest('.note');
+            var title = $note.children('.title').text();
+            var contents_html = $note.children('.contents').html();
+
+            $('#editNoteTitle').text(title);
+            $('#editNoteContents').html(contents_html);
+
+            $('#editNoteSave').click(function(e){
+
+                var editTitle = $('#editNoteTitle').text();
+                var editContent = $('#editNoteContents').html();
+
+                $.ajax({
+                    url: $note.data('url'),
+                    type: 'PUT',
+                    timeout: 1000,
+                    data: {
+                        'title'    : editTitle,
+                        'content'  : editContent,
+                        'notebook' : $note.data('notebook-url'),
+                    },
+                    success: function(data){
+                        $note.children('.title').text(editTitle);
+                        $note.children('.contents').html(editContent);
+                        $('#editNoteSave').off();
+                        $('#editNote').modal('hide');
+                    },
+                });
+            });
+
+            $('#editNote').modal('show');
+        },
+
         handleRootBreadcrumbClick: function() {
 
             this.currNotebook = null;
@@ -299,10 +334,13 @@ $(function(){
         // Wire up events for notebooks and notes
         wireEvents: function() {
 
-            // Wire the notebook-click event, but disable the event firing if the user clicks on the edit text
-            // inside the notebook element
+            // Wire the notebook-click event, except if the text itself inside the notebook is clicked
             $('#notebooks-wrapper').on('click', '.notebook', this.handleNotebookClick.bind(this))
                 .find('.edit')
+                .click(function(e){ e.stopPropagation(); });
+
+            $('#notes-wrapper').on('click', '.note', this.handleNoteClick.bind(this))
+                .find('.glyphicon-trash')
                 .click(function(e){ e.stopPropagation(); });
 
             $('.breadcrumbs').on('click', '.bc-root', this.handleRootBreadcrumbClick.bind(this));

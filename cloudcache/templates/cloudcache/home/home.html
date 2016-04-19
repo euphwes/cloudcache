@@ -51,6 +51,22 @@
         </div>
     </main>
 
+    <!-- Modal -->
+    <div class="modal fade" id="editNote" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="editNoteTitle" contenteditable="true">Title</h4>
+          </div>
+          <div class="modal-body" id="editNoteContents" contenteditable="true"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button id="editNoteSave" type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Handlebars.js notebook template -->
     {% verbatim %}
     <script id='notebook-template' type='text/x-handlebars-template'>
@@ -67,7 +83,6 @@
             </div>
             <div class="contents">{{render content}}</div>
             <div class="toolbar">
-                <span class="glyphicon glyphicon-pencil"></span>
                 <span class="glyphicon glyphicon-trash pull-right"></span>
             </div>
         </div>
