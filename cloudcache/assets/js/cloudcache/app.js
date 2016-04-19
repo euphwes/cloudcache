@@ -1,5 +1,4 @@
 $(function(){
-
     // -----------------------------------------------------------------------------------------------------------------
     //    Utility functions which are more general-purpose, and don't logically belong to the app controller itself
     // -----------------------------------------------------------------------------------------------------------------
@@ -293,16 +292,33 @@ $(function(){
                     success: function(data){
                         $note.children('.title').text(editTitle);
                         $note.children('.contents').html($('#editNoteContents').html());
-                        $('#editNoteSave').off();
                         $('#editNote').modal('hide');
                     },
                 });
             });
 
+            $('#editNoteDelete').click(function(e){
+                $.confirm({
+                    title: 'Delete?',
+                    content: 'This action cannot be reversed.',
+                    theme: 'black',
+                    animation: 'top',
+                    closeAnimation: 'bottom',
+                    columnClass: 'col-md-8 col-md-offset-6',
+                    confirmButton: 'Delete',
+                    confirmButtonClass: 'btn-danger',
+                    cancelButton: 'Cancel',
+                    confirm: function() {
+                        this.deleteNote($note, function(){ $('#editNote').modal('hide'); });
+                    }.bind(this),
+                });
+            }.bind(this));
+
             $('#editNote').on('hide.bs.modal', function(){
                 $note.showThenAnimateCss('zoomIn');
                 $('#editNote').off();
                 $('#editNoteSave').off();
+                $('#editNoteDelete').off();
             });
 
             $note.animateCssThenHide('zoomOut');
@@ -341,6 +357,38 @@ $(function(){
             this.buildBreadcrumbs();
         },
 
+        handleTrashCanClick: function(e){
+            $.confirm({
+                title: 'Delete?',
+                content: 'This action cannot be reversed.',
+                theme: 'black',
+                animation: 'top',
+                closeAnimation: 'bottom',
+                columnClass: 'col-md-8 col-md-offset-6',
+                confirmButton: 'Delete',
+                confirmButtonClass: 'btn-danger',
+                cancelButton: 'Cancel',
+                confirm: function() {
+                    var $note = $(e.target).closest('.note');
+                    this.deleteNote($note);
+                }.bind(this),
+            });
+        },
+
+        deleteNote: function($note, callback) {
+            $.ajax({
+                url: $note.data('url'),
+                type: 'DELETE',
+                timeout: 1000,
+                success: function() {
+                    $note.animateCss('zoomOut', function() {
+                        $note.remove();
+                        if (callback) callback();
+                    });
+                },
+            });
+        },
+
         // Wire up events for notebooks and notes
         wireEvents: function() {
 
@@ -349,10 +397,14 @@ $(function(){
             $('#notebooks-wrapper').on('click', '.edit', function(e){ e.stopPropagation(); });
 
             $('#notes-wrapper').on('click', '.note', this.handleNoteClick.bind(this));
-            $('#notes-wrapper').on('click', '.glyphicon-trash', function(e){ e.stopPropagation(); });
+
+            var boundHandleTrashCanClick = this.handleTrashCanClick.bind(this);
+            $('#notes-wrapper').on('click', '.glyphicon-trash', function(e){
+                boundHandleTrashCanClick(e);
+                e.stopPropagation();
+            });
 
             $('.breadcrumbs').on('click', '.bc-root', this.handleRootBreadcrumbClick.bind(this));
-
             $('.breadcrumbs').on('click', '.bc-crumb', this.handleBreadcrumbClick.bind(this));
         },
 
