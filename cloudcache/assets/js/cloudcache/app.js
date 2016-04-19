@@ -8,9 +8,9 @@ $(function(){
         renderContents: function(contents) {
             var $tmp = $('<div>');
             $.each(contents.split('\r\n'), function(i, line){
-                $('<p>')
+                $tmp
                     .append(line)
-                    .appendTo($tmp);
+                    .append($('<br>'));
             });
             return new Handlebars.SafeString($tmp.html());
         },
@@ -267,16 +267,19 @@ $(function(){
         handleNoteClick: function(e) {
 
             var $note = $(e.target).closest('.note');
-            var title = $note.children('.title').text();
-            var contents_html = $note.children('.contents').html();
 
-            $('#editNoteTitle').text(title);
-            $('#editNoteContents').html(contents_html);
+            $('#editNoteTitle').text($note.children('.title').text());
+            $('#editNoteContents').html($note.children('.contents').html());
 
             $('#editNoteSave').click(function(e){
 
                 var editTitle = $('#editNoteTitle').text();
-                var editContent = $('#editNoteContents').html();
+
+                var editContent = '';
+                $.each($('#editNoteContents').html().split('<br>'), function(i, line){
+                    editContent += '\r\n' + line;
+                });
+                editContent = editContent.trim();
 
                 $.ajax({
                     url: $note.data('url'),
@@ -289,13 +292,20 @@ $(function(){
                     },
                     success: function(data){
                         $note.children('.title').text(editTitle);
-                        $note.children('.contents').html(editContent);
+                        $note.children('.contents').html($('#editNoteContents').html());
                         $('#editNoteSave').off();
                         $('#editNote').modal('hide');
                     },
                 });
             });
 
+            $('#editNote').on('hide.bs.modal', function(){
+                $note.showThenAnimateCss('zoomIn');
+                $('#editNote').off();
+                $('#editNoteSave').off();
+            });
+
+            $note.animateCssThenHide('zoomOut');
             $('#editNote').modal('show');
         },
 
@@ -462,6 +472,56 @@ $(function(){
             });
         }
     });
+
+    // Extension to jQuery to easily animate elements with animate.css, then remove the animations when complete
+    $.fn.extend({
+        animateCssThenHide: function (animationName) {
+            var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+            $(this).addClass('animated ' + animationName).one(animationEnd, function() {
+                $(this).css('visibility', 'hidden');
+                $(this).removeClass('animated ' + animationName);
+            });
+        }
+    });
+
+    // Extension to jQuery to easily animate elements with animate.css, then remove the animations when complete
+    $.fn.extend({
+        showThenAnimateCss: function (animationName) {
+            var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+            $(this).css('visibility', 'visible');
+            $(this).addClass('animated ' + animationName).one(animationEnd, function() {
+                $(this).css('visibility', 'visible');
+                $(this).removeClass('animated ' + animationName);
+            });
+        }
+    });
+
+    $("div[contenteditable]")
+        // make sure br is always the lastChild of contenteditable
+        .on("keyup mouseup", function(){
+          if (!this.lastChild || this.lastChild.nodeName.toLowerCase() != "br") {
+            this.appendChild(document.createElement("br"));
+          }
+        })
+
+        // use br instead of div div
+        .on("keypress", function(e){
+          if (e.which == 13) {
+            if (window.getSelection) {
+              var selection = window.getSelection();
+              var range = selection.getRangeAt(0);
+              var br = document.createElement("br");
+              range.deleteContents();
+              range.insertNode(br);
+              range.setStartAfter(br);
+              range.setEndAfter(br);
+              range.collapse(false);
+              selection.removeAllRanges();
+              selection.addRange(range);
+              return false;
+            }
+          }
+        });
 
     // Since none of the Glyphicons are present in the page at page-load, Bootstrap doesn't need to load the Glyphicons
     // web font until we retrieve notebooks via API, then build the notebooks DOM elements. Unfortunately, this causes

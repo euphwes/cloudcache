@@ -118,7 +118,7 @@
 @note-hover-shadow:     0 2px 15px rgba(0,0,0,0.30);
 @note-hover-transition: box-shadow 0.3s ease;
 
-@note-padding-top:  0.625em;
+@note-padding-top:  1em;
 @note-padding-side: 1em;
 
 @title-font-size:    1em;
@@ -157,30 +157,12 @@
         font-size:  @contents-font-size;
         min-height: @contents-min-height;
 
-        // Overflow is hidden and nothing is wrapped...
-        //overflow:    hidden;
-        //white-space: normal;
+        padding-top: 0.625em;
+
         word-break: break-all;
-
-        // ...but when hovered, you get scrollbars so that you scroll around and
-        // see the entirety of the content
-        //&:hover {
-        //    overflow: auto;
-        //}
-
-        p {
-            margin-bottom: @para-margin-bottom;
-            &:first-of-type {
-                margin-top: 0.75em;
-            }
-            &:last-of-type {
-                margin-bottom: 0;
-            }
-        }
     }
 
     .toolbar {
-        margin-top: 1em;
         span {
             transition: opacity 0.3s ease;
             opacity: 0.0;
