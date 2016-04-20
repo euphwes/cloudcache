@@ -451,6 +451,56 @@ $(function(){
             $('#editNote').modal('show');
         },
 
+        handleAddNotebookClick: function(){
+
+            $('#editNotebookName').text('')
+                .trigger('change');
+
+            $('#editNotebook')
+                .on('hidden.bs.modal', function() {
+                    $('#editNotebook').off();
+                    $('#editNotebookSave').off();
+                });
+
+            var currNotebookUrl;
+            if (this.currNotebook) currNotebookUrl = this.currNotebook.url;
+
+            $('#editNotebookSave').click(function(e){
+
+                var newName = $('#editNotebookName').text().trim();
+
+                // Make POST call to create new notebook
+                $.ajax({
+                    url: '/api/notebooks/',
+                    type: 'POST',
+                    timeout: 1000,
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        'name'  : newName,
+                        'parent': currNotebookUrl,
+                    }),
+                    success: function(data){
+                        this.currNotebook = this.tree.getSelected()[0];
+                        this.async_loadNotebooks().done(function(notebooks){
+                            this.notebooks = notebooks;
+                            this.buildTree();
+                            if (this.currNotebook) {
+                                this.tree.selectNode(this.currNotebook, {silent: true});
+                                this.tree.revealNode(this.currNotebook, {silent: true});
+                            }
+                            $('#editNotebook').modal('hide');
+                        }.bind(this));
+                    }.bind(this),
+                    error: function(xhr, status, err) {
+                        //notifyError("Error creating '<strong>" + nbName + "</strong>': " + status + ".");
+                    }
+                });
+
+            }.bind(this));
+
+            $('#editNotebook').modal('show');
+        },
+
         // Wire up events for notebooks and notes
         wireEvents: function() {
 
@@ -470,6 +520,8 @@ $(function(){
 
             $('.breadcrumbs').on('click', '.bc-root', this.handleRootBreadcrumbClick.bind(this));
             $('.breadcrumbs').on('click', '.bc-crumb', this.handleBreadcrumbClick.bind(this));
+
+            $('#addNotebook').click(this.handleAddNotebookClick.bind(this));
         },
 
         buildNotes: function() {
