@@ -396,6 +396,61 @@ $(function(){
             });
         },
 
+        handleNewNoteClick: function(e){
+
+            $('#editNoteTitle').text('')
+                .trigger('change');
+
+            $('#editNoteContents').html('')
+                .trigger('change');
+
+            $('#editNoteDelete').hide();
+
+            $('#editNoteSave').click(function(e){
+
+                var editTitle = $('#editNoteTitle').text().trim();
+
+                var editContent = '';
+                $.each($('#editNoteContents').html().split('<br>'), function(i, line){
+                    editContent += '\r\n' + line;
+                });
+                editContent = editContent.trim();
+
+                if (editTitle == '' || editContent == '') {
+                    $.alert("Can't save the note. Please enter both a title and some note contents.", 'Oops');
+                    return;
+                }
+
+                // Make POST call to create new note
+                $.ajax({
+                    url: this.currNotebook.url + 'notes/',
+                    type: 'POST',
+                    timeout: 1000,
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        'title'  : editTitle,
+                        'content': editContent,
+                    }),
+                    success: function(note){
+                        $(this.noteTemplate(note))
+                            .appendTo(util.getShortestColumn('#notes-wrapper'))
+                            .animateCss('fadeIn');
+                        $('#editNote').modal('hide');
+                    }.bind(this),
+                });
+
+            }.bind(this));
+
+            $('#editNote')
+                .on('hidden.bs.modal', function() {
+                    $('#editNote').off();
+                    $('#editNoteSave').off();
+                    $('#editNoteDelete').show();
+                });
+
+            $('#editNote').modal('show');
+        },
+
         // Wire up events for notebooks and notes
         wireEvents: function() {
 
@@ -410,6 +465,8 @@ $(function(){
                 boundHandleTrashCanClick(e);
                 e.stopPropagation();
             });
+
+            $('#new-note-wrapper').on('click', '.new-note', this.handleNewNoteClick.bind(this));
 
             $('.breadcrumbs').on('click', '.bc-root', this.handleRootBreadcrumbClick.bind(this));
             $('.breadcrumbs').on('click', '.bc-crumb', this.handleBreadcrumbClick.bind(this));
