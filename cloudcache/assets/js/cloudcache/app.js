@@ -214,6 +214,8 @@ $(function(){
         handleTreeClick: function(e, notebookNode) {
             this.currNotebook = notebookNode;
 
+            $('#new-note-wrapper').show();
+
             $('#notebooks-wrapper').children().empty();
             this.buildNestedNotebooks();
 
@@ -229,6 +231,7 @@ $(function(){
         // Handle deselecting a row in the tree view
         handleTreeUnselect: function(e, notebookNode) {
             this.currNotebook = null;
+            $('#new-note-wrapper').hide();
 
             $('#notebooks-wrapper').children().empty();
             this.buildNestedNotebooks();
@@ -242,6 +245,8 @@ $(function(){
         handleNotebookClick: function(e) {
 
             util.clearTextSelection();
+
+            $('#new-note-wrapper').show();
 
             var $notebook = $(e.target);
             // If the user clicked the folder icon/span instead, get the parent element (the notebook itself)
@@ -328,6 +333,8 @@ $(function(){
         handleRootBreadcrumbClick: function() {
 
             this.currNotebook = null;
+            $('#new-note-wrapper').hide();
+
             this.tree.unselectNode(this.tree.getSelected()[0], {silent: true});
 
             $('#notebooks-wrapper').children().empty();
