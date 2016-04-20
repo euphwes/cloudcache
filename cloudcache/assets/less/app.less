@@ -54,8 +54,10 @@
     margin: @cc-el-top-bottom-margin @cc-el-side-margin;
     transition: @cc-el-transition;
 
+    font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
     .border-radius(@cc-el-border-radius);
-    .box-shadow(@cc-el-shadow);
+    //.box-shadow(@cc-el-shadow);
 }
 
 // Help <div> and <span> display inline next to each other in a parent container
@@ -73,6 +75,13 @@
 // Get rid of the border on a focused contenteditable on some platforms
 [contenteditable]:focus {
     outline: 0px solid transparent;
+}
+
+*[data-placeholder]:not(:focus):not([data-div-placeholder-content]):before {
+    content: attr(data-placeholder);
+    float: left;
+    //margin-left: 2px;
+    color: darken(#b3b3b3, 10%);
 }
 
 // ----------------------------- Notebook styles ------------------------------
@@ -158,6 +167,7 @@
         min-height: @contents-min-height;
 
         padding-top: 0.625em;
+        padding-bottom: 1em;
 
         word-break: break-all;
     }
@@ -195,15 +205,27 @@
     margin-top: 80px;
 
     .modal-dialog {
-        background: @off-white;
+        .border-radius(@cc-el-border-radius);
     }
 
     .modal-content {
         .border-radius(@cc-el-border-radius);
-    }
+        background: @off-white;
+        border: none;
 
-    .modal-header {
-        border: 0;
+        .modal-title {
+            font-size:    1.125em;
+            font-weight:  bold;
+        }
+
+        .modal-header {
+            border: 0;
+            padding-bottom: 0;
+        }
+
+        .modal-body {
+            font-size: 0.875em;
+        }
     }
 }
 
