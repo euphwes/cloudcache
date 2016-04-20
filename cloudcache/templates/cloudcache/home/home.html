@@ -18,7 +18,16 @@
             <div id="tree"></div>
         </div>
         <ul class="nav nav-pills nav-stacked">
-            <li class="pull-down">
+            <li>
+                <a onclick="$.alert('boop');">Add notebook</a>
+            </li>
+            <li>
+                <a onclick="$.alert('boop');">Rename notebook</a>
+            </li>
+            <li>
+                <a onclick="$.alert('boop');">Delete notebook</a>
+            </li>
+            <li>
                 <a id="id_navbar_logout" href="{% url 'cloudcache:logout' %}">Log Out</a>
             </li>
         </ul>
