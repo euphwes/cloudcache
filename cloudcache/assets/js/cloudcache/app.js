@@ -148,6 +148,7 @@ $(function(){
                 this.buildTree();
                 this.buildNestedNotebooks();
                 this.buildBreadcrumbs();
+                $('#renameNotebook').hide();
             });
         },
 
@@ -226,6 +227,7 @@ $(function(){
             });
 
             this.buildBreadcrumbs();
+            $('#renameNotebook').show();
         },
 
         // Handle deselecting a row in the tree view
@@ -238,6 +240,8 @@ $(function(){
 
             $('#notes-wrapper').children().empty();
             this.buildBreadcrumbs();
+
+            $('#renameNotebook').hide();
         },
 
         // Handle a click of a notebook button. Get the associated treeview node for that button, set that as the
@@ -266,6 +270,8 @@ $(function(){
             });
 
             this.buildBreadcrumbs();
+
+            $('#renameNotebook').show();
         },
 
         handleNoteClick: function(e) {
@@ -342,6 +348,8 @@ $(function(){
 
             $('#notes-wrapper').children().empty();
             this.buildBreadcrumbs();
+
+            $('#renameNotebook').hide();
         },
 
         handleBreadcrumbClick: function(e) {
@@ -362,6 +370,8 @@ $(function(){
             });
 
             this.buildBreadcrumbs();
+
+            $('#renameNotebook').show();
         },
 
         handleTrashCanClick: function(e){
@@ -501,6 +511,10 @@ $(function(){
             $('#editNotebook').modal('show');
         },
 
+        handleRenameNotebookClick: function() {
+            $.alert('boop');
+        },
+
         // Wire up events for notebooks and notes
         wireEvents: function() {
 
@@ -522,6 +536,7 @@ $(function(){
             $('.breadcrumbs').on('click', '.bc-crumb', this.handleBreadcrumbClick.bind(this));
 
             $('#addNotebook').click(this.handleAddNotebookClick.bind(this));
+            $('#renameNotebook').click(this.handleRenameNotebookClick.bind(this));
         },
 
         buildNotes: function() {
