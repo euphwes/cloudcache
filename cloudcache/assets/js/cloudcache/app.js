@@ -485,8 +485,8 @@ $(function(){
                             this.notebooks = notebooks;
                             this.buildTree();
                             if (this.currNotebook) {
-                                this.tree.selectNode(this.currNotebook, {silent: true});
-                                this.tree.revealNode(this.currNotebook, {silent: true});
+                                this.tree.selectNode(this.currNotebook.nodeId, {silent: true});
+                                this.tree.revealNode(this.currNotebook.nodeId, {silent: true});
                             }
                             $('#editNotebook').modal('hide');
                         }.bind(this));
