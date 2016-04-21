@@ -39,12 +39,6 @@
     padding-top:    @section-padding;
 }
 
-#notebooks-wrapper {
-    .responsive-mobile({
-        display: none;
-    })
-}
-
 // --------------------- Note and notebook common styles ----------------------
 
 @cc-el-side-margin:          0;  // Unnecessary because of Bootstrap's column sidepadding
@@ -90,50 +84,12 @@
     color: darken(#b3b3b3, 10%);
 }
 
-// ----------------------------- Notebook styles ------------------------------
-
-@notebook-bg-color: @cc-theme;
-@notebook-fg-color: @off-white;
-
-@notebook-padding:    0.625em;
-@notebook-min-height: 4 * @notebook-padding;
-
-@notebook-font-size: 1em;
-
-.notebook {
-    display: inline-flex;
-    align-items: center;
-    span { order: 1; }
-     div { order: 2; }
-
-    color:      @notebook-fg-color;
-    background: @notebook-bg-color;
-    padding:    @notebook-padding;
-    min-height: @notebook-min-height;
-
-    font-size: @notebook-font-size;
-
-    &:not(.placeholder) {
-        cursor: pointer;
-    }
-
-    &:not(.go-up) {
-        span {
-            margin-right: 1em;
-        }
-    }
-
-    .responsive-mobile({
-        font-size: 2.75 * @notebook-font-size;
-    });
-}
-
 // ------------------------------- Note styles --------------------------------
 
 @note-hover-shadow:     0 2px 15px rgba(0,0,0,0.30);
 @note-hover-transition: box-shadow 0.3s ease;
 
-@note-padding-top:  1em;
+@note-padding-top:  0.625em;
 @note-padding-side: 1em;
 
 @title-font-size:    1em;
@@ -164,8 +120,8 @@
     }
 
     .title {
-        font-size:     @title-font-size;
-        font-weight:   @title-font-weight;
+        font-size:   @title-font-size;
+        font-weight: @title-font-weight;
     }
 
     .contents {
@@ -349,4 +305,12 @@
         }
 
     })
+}
+
+// ----------------------- Default text section styles ------------------------
+
+#default-view {
+    padding-top: 40px;
+    text-align: center;
+    color: #757575;
 }

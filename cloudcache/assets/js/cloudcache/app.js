@@ -107,6 +107,26 @@ $(function(){
             return shortColumn;
         },
 
+        setEndOfContenteditable: function(jqueryObject) {
+            var range,selection;
+            var contentEditableElement = jqueryObject.get(0);
+            if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
+            {
+                range = document.createRange();//Create a range (a range is a like the selection but invisible)
+                range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
+                range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+                selection = window.getSelection();//get the selection object (allows you to change selection)
+                selection.removeAllRanges();//remove any selections already made
+                selection.addRange(range);//make the range you have just created the visible selection
+            }
+            else if(document.selection)//IE 8 and lower
+            {
+                range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
+                range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
+                range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+                range.select();//Select the range (make it the visible selection
+            }
+        }
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -121,16 +141,13 @@ $(function(){
         notebooks: [],
         notes: [],
 
-        notebookTemplate: null,
         noteTemplate: null,
 
         // Initialize the app controller, perform all the setup stuff necessary
         init: function() {
 
             Handlebars.registerHelper('render', util.renderContents);
-
-            this.notebookTemplate = Handlebars.compile($('#notebook-template').html());
-            this.noteTemplate     = Handlebars.compile($('#note-template').html());
+            this.noteTemplate = Handlebars.compile($('#note-template').html());
 
             // Register with enquire.js so that if the the screen size changes and media queries are matched or
             // unmatched, the slideout menu size params are rebuilt and the toggle mechanism is reattached to the button
@@ -146,9 +163,10 @@ $(function(){
             this.async_loadNotebooks().done(function(notebooks){
                 this.notebooks = notebooks;
                 this.buildTree();
-                this.buildNestedNotebooks();
                 this.buildBreadcrumbs();
                 $('#renameNotebook').hide();
+                $('#deleteNotebook').hide();
+                $('#default-view').show();
             });
         },
 
@@ -161,15 +179,12 @@ $(function(){
 
             var $breadcrumbs = $('.breadcrumbs').empty();
 
+            // If no notebook is provided, bail out early
+            if (this.currNotebook == null) return;
+
             var $rootLink = $('<a href="#">')
                 .addClass('bc-root')
                 .append('Home');
-
-            // If no notebook is provided, only put the 'Home' crumb at the root and bail out early
-            if (this.currNotebook == null) {
-                $breadcrumbs.append($rootLink);
-                return;
-            }
 
             $breadcrumbs.append(this.currNotebook.text);
 
@@ -190,27 +205,6 @@ $(function(){
             $breadcrumbs.append($rootLink);
         },
 
-        // Handle a new notebook being selected, firing off everything that needs to happen when a notebook is selected
-        buildNestedNotebooks: function() {
-
-            var template = this.notebookTemplate;
-
-            if (!this.currNotebook) {
-                var rootNotebooks = this.tree.getSiblings(0);
-                rootNotebooks.unshift(this.tree.getNode(0));
-                $.each(rootNotebooks, function(i, nb){
-                    util.getShortestColumn('#notebooks-wrapper').append(template(nb));
-                });
-                return;
-            }
-
-            if (this.currNotebook.nodes) {
-                $.each(this.currNotebook.nodes, function(i, nb){
-                    util.getShortestColumn('#notebooks-wrapper').append(template(nb));
-                });
-            }
-        },
-
         // Handle a click of a row in the tree view
         handleTreeClick: function(e, notebookNode) {
             this.currNotebook = notebookNode;
@@ -218,7 +212,6 @@ $(function(){
             $('#new-note-wrapper').show();
 
             $('#notebooks-wrapper').children().empty();
-            this.buildNestedNotebooks();
 
             $('#notes-wrapper').children().empty();
             this.async_loadNotes().done(function(notes){
@@ -228,6 +221,8 @@ $(function(){
 
             this.buildBreadcrumbs();
             $('#renameNotebook').show();
+            $('#deleteNotebook').show();
+            $('#default-view').hide();
         },
 
         // Handle deselecting a row in the tree view
@@ -236,42 +231,13 @@ $(function(){
             $('#new-note-wrapper').hide();
 
             $('#notebooks-wrapper').children().empty();
-            this.buildNestedNotebooks();
 
             $('#notes-wrapper').children().empty();
             this.buildBreadcrumbs();
 
             $('#renameNotebook').hide();
-        },
-
-        // Handle a click of a notebook button. Get the associated treeview node for that button, set that as the
-        // current notebook, then fire off the notebook-selected function.
-        handleNotebookClick: function(e) {
-
-            util.clearTextSelection();
-
-            $('#new-note-wrapper').show();
-
-            var $notebook = $(e.target);
-            // If the user clicked the folder icon/span instead, get the parent element (the notebook itself)
-            if ($notebook.prop('tagName') == 'SPAN') $notebook = $notebook.parent();
-
-            this.currNotebook = this.tree.getNode($notebook.attr('data-nodeId'));
-            this.tree.selectNode(this.currNotebook, {silent: true});
-            this.tree.revealNode(this.currNotebook, {silent: true});
-
-            $('#notebooks-wrapper').children().empty();
-            this.buildNestedNotebooks();
-
-            $('#notes-wrapper').children().empty();
-            this.async_loadNotes().done(function(notes){
-                this.notes = notes;
-                this.buildNotes();
-            });
-
-            this.buildBreadcrumbs();
-
-            $('#renameNotebook').show();
+            $('#deleteNotebook').hide();
+            $('#default-view').show();
         },
 
         handleNoteClick: function(e) {
@@ -344,12 +310,13 @@ $(function(){
             this.tree.unselectNode(this.tree.getSelected()[0], {silent: true});
 
             $('#notebooks-wrapper').children().empty();
-            this.buildNestedNotebooks();
 
             $('#notes-wrapper').children().empty();
             this.buildBreadcrumbs();
 
             $('#renameNotebook').hide();
+            $('#deleteNotebook').hide();
+            $('#default-view').show();
         },
 
         handleBreadcrumbClick: function(e) {
@@ -361,7 +328,6 @@ $(function(){
             this.tree.revealNode(this.currNotebook, {silent: true});
 
             $('#notebooks-wrapper').children().empty();
-            this.buildNestedNotebooks();
 
             $('#notes-wrapper').children().empty();
             this.async_loadNotes().done(function(notes){
@@ -372,6 +338,8 @@ $(function(){
             this.buildBreadcrumbs();
 
             $('#renameNotebook').show();
+            $('#deleteNotebook').show();
+            $('#default-view').hide();
         },
 
         handleTrashCanClick: function(e){
@@ -512,15 +480,90 @@ $(function(){
         },
 
         handleRenameNotebookClick: function() {
-            $.alert('boop');
+
+            $('#editNotebookName').text(this.currNotebook.text)
+                .trigger('change');
+
+            $('#editNotebookSave').click(function(){
+                // Make PUT call to update notebook
+                $.ajax({
+                    url: this.currNotebook.url,
+                    type: 'PUT',
+                    timeout: 1000,
+                    data: {
+                        'name'  : $('#editNotebookName').text().trim(),
+                        'parent': this.currNotebook.parent,
+                        'owner' : this.currNotebook.owner,
+                    },
+                    success: function(data){
+                        this.async_loadNotebooks().done(function(notebooks){
+                            this.notebooks = notebooks;
+                            this.buildTree();
+                            this.tree.selectNode(this.currNotebook.nodeId, {silent: true});
+                            this.tree.revealNode(this.currNotebook.nodeId, {silent: true});
+                            this.currNotebook = this.tree.getSelected()[0];
+                            this.buildBreadcrumbs();
+                            $('#editNotebook').modal('hide');
+                        }.bind(this));
+                    }.bind(this),
+                    error: function(xhr, status, err) {
+                        //notifyError("Error updating '<strong>" + nbName + "</strong>': " + status + ".");
+                    }
+                });
+            }.bind(this));
+
+            $('#editNotebook')
+                .on('hidden.bs.modal', function() {
+                    $('#editNotebook').off();
+                    $('#editNotebookSave').off();
+                })
+                .on('shown.bs.modal', function() {
+                    util.setEndOfContenteditable($('#editNotebookName'));
+                })
+                .on('keypress', function(e){
+                    if (e.keyCode == 13) {
+                        $('#editNotebookSave').trigger('click');
+                        return false;
+                    }
+                });
+
+            $('#editNotebook').modal('show');
+        },
+
+        handleDeleteNotebookClick: function(e){
+            $.confirm({
+                title: 'Delete notebook?',
+                content: 'This action cannot be reversed. All nested notebook and notes will be deleted.',
+                theme: 'black',
+                animation: 'top',
+                closeAnimation: 'bottom',
+                columnClass: 'col-md-8 col-md-offset-6 col-sm-20',
+                confirmButton: 'Delete',
+                confirmButtonClass: 'btn-danger',
+                cancelButton: 'Cancel',
+                confirm: function() {
+                    $.ajax({
+                        url: this.currNotebook.url,
+                        type: 'DELETE',
+                        timeout: 1000,
+                        success: function() {
+                            this.async_loadNotebooks().done(function(notebooks){
+                                this.notebooks = notebooks;
+                                this.buildTree();
+                                this.currNotebook = null;
+                                this.buildBreadcrumbs();
+                                $('#notes-wrapper').children().empty();
+                                $('#new-note-wrapper').hide();
+                                $('#default-view').show();
+                            }.bind(this));
+                        }.bind(this),
+                    });
+                }.bind(this),
+            });
         },
 
         // Wire up events for notebooks and notes
         wireEvents: function() {
-
-            // Wire the notebook-click event, except if the text itself inside the notebook is clicked
-            $('#notebooks-wrapper').on('click', '.notebook', this.handleNotebookClick.bind(this));
-            $('#notebooks-wrapper').on('click', '.edit', function(e){ e.stopPropagation(); });
 
             $('#notes-wrapper').on('click', '.note', this.handleNoteClick.bind(this));
 
@@ -537,6 +580,7 @@ $(function(){
 
             $('#addNotebook').click(this.handleAddNotebookClick.bind(this));
             $('#renameNotebook').click(this.handleRenameNotebookClick.bind(this));
+            $('#deleteNotebook').click(this.handleDeleteNotebookClick.bind(this));
         },
 
         buildNotes: function() {

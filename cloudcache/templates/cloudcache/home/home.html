@@ -24,7 +24,7 @@
             <li id="renameNotebook">
                 <a>Rename notebook</a>
             </li>
-            <li>
+            <li id="deleteNotebook">
                 <a>Delete notebook</a>
             </li>
             <li>
@@ -43,12 +43,9 @@
         </header>
 
         <div class="content-wrapper">
-            <div id="notebooks-wrapper" class="row section-wrapper">
-                <div class="col-md-4"></div>
-                <div class="col-md-4"></div>
-                <div class="col-md-4"></div>
-                <div class="col-md-4"></div>
-                <div class="col-md-4"></div>
+            <div id="default-view">
+                <h2>Welcome!</h2>
+                <h3>Use the menu to create a new notebook, or choose an existing one.</h3>
             </div>
             <div id="new-note-wrapper" class="row section-wrapper">
                 <div class="col-md-8 col-md-offset-6">
@@ -74,8 +71,8 @@
           </div>
           <div class="modal-body" id="editNoteContents" contenteditable="true" data-placeholder="Take a note..."></div>
           <div class="modal-footer">
-            <button id="editNoteDelete" type="button" class="btn btn-danger pull-left">Delete</button>
             <button id="editNoteSave" type="button" class="btn btn-primary">Save</button>
+            <button id="editNoteDelete" type="button" class="btn btn-danger pull-left">Delete</button>
           </div>
         </div>
       </div>
@@ -95,15 +92,8 @@
       </div>
     </div>
 
-    <!-- Handlebars.js notebook template -->
+    <!-- Handlebars.js note template -->
     {% verbatim %}
-    <script id='notebook-template' type='text/x-handlebars-template'>
-        <div data-url="{{url}}" data-nodeId="{{nodeId}}" class="cc-element notebook">
-            <div>{{text}}</div>
-            <span class="glyphicon glyphicon-folder-open hvr-pop-25"></span>
-        </div>
-    </script>
-
     <script id='note-template' type='text/x-handlebars-template'>
         <div class="cc-element note" data-url="{{url}}" data-notebook-url="{{notebook}}">
             <div class="title">
