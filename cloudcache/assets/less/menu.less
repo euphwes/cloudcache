@@ -51,7 +51,7 @@
 }
 
 #menu {
-    background-color: @cc-theme;
+    background-color: @cc-theme-trim;
     display: none;
     header h3 {
         color: @off-white;
@@ -61,7 +61,7 @@
         color: @off-white;
         &:hover {
             border-radius: 0;
-            background-color: @cc-theme-trim;
+            background-color: @cc-theme;
         }
     }
 
@@ -90,7 +90,7 @@
 .treeview > ul > li {
 
     color:            @off-white;
-    background-color: @cc-theme;
+    background-color: @cc-theme-trim;
 
     padding: 5px 6px;
     font-size: @treeview-font-size;
@@ -100,7 +100,7 @@
     }
 
     &:hover:not(.node-selected) {
-        background-color: @cc-theme-trim;
+        background-color: @cc-theme;
     } 
 
     span {
@@ -116,7 +116,7 @@
 
     &.node-selected {
         font-weight:      bold;
-        color:            @cc-theme !important;
+        color:            @cc-theme-trim !important;
         background-color: @bg-grey  !important;
     }
 
