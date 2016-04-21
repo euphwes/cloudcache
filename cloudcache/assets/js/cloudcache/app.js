@@ -169,6 +169,7 @@ $(function(){
                 this.buildNestedNotebooks();
                 this.buildBreadcrumbs();
                 $('#renameNotebook').hide();
+                $('#deleteNotebook').hide();
             });
         },
 
@@ -248,6 +249,7 @@ $(function(){
 
             this.buildBreadcrumbs();
             $('#renameNotebook').show();
+            $('#deleteNotebook').show();
         },
 
         // Handle deselecting a row in the tree view
@@ -262,6 +264,7 @@ $(function(){
             this.buildBreadcrumbs();
 
             $('#renameNotebook').hide();
+            $('#deleteNotebook').hide();
         },
 
         // Handle a click of a notebook button. Get the associated treeview node for that button, set that as the
@@ -292,6 +295,7 @@ $(function(){
             this.buildBreadcrumbs();
 
             $('#renameNotebook').show();
+            $('#deleteNotebook').show();
         },
 
         handleNoteClick: function(e) {
@@ -370,6 +374,7 @@ $(function(){
             this.buildBreadcrumbs();
 
             $('#renameNotebook').hide();
+            $('#deleteNotebook').hide();
         },
 
         handleBreadcrumbClick: function(e) {
@@ -392,6 +397,7 @@ $(function(){
             this.buildBreadcrumbs();
 
             $('#renameNotebook').show();
+            $('#deleteNotebook').show();
         },
 
         handleTrashCanClick: function(e){
@@ -582,6 +588,37 @@ $(function(){
             $('#editNotebook').modal('show');
         },
 
+        handleDeleteNotebookClick: function(e){
+            $.confirm({
+                title: 'Delete notebook?',
+                content: 'This action cannot be reversed. All nested notebook and notes will be deleted.',
+                theme: 'black',
+                animation: 'top',
+                closeAnimation: 'bottom',
+                columnClass: 'col-md-8 col-md-offset-6 col-sm-20',
+                confirmButton: 'Delete',
+                confirmButtonClass: 'btn-danger',
+                cancelButton: 'Cancel',
+                confirm: function() {
+                    $.ajax({
+                        url: this.currNotebook.url,
+                        type: 'DELETE',
+                        timeout: 1000,
+                        success: function() {
+                            this.async_loadNotebooks().done(function(notebooks){
+                                this.notebooks = notebooks;
+                                this.buildTree();
+                                this.currNotebook = null;
+                                this.buildBreadcrumbs();
+                                $('#notes-wrapper').children().empty();
+                                $('#new-note-wrapper').hide();
+                            }.bind(this));
+                        }.bind(this),
+                    });
+                }.bind(this),
+            });
+        },
+
         // Wire up events for notebooks and notes
         wireEvents: function() {
 
@@ -604,6 +641,7 @@ $(function(){
 
             $('#addNotebook').click(this.handleAddNotebookClick.bind(this));
             $('#renameNotebook').click(this.handleRenameNotebookClick.bind(this));
+            $('#deleteNotebook').click(this.handleDeleteNotebookClick.bind(this));
         },
 
         buildNotes: function() {
