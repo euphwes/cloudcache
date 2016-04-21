@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <title>cloudCache</title>
 
-    <link rel="shortcut icon" href="{% static 'cloudcache/favicon.ico' %}">
-
-    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'cloudcache/css/cloudcache.css' %}" rel="stylesheet">
+    <link href="{% static 'favicon.ico' %}" rel="shortcut icon">
+    <link href="{% static 'css/cc.min.css' %}"  rel="stylesheet">
 </head>
 <body>
 
@@ -17,8 +15,7 @@
     {% block content %}
     {% endblock %}
 
-    <script src="{% static 'jquery/js/jquery-2.1.0.min.js' %}"></script>
-    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/cc.min.js' %}"></script>
     <script>
         {% block additional_js %}
         {% endblock %}

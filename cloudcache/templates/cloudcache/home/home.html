@@ -5,14 +5,8 @@
     <meta charset="UTF-8">
     <title>cloudCache</title>
 
-    <link href="{% static 'cloudcache/favicon.ico' %}" rel="shortcut icon">
-
-    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}"               rel="stylesheet">
-    <link href="{% static 'cloudcache/css/cloudcache.css' %}"                 rel="stylesheet">
-    <link href="{% static 'bootstrap-treeview/css/bootstrap-treeview.css' %}" rel="stylesheet">
-    <link href="{% static 'bootstrap-notify/css/animate-min.css' %}"          rel="stylesheet">
-    <link href="{% static 'jquery-ui/css/jquery-ui.min.css' %}"               rel="stylesheet">
-    <link href="{% static 'jquery-contextmenu/jquery.contextMenu.min.css' %}" rel="stylesheet">
+    <link href="{% static 'favicon.ico' %}" rel="shortcut icon">
+    <link href="{% static 'css/cc.min.css' %}"  rel="stylesheet">
 </head>
 <body oncontextmenu="return false;" spellcheck="false">
 
@@ -24,7 +18,16 @@
             <div id="tree"></div>
         </div>
         <ul class="nav nav-pills nav-stacked">
-            <li class="pull-down">
+            <li id="addNotebook">
+                <a>Add notebook</a>
+            </li>
+            <li id="renameNotebook">
+                <a>Rename notebook</a>
+            </li>
+            <li>
+                <a>Delete notebook</a>
+            </li>
+            <li>
                 <a id="id_navbar_logout" href="{% url 'cloudcache:logout' %}">Log Out</a>
             </li>
         </ul>
@@ -47,6 +50,11 @@
                 <div class="col-md-4"></div>
                 <div class="col-md-4"></div>
             </div>
+            <div id="new-note-wrapper" class="row section-wrapper">
+                <div class="col-md-8 col-md-offset-6">
+                    <div class="new-note">Take a new note...</div>
+                </div>
+            </div>
             <div id="notes-wrapper" class="row section-wrapper">
                 <div class="col-md-4"></div>
                 <div class="col-md-4"></div>
@@ -57,15 +65,58 @@
         </div>
     </main>
 
-    <script src="{% static 'jquery/js/jquery-2.1.0.min.js' %}"></script>
-    <script src="{% static 'jquery-ui/js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'jquery-contextmenu/jquery.contextMenu.min.js' %}"></script>
-    <script src="{% static 'slideout/js/slideout.min.js' %}"></script>
-    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'bootstrap-treeview/js/bootstrap-treeview.js' %}"></script>
-    <script src="{% static 'bootstrap-notify/js/bootstrap-notify.min.js' %}"></script>
-    <script src="{% static 'enquire.js/js/enquire.min.js' %}"></script>
-    <script src="{% static 'cloudcache/js/core.js' %}"></script>
-    <script src="{% static 'cloudcache/js/cc_home.js' %}"></script>
+    <!-- Note modal -->
+    <div class="modal fade" id="editNote" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="editNoteTitle" contenteditable="true" data-placeholder="Title"></h4>
+          </div>
+          <div class="modal-body" id="editNoteContents" contenteditable="true" data-placeholder="Take a note..."></div>
+          <div class="modal-footer">
+            <button id="editNoteDelete" type="button" class="btn btn-danger pull-left">Delete</button>
+            <button id="editNoteSave" type="button" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notebook modal -->
+    <div class="modal fade" id="editNotebook" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="editNotebookName" contenteditable="true" data-placeholder="Notebook name..."></h4>
+          </div>
+          <div class="modal-footer">
+            <button id="editNotebookSave" type="button" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Handlebars.js notebook template -->
+    {% verbatim %}
+    <script id='notebook-template' type='text/x-handlebars-template'>
+        <div data-url="{{url}}" data-nodeId="{{nodeId}}" class="cc-element notebook">
+            <div>{{text}}</div>
+            <span class="glyphicon glyphicon-folder-open hvr-pop-25"></span>
+        </div>
+    </script>
+
+    <script id='note-template' type='text/x-handlebars-template'>
+        <div class="cc-element note" data-url="{{url}}" data-notebook-url="{{notebook}}">
+            <div class="title">
+                <div class="inline">{{title}}</div>
+            </div>
+            <div class="contents">{{render content}}</div>
+            <div class="toolbar">
+                <span class="glyphicon glyphicon-trash pull-right"></span>
+            </div>
+        </div>
+    </script>
+    {% endverbatim %}
+
+    <script src="{% static 'js/cc.min.js' %}"></script>
 </body>
 </html>
