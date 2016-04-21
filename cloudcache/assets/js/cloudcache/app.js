@@ -107,6 +107,26 @@ $(function(){
             return shortColumn;
         },
 
+        setEndOfContenteditable: function(jqueryObject) {
+            var range,selection;
+            var contentEditableElement = jqueryObject.get(0);
+            if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
+            {
+                range = document.createRange();//Create a range (a range is a like the selection but invisible)
+                range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
+                range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+                selection = window.getSelection();//get the selection object (allows you to change selection)
+                selection.removeAllRanges();//remove any selections already made
+                selection.addRange(range);//make the range you have just created the visible selection
+            }
+            else if(document.selection)//IE 8 and lower
+            {
+                range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
+                range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
+                range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+                range.select();//Select the range (make it the visible selection
+            }
+        }
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -512,7 +532,54 @@ $(function(){
         },
 
         handleRenameNotebookClick: function() {
-            $.alert('boop');
+
+            $('#editNotebookName').text(this.currNotebook.text)
+                .trigger('change');
+
+            $('#editNotebookSave').click(function(){
+                // Make PUT call to update notebook
+                $.ajax({
+                    url: this.currNotebook.url,
+                    type: 'PUT',
+                    timeout: 1000,
+                    data: {
+                        'name'  : $('#editNotebookName').text().trim(),
+                        'parent': this.currNotebook.parent,
+                        'owner' : this.currNotebook.owner,
+                    },
+                    success: function(data){
+                        this.async_loadNotebooks().done(function(notebooks){
+                            this.notebooks = notebooks;
+                            this.buildTree();
+                            this.tree.selectNode(this.currNotebook.nodeId, {silent: true});
+                            this.tree.revealNode(this.currNotebook.nodeId, {silent: true});
+                            this.currNotebook = this.tree.getSelected()[0];
+                            this.buildBreadcrumbs();
+                            $('#editNotebook').modal('hide');
+                        }.bind(this));
+                    }.bind(this),
+                    error: function(xhr, status, err) {
+                        //notifyError("Error updating '<strong>" + nbName + "</strong>': " + status + ".");
+                    }
+                });
+            }.bind(this));
+
+            $('#editNotebook')
+                .on('hidden.bs.modal', function() {
+                    $('#editNotebook').off();
+                    $('#editNotebookSave').off();
+                })
+                .on('shown.bs.modal', function() {
+                    util.setEndOfContenteditable($('#editNotebookName'));
+                })
+                .on('keypress', function(e){
+                    if (e.keyCode == 13) {
+                        $('#editNotebookSave').trigger('click');
+                        return false;
+                    }
+                });
+
+            $('#editNotebook').modal('show');
         },
 
         // Wire up events for notebooks and notes
