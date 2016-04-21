@@ -166,6 +166,7 @@ $(function(){
                 this.buildBreadcrumbs();
                 $('#renameNotebook').hide();
                 $('#deleteNotebook').hide();
+                $('#default-view').show();
             });
         },
 
@@ -178,15 +179,12 @@ $(function(){
 
             var $breadcrumbs = $('.breadcrumbs').empty();
 
+            // If no notebook is provided, bail out early
+            if (this.currNotebook == null) return;
+
             var $rootLink = $('<a href="#">')
                 .addClass('bc-root')
                 .append('Home');
-
-            // If no notebook is provided, only put the 'Home' crumb at the root and bail out early
-            if (this.currNotebook == null) {
-                $breadcrumbs.append($rootLink);
-                return;
-            }
 
             $breadcrumbs.append(this.currNotebook.text);
 
@@ -224,6 +222,7 @@ $(function(){
             this.buildBreadcrumbs();
             $('#renameNotebook').show();
             $('#deleteNotebook').show();
+            $('#default-view').hide();
         },
 
         // Handle deselecting a row in the tree view
@@ -238,6 +237,7 @@ $(function(){
 
             $('#renameNotebook').hide();
             $('#deleteNotebook').hide();
+            $('#default-view').show();
         },
 
         handleNoteClick: function(e) {
@@ -316,6 +316,7 @@ $(function(){
 
             $('#renameNotebook').hide();
             $('#deleteNotebook').hide();
+            $('#default-view').show();
         },
 
         handleBreadcrumbClick: function(e) {
@@ -338,6 +339,7 @@ $(function(){
 
             $('#renameNotebook').show();
             $('#deleteNotebook').show();
+            $('#default-view').hide();
         },
 
         handleTrashCanClick: function(e){
@@ -552,6 +554,7 @@ $(function(){
                                 this.buildBreadcrumbs();
                                 $('#notes-wrapper').children().empty();
                                 $('#new-note-wrapper').hide();
+                                $('#default-view').show();
                             }.bind(this));
                         }.bind(this),
                     });
