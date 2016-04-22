@@ -291,12 +291,25 @@ $(function(){
                 });
             }.bind(this));
 
-            $('#editNote').on('hide.bs.modal', function(){
-                $note.showThenAnimateCss('zoomIn');
-                $('#editNote').off();
-                $('#editNoteSave').off();
-                $('#editNoteDelete').off();
-            });
+            $('#editNote')
+                .on('shown.bs.modal', function() {
+                    util.setEndOfContenteditable($('#editNoteTitle'));
+                })
+                .on('hide.bs.modal', function(){
+                    $note.showThenAnimateCss('zoomIn');
+                    $('#editNote').off();
+                    $('#editNoteTitle').off();
+                    $('#editNoteSave').off();
+                    $('#editNoteDelete').off();
+                });
+
+            $('#editNoteTitle')
+                .on('keypress', function(e){
+                    if (e.keyCode == 13) {
+                        $('#editNoteSave').trigger('click');
+                        return false;
+                    }
+                });
 
             $note.animateCssThenHide('zoomOut');
             $('#editNote').modal('show');
@@ -420,10 +433,22 @@ $(function(){
             }.bind(this));
 
             $('#editNote')
+                .on('shown.bs.modal', function() {
+                    util.setEndOfContenteditable($('#editNoteTitle'));
+                })
                 .on('hidden.bs.modal', function() {
                     $('#editNote').off();
+                    $('#editNoteTitle').off();
                     $('#editNoteSave').off();
                     $('#editNoteDelete').show();
+                });
+
+            $('#editNoteTitle')
+                .on('keypress', function(e){
+                    if (e.keyCode == 13) {
+                        util.setEndOfContenteditable($('#editNoteContents'));
+                        return false;
+                    }
                 });
 
             $('#editNote').modal('show');
@@ -438,7 +463,16 @@ $(function(){
                 .on('hidden.bs.modal', function() {
                     $('#editNotebook').off();
                     $('#editNotebookSave').off();
-                });
+                })
+                .on('shown.bs.modal', function() {
+                    util.setEndOfContenteditable($('#editNotebookName'));
+                })
+                .on('keypress', function(e){
+                    if (e.keyCode == 13) {
+                        $('#editNotebookSave').trigger('click');
+                        return false;
+                    }
+                });;
 
             var currNotebookUrl;
             if (this.currNotebook) currNotebookUrl = this.currNotebook.url;
