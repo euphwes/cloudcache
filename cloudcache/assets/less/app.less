@@ -36,7 +36,12 @@
 
 // Both notebook and note sections get top/bottom padding
 .section-wrapper {
-    padding-top:    @section-padding;
+    margin-top:    @section-padding;
+}
+
+#notes-wrapper {
+    max-height: ~"calc(100% - @{section-padding} - @{section-padding} - @{content-padding-top} - 60px)";
+    overflow-y: auto;
 }
 
 // --------------------- Note and notebook common styles ----------------------

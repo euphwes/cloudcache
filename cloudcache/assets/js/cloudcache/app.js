@@ -98,7 +98,12 @@ $(function(){
         getShortestColumn: function(selector) {
             var minHeight = 9999999;
             var shortColumn;
-            $(selector).children().each(function() {
+            console.log('in shortestColumn');
+            console.log(selector);
+            console.log($(selector));
+            console.log($(selector).find('.note-col'));
+            $(selector).find('.note-col').each(function() {
+                console.log(this);
                 if ($(this).height() < minHeight) {
                     minHeight = $(this).height();
                     shortColumn = $(this);
@@ -211,9 +216,7 @@ $(function(){
 
             $('#new-note-wrapper').show();
 
-            $('#notebooks-wrapper').children().empty();
-
-            $('#notes-wrapper').children().empty();
+            $('#notes-wrapper').find('.note-col').empty();
             this.async_loadNotes().done(function(notes){
                 this.notes = notes;
                 this.buildNotes();
@@ -230,9 +233,7 @@ $(function(){
             this.currNotebook = null;
             $('#new-note-wrapper').hide();
 
-            $('#notebooks-wrapper').children().empty();
-
-            $('#notes-wrapper').children().empty();
+            $('#notes-wrapper').find('.note-col').empty();
             this.buildBreadcrumbs();
 
             $('#renameNotebook').hide();
@@ -322,9 +323,7 @@ $(function(){
 
             this.tree.unselectNode(this.tree.getSelected()[0], {silent: true});
 
-            $('#notebooks-wrapper').children().empty();
-
-            $('#notes-wrapper').children().empty();
+            $('#notes-wrapper').find('.note-col').empty();
             this.buildBreadcrumbs();
 
             $('#renameNotebook').hide();
@@ -340,9 +339,7 @@ $(function(){
             this.tree.selectNode(this.currNotebook, {silent: true});
             this.tree.revealNode(this.currNotebook, {silent: true});
 
-            $('#notebooks-wrapper').children().empty();
-
-            $('#notes-wrapper').children().empty();
+            $('#notes-wrapper').find('.note-col').empty();
             this.async_loadNotes().done(function(notes){
                 this.notes = notes;
                 this.buildNotes();
@@ -586,7 +583,7 @@ $(function(){
                                 this.buildTree();
                                 this.currNotebook = null;
                                 this.buildBreadcrumbs();
-                                $('#notes-wrapper').children().empty();
+                                $('#notes-wrapper').find('.note-col').empty();
                                 $('#new-note-wrapper').hide();
                                 $('#default-view').show();
                             }.bind(this));
@@ -618,6 +615,7 @@ $(function(){
         },
 
         buildNotes: function() {
+            console.log('in buildnotes');
             var template = this.noteTemplate;
             $.each(this.notes, function(i, note){
                 $(template(note))
@@ -806,6 +804,11 @@ $(function(){
         .appendTo($('#panel'))
         .hide()
         .remove();
+
+    $('#notes-wrapper').mCustomScrollbar({
+        theme: "dark",
+        scrollInertia: 500,
+    });
 
     App.init();
 });
