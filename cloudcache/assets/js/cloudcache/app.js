@@ -4,6 +4,11 @@ $(function(){
     // -----------------------------------------------------------------------------------------------------------------
     var util = {
 
+        /**
+         * Handlebars.js helper function to render note body contents into the note template. Takes each line break in
+         * note contents, replaces it with an HTML line break element, and puts the line itself with the <br> into a
+         * <div>. When complete, returns the div's inner html.
+         **/
         renderContents: function(contents) {
             var $tmp = $('<div>');
             $.each(contents.split('\r\n'), function(i, line){
@@ -14,7 +19,9 @@ $(function(){
             return new Handlebars.SafeString($tmp.html());
         },
 
-        // Clear any text selection in the browser. Should work cross-browser
+        /**
+         * Cross-browser method to clear all text selections in the browser.
+         **/
         clearTextSelection: function() {
             if (window.getSelection) {
               if (window.getSelection().empty) {  // Chrome
@@ -28,9 +35,9 @@ $(function(){
         },
 
         /**
-         * Returns a function, that, as long as it continues to be invoked, will not be triggered. The function will be called
-         * after it stops being called for N milliseconds. If `immediate` is passed, trigger the function on the leading edge,
-         * instead of the trailing.
+         * Returns a function, that, as long as it continues to be invoked, will not be triggered. The function will be
+         * called after it stops being called for N milliseconds. If `immediate` is passed, trigger the function on the
+         * leading edge, instead of the trailing edge.
          **/
         debounce: function(func, wait, immediate) {
             var timeout;
@@ -104,8 +111,10 @@ $(function(){
             return notebooks;
         },
 
-        // Ready the ajax-retrieved list of notebooks for use in the Bootstrap-Treeview tree by making it fit the format
-        // that library is expecting
+        /**
+         * Ready the ajax-retrieved list of notebooks for use in the Bootstrap-Treeview tree by making it fit the format
+         * that library is expecting.
+        **/
         massageNotebookFormat: function(notebooks) {
             notebooks = util._renameFieldsForTreeview(notebooks);
             notebooks = util._buildNested(notebooks);
@@ -113,17 +122,16 @@ $(function(){
             return notebooks;
         },
 
-        // We want to get the shortest column in the content pane, to append the current note to the end of that.
-        // Check the height of each of the note-col divs inside the #notes-wrapper, find the shortest, and return that
-        getShortestColumn: function(selector) {
+        /**
+         * Helper function to determine the shortest child column/container (in terms of DOM height in pixels) in a
+         * parent container. At the moment, just used to get the shortest notes column inside the notes wrapper.
+         **/
+        getShortestColumn: function(containerSelector, columnSelector) {
+            containerSelector = containerSelector || '#notes-wrapper';
+            columnSelector = columnSelector || '.note-col';
             var minHeight = 9999999;
             var shortColumn;
-            console.log('in shortestColumn');
-            console.log(selector);
-            console.log($(selector));
-            console.log($(selector).find('.note-col'));
-            $(selector).find('.note-col').each(function() {
-                console.log(this);
+            $(containerSelector).find(columnSelector).each(function() {
                 if ($(this).height() < minHeight) {
                     minHeight = $(this).height();
                     shortColumn = $(this);
@@ -132,24 +140,27 @@ $(function(){
             return shortColumn;
         },
 
+        /**
+         * Utility function to set the cursor at the end of the supplied contenteditable div.
+         **/
         setEndOfContenteditable: function(jqueryObject) {
             var range,selection;
             var contentEditableElement = jqueryObject.get(0);
-            if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
-            {
-                range = document.createRange();//Create a range (a range is a like the selection but invisible)
-                range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
-                range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
-                selection = window.getSelection();//get the selection object (allows you to change selection)
-                selection.removeAllRanges();//remove any selections already made
-                selection.addRange(range);//make the range you have just created the visible selection
+            //Firefox, Chrome, Opera, Safari, IE 9+
+            if(document.createRange) {
+                range = document.createRange();
+                range.selectNodeContents(contentEditableElement);
+                range.collapse(false);
+                selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
             }
-            else if(document.selection)//IE 8 and lower
-            {
-                range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
-                range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
-                range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
-                range.select();//Select the range (make it the visible selection
+            //IE 8 and lower
+            else if(document.selection) {
+                range = document.body.createTextRange();
+                range.moveToElementText(contentEditableElement);
+                range.collapse(false);
+                range.select();
             }
         }
     };
@@ -168,9 +179,12 @@ $(function(){
 
         noteTemplate: null,
 
-        // Initialize the app controller, perform all the setup stuff necessary
+        /**
+         * Initialize the app controller, perform all the setup stuff necessary.
+         **/
         init: function() {
 
+            // Register the renderContents helper function with Handlebars.js and compile the template.
             Handlebars.registerHelper('render', util.renderContents);
             this.noteTemplate = Handlebars.compile($('#note-template').html());
 
@@ -196,9 +210,9 @@ $(function(){
         },
 
         /**
-         * Build up the breadcrumbs for the current notebook structure. Start at the current notebook, then keep working up the
-         * tree until you reach the root. At each notebook, prepend a link element with the notebook's name. All notebooks
-         * fall under a root element here which we'll call 'Notebooks'.
+         * Build up the breadcrumbs for the current notebook structure. Start at the current notebook, then keep working
+         * up the tree until the root is reached. At each notebook, append a link element with the notebook's name.
+         * All root notebooks fall under an imaginary element here which we'll call 'Home'.
          **/
         buildBreadcrumbs: function() {
 
@@ -213,8 +227,8 @@ $(function(){
 
             $breadcrumbs.append(this.currNotebook.text);
 
-            // Keep climbing the tree, finding each parent notebook, until we reach the top. For each parent notebook, prepend
-            // the parent's name
+            // Keep climbing the tree, finding each parent notebook, until we reach the top. For each parent notebook
+            // append a link element with the parent's name
             var parent = this.tree.getParent(this.currNotebook);
             while (parent) {
                 $breadcrumbs.append(' ▶ ');
@@ -230,7 +244,18 @@ $(function(){
             $breadcrumbs.append($rootLink);
         },
 
-        // Handle a click of a row in the tree view
+        /**
+         * Handle a click of a row (in effect, selecting a notebook) in the treeview by doing the following:
+         *      1) Set the current notebook to the one selected in the treeview
+         *      2) Ensure the new note div is visible, by showing the new note wrapper
+         *      3) Remove any notes from the notes wrapper
+         *      4) Perform an async notes load for the current notebook, which when complete, does the following:
+         *          a) Creates note divs for each note then appends them to the notes wrapper
+         *      5) Build the breadcrumbs for the current notebook hierarchy
+         *      6) Ensure the rename notebook menu option is visible
+         *      7) Ensure the delete notebook menu option is visible
+         *      8) Ensure the default view is hidden
+         **/
         handleTreeClick: function(e, notebookNode) {
             this.currNotebook = notebookNode;
 
@@ -248,7 +273,16 @@ $(function(){
             $('#default-view').hide();
         },
 
-        // Handle deselecting a row in the tree view
+        /**
+         * Handle deselecting a row (in effect, no notebook being chosen) in the treeview by doing the following:
+         *      1) Set the current notebook to null
+         *      2) Ensure the new note div is invisible, by hiding the new note wrapper
+         *      3) Remove any notes from the notes wrapper
+         *      4) Clear breadcrumbs (by running buildBreadcrumbs with a null current notebook)
+         *      5) Ensure the rename notebook menu option is hidden
+         *      6) Ensure the delete notebook menu option is hidden
+         *      7) Ensure the default view is visible
+         **/
         handleTreeUnselect: function(e, notebookNode) {
             this.currNotebook = null;
             $('#new-note-wrapper').hide();
@@ -261,6 +295,22 @@ $(function(){
             $('#default-view').show();
         },
 
+        /**
+         * Handle a note being clicked by doing the following:
+         *      1) Make sure we have a ref to the actual note itself, in case an internal element click triggered this
+         *      2) Set the note modal title to the title of the note being clicked, trigger change to erase placeholder
+         *      3) Set the note modal content to that of the note being clicked, trigger change to erase placeholder
+         *      4) Attach a click handler to the note modal's save button to perform saving the note
+         *      5) Attach a click handler to the note modal's delete button to perform deleting the note
+         *      6) Attach misc handlers to the note modal itself:
+         *          a) After being shown, put the cursor at the end of the title div
+         *          b) When hiding/closing the modal, do the following:
+         *              i) Animate/zoom the note being edited back in
+         *              ii) Disconnect all event handlers on the modal itself, save button, delete button, and title
+         *      7) Attach a keypress handler on the note modal title to capture enter key and trigger a save btn click
+         *      8) Hide/zoom out the note being edited
+         *      9) Show the modal
+         **/
         handleNoteClick: function(e) {
 
             var $note = $(e.target).closest('.note');
@@ -336,6 +386,17 @@ $(function(){
             $('#editNote').modal('show');
         },
 
+        /**
+         * Handle the root breadcrumb element being clicked by doing the following:
+         *      1) Set the current notebook to null
+         *      2) Hide the new note div by setting its wrapper to be hidden
+         *      3) Unselect the current node in the treeview, suppressing events being fired by this
+         *      4) Empty the notes wrapper of any notes which might be in there
+         *      5) Empty the breadcrumbs, by running buildBreadcrumbs when the current notebook is null
+         *      6) Hide the rename notebook menu option
+         *      7) Hide the delete notebook menu option
+         *      8) Show the default view in the main content panel
+         **/
         handleRootBreadcrumbClick: function() {
 
             this.currNotebook = null;
@@ -351,11 +412,24 @@ $(function(){
             $('#default-view').show();
         },
 
+        /**
+         * Handle a non-root breadcrumb element being clicked by doing the following:
+         *      1) Set the current notebook to the node in the tree with the node ID from the breadcrumb being clicked
+         *      3) Select that notebook in the treeview, suppressing events being fired by this
+         *      3) Show that notebook in the treeview, suppressing events being fired by this
+         *      4) Empty the notes wrapper of any notes which might be in there
+         *      5) Perform an async notes load for the current notebook, which when complete, does the following:
+         *          a) Creates note divs for each note then appends them to the notes wrapper
+         *      6) Build up the breadcrumbs for the current notebook hierarchy
+         *      7) Show the rename notebook menu option
+         *      8) Show the delete notebook menu option
+         *      9) Hide the default view from the main content panel
+         **/
         handleBreadcrumbClick: function(e) {
 
             var $notebook = $(e.target);
-
             this.currNotebook = this.tree.getNode($notebook.attr('data-nodeId'));
+
             this.tree.selectNode(this.currNotebook, {silent: true});
             this.tree.revealNode(this.currNotebook, {silent: true});
 
@@ -372,6 +446,12 @@ $(function(){
             $('#default-view').hide();
         },
 
+        /**
+         * Handle the trash can icon being clicked by doing the following:
+         *      1) Display a confirmation box, asking the user if they are sure.
+         *          a) If yes, call the function to delete the note
+         *          b) If no, just close the confirm dialog and do nothing further.
+         **/
         handleTrashCanClick: function(e){
             $.confirm({
                 title: 'Delete?',
@@ -390,6 +470,13 @@ $(function(){
             });
         },
 
+        /**
+         * Perform an ajax call to delete the provided note (a jQuery object of a note div). When the async call is
+         * done, do the following:
+         *      1) Animate the note div with a zoom-out animation to make it visually disappear
+         *      2) Remove the note div from the DOM
+         *      3) If a callback function was supplied, call it
+         **/
         deleteNote: function($note, callback) {
             $.ajax({
                 url: $note.data('url'),
@@ -404,6 +491,18 @@ $(function(){
             });
         },
 
+        /**
+         * Handle the new note div being clicked by doing the following:
+         *      1) Clear out the note modal title, and trigger 'change' so the placeholder text is displayed
+         *      2) Clear out the note modal content, and trigger 'change' so the placeholder text is displayed
+         *      3) Hide the note modal's delete button
+         *      4) Attach a click handler to the note modal's save button, to save the note
+         *      5) Attach misc event handlers to the note modal itself:
+         *          a) After being show, move the cursor to the end of the title div
+         *          b) When being hidden, detach all event handlers on the modal itself, title, save, and delete buttons
+         *      6) Attach a keypress handler on the modal title to capture 'enter', and move the cursor to the contents
+         *      7) Show the modal
+         **/
         handleNewNoteClick: function(e){
 
             $('#editNoteTitle').text('')
@@ -441,7 +540,7 @@ $(function(){
                     }),
                     success: function(note){
                         $(this.noteTemplate(note))
-                            .appendTo(util.getShortestColumn('#notes-wrapper'))
+                            .appendTo(util.getShortestColumn())
                             .animateCss('fadeIn');
                         $('#editNote').modal('hide');
                     }.bind(this),
@@ -471,6 +570,16 @@ $(function(){
             $('#editNote').modal('show');
         },
 
+        /**
+         * Handle the `Add Notebook` menu option being clicked by doing the following:
+         *      1) Clear the notebook modal title, and trigger `change` so the placeholder text is entered
+         *      2) Attach misc event handlers to the notebook modal:
+         *          a) After being shown, move the cursor to the end of the modal's notebook name area
+         *          b) On being hidden, detach all event handlers from the modal itself, and the save button
+         *          b) On keypress, capture enter, and trigger a save button click instead
+         *      3) Attach a click handler to the save button, to save the new notebook
+         *      4) Show the modal
+         **/
         handleAddNotebookClick: function(){
 
             $('#editNotebookName').text('')
@@ -489,14 +598,12 @@ $(function(){
                         $('#editNotebookSave').trigger('click');
                         return false;
                     }
-                });;
-
-            var currNotebookUrl;
-            if (this.currNotebook) currNotebookUrl = this.currNotebook.url;
+                });
 
             $('#editNotebookSave').click(function(e){
 
                 var newName = $('#editNotebookName').text().trim();
+                var currNotebookUrl = this.currNotebook.url;
 
                 // Make POST call to create new notebook
                 $.ajax({
@@ -530,6 +637,16 @@ $(function(){
             $('#editNotebook').modal('show');
         },
 
+        /**
+         * Handle the `Rename Notebook` menu option being clicked by doing the following:
+         *      1) Set notebook modal title to the current title, and trigger `change` so the placeholder is removed
+         *      2) Attach misc event handlers to the notebook modal:
+         *          a) After being shown, move the cursor to the end of the modal's notebook name area
+         *          b) On being hidden, detach all event handlers from the modal itself, and the save button
+         *          b) On keypress, capture enter, and trigger a save button click instead
+         *      3) Attach a click handler to the save button, to save the new notebook
+         *      4) Show the modal
+         **/
         handleRenameNotebookClick: function() {
 
             $('#editNotebookName').text(this.currNotebook.text)
@@ -581,6 +698,20 @@ $(function(){
             $('#editNotebook').modal('show');
         },
 
+        /**
+         * Handle the delete notebook menu option being clicked by doing the following:
+         *      1) Display a confirmation box, indicating the dangers to the user
+         *      2) If no, just exit without doing anything. If yes, continue
+         *      3) Start an async ajax call to the delete the notebook.
+         *          a) On success, do the following:
+         *              i) Async reload notebooks
+         *              ii) Rebuild the treeview
+         *              iii) Set the current notebook to null
+         *              iv) Clear breadcrumbs
+         *              v) Empty the content panel of all notes
+         *              vi) Hide the new note thingy
+         *              vii) Show the default view
+         **/
         handleDeleteNotebookClick: function(e){
             $.confirm({
                 title: 'Delete notebook?',
@@ -613,7 +744,9 @@ $(function(){
             });
         },
 
-        // Wire up events for notebooks and notes
+        /**
+         * Wire up events for pretty much everything
+         **/
         wireEvents: function() {
 
             $('#notes-wrapper').on('click', '.note', this.handleNoteClick.bind(this));
@@ -634,18 +767,24 @@ $(function(){
             $('#deleteNotebook').click(this.handleDeleteNotebookClick.bind(this));
         },
 
+        /**
+         * Iterate through the current array of notes, running each through the template and then appending it to the
+         * shortest column in the notes wrapper.
+         **/
         buildNotes: function() {
-            console.log('in buildnotes');
-            var template = this.noteTemplate;
-            $.each(this.notes, function(i, note){
-                $(template(note))
-                    .appendTo(util.getShortestColumn('#notes-wrapper'))
+            var buildNote = function(i, note){
+                $(this.noteTemplate(note))
+                    .appendTo(util.getShortestColumn())
                     .animateCss('fadeIn');
-            });
+            };
+            $.each(this.notes, buildNote.bind(this));
         },
 
-        // Kick off the process to get the user's notebooks and parse into a tree for navigation in the sidebar, by
-        // making an API call to the endpoint for listing all notebooks
+        /**
+         * Kick off the async process for retrieving all notebooks for the current user. When the call returns, run the
+         * notebooks through the process to prepare them for use in the treeview, then return an async promise to the
+         * caller so they can do whatever they want whenever this is ready.
+         **/
         async_loadNotebooks: function () {
             return $.ajax({
                 context: this,
@@ -655,7 +794,10 @@ $(function(){
             }).then(util.massageNotebookFormat);
         },
 
-        // Load all the notes for the current notebook
+        /**
+         * Kick off the async process for retrieving all notebooks for the current notebook. Return an async promise
+         * to the caller so they can do whatever they want whenever this is ready.
+         **/
         async_loadNotes: function() {
             return $.ajax({
                 context: this,
@@ -665,7 +807,9 @@ $(function(){
             });
         },
 
-        // Build notebook treeview in the sidebar.
+        /**
+         * Build the treeview in the sidebar. Bind the event handlers for tree nodes being selected and unselected.
+         **/
         buildTree: function() {
             if (this.notebooks.length == 0) return;
 
@@ -684,7 +828,10 @@ $(function(){
             this.tree = $('#tree').treeview(true);
         },
 
-        // Build the slide-out menu, and attach a click handler to the hamburger icon.
+        /**
+         * Build the slide-out menu, and attach a click handler to the hamburger icon. Make the menu visible when it's
+         * done being built.
+         **/
         buildMenu: function() {
             var slideout = new Slideout({
                 'panel': $('#panel')[0],
@@ -739,7 +886,7 @@ $(function(){
         }
     });
 
-    // Extension to jQuery to easily animate elements with animate.css, then remove the animations when complete
+    // Animate.css-related extensions to jQuery, to facilitate applying an animation to an element
     $.fn.extend({
         animateCss: function (animationName, finishCallback) {
             var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
@@ -747,22 +894,14 @@ $(function(){
                 $(this).removeClass('animated ' + animationName);
                 if (finishCallback) finishCallback();
             });
-        }
-    });
-
-    // Extension to jQuery to easily animate elements with animate.css, then remove the animations when complete
-    $.fn.extend({
+        },
         animateCssThenHide: function (animationName) {
             var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
             $(this).addClass('animated ' + animationName).one(animationEnd, function() {
                 $(this).css('visibility', 'hidden');
                 $(this).removeClass('animated ' + animationName);
             });
-        }
-    });
-
-    // Extension to jQuery to easily animate elements with animate.css, then remove the animations when complete
-    $.fn.extend({
+        },
         showThenAnimateCss: function (animationName) {
             var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
             $(this).css('visibility', 'visible');
@@ -773,6 +912,9 @@ $(function(){
         }
     });
 
+    // Utility code intended to help with uniform contenteditable div behavior across browser platforms. Ensure that
+    // line breaks inside contenteditable content are handle with <br> rather than paragraphs, nested divs, or anything
+    // else like that.
     $("div[contenteditable]")
         // make sure br is always the lastChild of contenteditable
         .on("keyup mouseup", function(){
@@ -780,7 +922,6 @@ $(function(){
             this.appendChild(document.createElement("br"));
           }
         })
-
         // use br instead of div div
         .on("keypress", function(e){
           if (e.which == 13) {
@@ -800,16 +941,15 @@ $(function(){
           }
         });
 
-    (function ($) {
-        $(document).on('change keydown keypress input', '*[data-placeholder]', function() {
-            if (this.textContent) {
-                this.setAttribute('data-div-placeholder-content', 'true');
-            }
-            else {
-                this.removeAttribute('data-div-placeholder-content');
-            }
-        });
-    })(jQuery);
+    // Utility code to help emulate form input placeholders, in contenteditable divs.
+    $(document).on('change keydown keypress input', '*[data-placeholder]', function() {
+        if (this.textContent) {
+            this.setAttribute('data-div-placeholder-content', 'true');
+        }
+        else {
+            this.removeAttribute('data-div-placeholder-content');
+        }
+    });
 
     // Since none of the Glyphicons are present in the page at page-load, Bootstrap doesn't need to load the Glyphicons
     // web font until we retrieve notebooks via API, then build the notebooks DOM elements. Unfortunately, this causes
@@ -825,6 +965,7 @@ $(function(){
         .hide()
         .remove();
 
+    // Wrap the notes wrapper section with a custom scrollbar.
     $('#notes-wrapper').mCustomScrollbar({
         theme: "dark",
         scrollInertia: 500,
