@@ -162,6 +162,25 @@ $(function(){
                 range.collapse(false);
                 range.select();
             }
+        },
+
+        /**
+         * Convenience wrapper around jquery-confirm's confirm function. Only need to pass the title, content,
+         * confirmButton text, and the confirm callback.
+         **/
+        confirm: function(title, content, confirmButton, onConfirm) {
+            $.confirm({
+                title: title,
+                content: content,
+                theme: 'black',
+                animation: 'top',
+                closeAnimation: 'bottom',
+                columnClass: 'col-md-8 col-md-offset-6 col-sm-20',
+                confirmButton: confirmButton,
+                confirmButtonClass: 'btn-danger',
+                cancelButton: 'Cancel',
+                confirm: onConfirm,
+            });
         }
     };
 
@@ -295,6 +314,19 @@ $(function(){
             $('#default-view').show();
         },
 
+
+        /**
+         * Handle the note modal delete button being clicked by doing the following:
+         *      1) Pop up a confirmation dialog. If the user chooses yes...
+         *      2) Make ajax note delete call, which when complete, hides the note edit modal
+         **/
+        handleNoteModalNoteDelete: function($note) {
+            var onConfirm = function(){
+                this.deleteNote($note, function(){ $('#editNote').modal('hide'); });
+            };
+            util.confirm('Delete note?', 'This action cannot be reversed.', 'Delete', onConfirm.bind(this));
+        },
+
         /**
          * Handle a note being clicked by doing the following:
          *      1) Make sure we have a ref to the actual note itself, in case an internal element click triggered this
@@ -315,8 +347,13 @@ $(function(){
 
             var $note = $(e.target).closest('.note');
 
-            $('#editNoteTitle').text($note.children('.title').text()).trigger('change');
-            $('#editNoteContents').html($note.children('.contents').html()).trigger('change');
+            $('#editNoteTitle')
+                .text($note.children('.title').text())
+                .trigger('change');
+
+            $('#editNoteContents')
+                .html($note.children('.contents').html())
+                .trigger('change');
 
             $('#editNoteSave').click(function(e){
 
@@ -345,21 +382,8 @@ $(function(){
                 });
             });
 
-            $('#editNoteDelete').click(function(e){
-                $.confirm({
-                    title: 'Delete?',
-                    content: 'This action cannot be reversed.',
-                    theme: 'black',
-                    animation: 'top',
-                    closeAnimation: 'bottom',
-                    columnClass: 'col-md-8 col-md-offset-6 col-sm-20',
-                    confirmButton: 'Delete',
-                    confirmButtonClass: 'btn-danger',
-                    cancelButton: 'Cancel',
-                    confirm: function() {
-                        this.deleteNote($note, function(){ $('#editNote').modal('hide'); });
-                    }.bind(this),
-                });
+            $('#editNoteDelete').click(function(){
+                this.handleNoteModalNoteDelete($note);
             }.bind(this));
 
             $('#editNote')
@@ -368,10 +392,7 @@ $(function(){
                 })
                 .on('hide.bs.modal', function(){
                     $note.showThenAnimateCss('zoomIn');
-                    $('#editNote').off();
-                    $('#editNoteTitle').off();
-                    $('#editNoteSave').off();
-                    $('#editNoteDelete').off();
+                    $('#editNote, #editNoteTitle, #editNoteSave, #editNoteDelete').off();
                 });
 
             $('#editNoteTitle')
@@ -398,7 +419,6 @@ $(function(){
          *      8) Show the default view in the main content panel
          **/
         handleRootBreadcrumbClick: function() {
-
             this.currNotebook = null;
             $('#new-note-wrapper').hide();
 
@@ -453,21 +473,10 @@ $(function(){
          *          b) If no, just close the confirm dialog and do nothing further.
          **/
         handleTrashCanClick: function(e){
-            $.confirm({
-                title: 'Delete?',
-                content: 'This action cannot be reversed.',
-                theme: 'black',
-                animation: 'top',
-                closeAnimation: 'bottom',
-                columnClass: 'col-md-8 col-md-offset-6 col-sm-20',
-                confirmButton: 'Delete',
-                confirmButtonClass: 'btn-danger',
-                cancelButton: 'Cancel',
-                confirm: function() {
-                    var $note = $(e.target).closest('.note');
-                    this.deleteNote($note);
-                }.bind(this),
-            });
+            var onConfirm = function() {
+                this.deleteNote($(e.target).closest('.note'));
+            };
+            util.confirm('Delete note?', 'This action cannot be reversed.', 'Delete', onConfirm.bind(this));
         },
 
         /**
@@ -713,35 +722,31 @@ $(function(){
          *              vii) Show the default view
          **/
         handleDeleteNotebookClick: function(e){
-            $.confirm({
-                title: 'Delete notebook?',
-                content: 'This action cannot be reversed. All nested notebook and notes will be deleted.',
-                theme: 'black',
-                animation: 'top',
-                closeAnimation: 'bottom',
-                columnClass: 'col-md-8 col-md-offset-6 col-sm-20',
-                confirmButton: 'Delete',
-                confirmButtonClass: 'btn-danger',
-                cancelButton: 'Cancel',
-                confirm: function() {
-                    $.ajax({
-                        url: this.currNotebook.url,
-                        type: 'DELETE',
-                        timeout: 1000,
-                        success: function() {
-                            this.async_loadNotebooks().done(function(notebooks){
-                                this.notebooks = notebooks;
-                                this.buildTree();
-                                this.currNotebook = null;
-                                this.buildBreadcrumbs();
-                                $('#notes-wrapper').find('.note-col').empty();
-                                $('#new-note-wrapper').hide();
-                                $('#default-view').show();
-                            }.bind(this));
-                        }.bind(this),
-                    });
-                }.bind(this),
-            });
+
+            var onNotebookDeleteSuccess = function() {
+                this.async_loadNotebooks().done(function(notebooks){
+                    this.notebooks = notebooks;
+                    this.buildTree();
+                    this.currNotebook = null;
+                    this.buildBreadcrumbs();
+                    $('#notes-wrapper').find('.note-col').empty();
+                    $('#new-note-wrapper').hide();
+                    $('#default-view').show();
+                }.bind(this));
+            };
+
+            var onConfirm = function() {
+                $.ajax({
+                    url: this.currNotebook.url,
+                    type: 'DELETE',
+                    timeout: 1000,
+                    success: onNotebookDeleteSuccess.bind(this),
+                });
+            };
+
+            util.confirm('Delete notebook?',
+                'This action cannot be reversed. All nested notebook and notes will be deleted.', 'Delete',
+                onConfirm.bind(this));
         },
 
         /**
