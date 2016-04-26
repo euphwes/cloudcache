@@ -9,12 +9,13 @@ class NotebookSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = Notebook
-        fields = ('id', 'name', 'owner', 'parent', 'notebooks', 'notes', 'created', 'modified', 'url')
+        fields = ('id', 'name', 'owner', 'parent', 'notebooks', 'notes', 'checklists', 'created', 'modified', 'url')
 
         extra_kwargs = {
-            'id': {'read_only': True},         # Can't edit ID
-            'notes': {'read_only': True},      # Can't edit the contained notes here, do that in the Note detail view
-            'notebooks': {'read_only': True},  # Can't edit contained notebooks here, do that in Notebook detail view
+            'id': {'read_only': True},          # Can't edit ID
+            'notes': {'read_only': True},       # Can't edit the contained notes here, do that in the Note detail view
+            'notebooks': {'read_only': True},   # Can't edit contained notebooks here, do that in Notebook detail view
+            'checklists': {'read_only': True},  # Ditto
         }
 
 
