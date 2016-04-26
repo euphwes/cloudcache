@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from .views.public import AccountList, AccountDetail, NotebookList, NotebookDetail, NoteList, NoteDetail,\
-    NotebookNotesList, NotebookNotebooksList
+    NotebookNotesList, NotebookNotebooksList, ChecklistList, ChecklistDetail
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ def api_root(request, format=None):
         'accounts': reverse('account-list', request=request, format=format),
         'notebooks': reverse('notebook-list', request=request, format=format),
         'notes': reverse('note-list', request=request, format=format),
+        'checklists': reverse('checklist-list', request=request, format=format),
     })
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -42,4 +43,8 @@ urlpatterns = [
     # cloudcache.models.Note list and detail views
     url(r'^notes/$', NoteList.as_view(), name='note-list'),
     url(r'^notes/(?P<pk>[0-9]+)/$', NoteDetail.as_view(), name='note-detail'),
+
+    # cloudcache.models.Checklist list and detail views
+    url(r'^checklists/$', ChecklistList.as_view(), name='checklist-list'),
+    url(r'^checklists/(?P<pk>[0-9]+)/$', ChecklistDetail.as_view(), name='checklist-detail'),
 ]

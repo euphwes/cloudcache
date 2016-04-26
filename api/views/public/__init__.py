@@ -4,9 +4,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from authentication.models import Account
-from cloudcache.models import Notebook, Note
+from cloudcache.models import Notebook, Note, ChecklistItem, Checklist
 
-from ...serializers import AccountSerializer, NotebookSerializer, NoteSerializer
+from ...serializers import AccountSerializer, NotebookSerializer, NoteSerializer, ChecklistItemSerializer,\
+    ChecklistSerializer
 from ...permissions import IsAccountSelfOrReadOnly
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -136,7 +137,7 @@ class NotebookNotebooksList(ListCreateAPIView):
 # ----------------------------------------------------------------------------------------------------------------------
 
 class NoteList(ListCreateAPIView):
-    """ API endpoint for listing and creating Note. Requires authentication. """
+    """ API endpoint for listing and creating Notes. Requires authentication. """
 
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
@@ -155,3 +156,26 @@ class NoteDetail(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         """ Only show Notes which are in Notebooks that are owned by the currently logged-in user. """
         return Note.objects.filter(notebook__owner=self.request.user)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+class ChecklistList(ListCreateAPIView):
+    """ API endpoint for listing and creating Checklists. Requires authentication. """
+
+    serializer_class = ChecklistSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """ Only show Checklists which are in Notebooks that are owned by the currently logged-in user. """
+        return Checklist.objects.filter(notebook__owner=self.request.user)
+
+
+class ChecklistDetail(RetrieveUpdateDestroyAPIView):
+    """ API endpoint which allows retrieving details for, updating, or deleting a specific Checklist. """
+
+    serializer_class = ChecklistSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """ Only show Checklists which are in Notebooks that are owned by the currently logged-in user. """
+        return Checklist.objects.filter(notebook__owner=self.request.user)

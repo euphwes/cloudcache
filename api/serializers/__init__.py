@@ -1,3 +1,5 @@
 from .AccountSerializer import AccountSerializer
 from .NotebookSerializer import NotebookSerializer
 from .NoteSerializer import NoteSerializer
+from .ChecklistSerializer import ChecklistSerializer
+from .ChecklistItemSerializer import ChecklistItemSerializer
