@@ -12,5 +12,4 @@ class ChecklistItemSerializer(HyperlinkedModelSerializer):
 
         extra_kwargs = {
             'id': {'read_only': True},        # Shouldn't be able to edit ID
-            'checklist': {'read_only': True}  # Shouldn't be able to edit which checklist this belongs to
         }

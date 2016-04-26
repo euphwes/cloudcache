@@ -11,7 +11,7 @@ class ChecklistItem(TrackingFieldsMixin, Model):
         ordering = ('id',)
 
     text = CharField(max_length=1024, blank=False)
-    complete = BooleanField()
+    complete = BooleanField(default=False)
     checklist = ForeignKey(Checklist, on_delete=CASCADE, related_name='items')
 
     def __repr__(self):
