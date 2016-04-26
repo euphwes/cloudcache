@@ -328,6 +328,41 @@ $(function(){
         },
 
         /**
+         * Handle the edit note modal save button being clicked by doing the following:
+         *      1) Get the whitespace-trimmed content of the note title
+         *      2) Get the content of the note body, where <br> are replaced by \r\n
+         *      3) Make an async PUT call to update the new note. Upon success, do the following:
+         *          a) Update the note div's title with the new title
+         *          b) Update the note div's content with the new content
+         *          c) Hide the note modal
+         **/
+        handleEditNoteSaveClick: function($note) {
+            var editTitle = $('#editNoteTitle').text().trim();
+
+            var editContent = '';
+            $.each($('#editNoteContents').html().split('<br>'), function(i, line){
+                editContent += '\r\n' + line;
+            });
+            editContent = editContent.trim();
+
+            $.ajax({
+                url: $note.data('url'),
+                type: 'PUT',
+                timeout: 1000,
+                data: {
+                    'title'    : editTitle,
+                    'content'  : editContent,
+                    'notebook' : $note.data('notebook-url'),
+                },
+                success: function(data){
+                    $note.children('.title').text(editTitle);
+                    $note.children('.contents').html($('#editNoteContents').html());
+                    $('#editNote').modal('hide');
+                },
+            });
+        },
+
+        /**
          * Handle a note being clicked by doing the following:
          *      1) Make sure we have a ref to the actual note itself, in case an internal element click triggered this
          *      2) Set the note modal title to the title of the note being clicked, trigger change to erase placeholder
@@ -355,32 +390,9 @@ $(function(){
                 .html($note.children('.contents').html())
                 .trigger('change');
 
-            $('#editNoteSave').click(function(e){
-
-                var editTitle = $('#editNoteTitle').text();
-
-                var editContent = '';
-                $.each($('#editNoteContents').html().split('<br>'), function(i, line){
-                    editContent += '\r\n' + line;
-                });
-                editContent = editContent.trim();
-
-                $.ajax({
-                    url: $note.data('url'),
-                    type: 'PUT',
-                    timeout: 1000,
-                    data: {
-                        'title'    : editTitle,
-                        'content'  : editContent,
-                        'notebook' : $note.data('notebook-url'),
-                    },
-                    success: function(data){
-                        $note.children('.title').text(editTitle);
-                        $note.children('.contents').html($('#editNoteContents').html());
-                        $('#editNote').modal('hide');
-                    },
-                });
-            });
+            $('#editNoteSave').click(function(){
+                this.handleEditNoteSaveClick($note);
+            }.bind(this));
 
             $('#editNoteDelete').click(function(){
                 this.handleNoteModalNoteDelete($note);
@@ -501,18 +513,65 @@ $(function(){
         },
 
         /**
+         * Handle the new note modal save button being clicked by doing the following:
+         *      1) Get the whitespace-trimmed content of the note title
+         *      2) Get the content of the note body, where <br> are replaced by \r\n
+         *      3) If either note title or content are empty, alert the user and return early
+         *      4) Make an async POST call to create the new note. Upon success, do the following:
+         *          a) Render the note with the note template
+         *          b) Append it to the shortest column in the notes wrapper
+         *          c) Animate the note and fade it in
+         *          d) Hide the note modal
+         **/
+        handleNewNoteSaveClick: function() {
+
+            var editTitle = $('#editNoteTitle').text().trim();
+
+            var editContent = '';
+            $.each($('#editNoteContents').html().split('<br>'), function(i, line){
+                editContent += '\r\n' + line;
+            });
+            editContent = editContent.trim();
+
+            if (editTitle == '' || editContent == '') {
+                $.alert("Can't save the note. Please enter both a title and some note contents.", 'Oops');
+                return;
+            }
+
+            // Make POST call to create new note
+            $.ajax({
+                url: this.currNotebook.url + 'notes/',
+                type: 'POST',
+                timeout: 1000,
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    'title'  : editTitle,
+                    'content': editContent,
+                }),
+                success: function(note){
+                    $(this.noteTemplate(note))
+                        .appendTo(util.getShortestColumn())
+                        .animateCss('fadeIn');
+                    $('#editNote').modal('hide');
+                }.bind(this),
+            });
+        },
+
+        /**
          * Handle the new note div being clicked by doing the following:
-         *      1) Clear out the note modal title, and trigger 'change' so the placeholder text is displayed
-         *      2) Clear out the note modal content, and trigger 'change' so the placeholder text is displayed
-         *      3) Hide the note modal's delete button
+         *      1) Hide the note modal's delete button
+         *      2) Clear out the note modal title, and trigger 'change' so the placeholder text is displayed
+         *      3) Clear out the note modal content, and trigger 'change' so the placeholder text is displayed
          *      4) Attach a click handler to the note modal's save button, to save the note
          *      5) Attach misc event handlers to the note modal itself:
-         *          a) After being show, move the cursor to the end of the title div
+         *          a) After being shown, move the cursor to the end of the title div
          *          b) When being hidden, detach all event handlers on the modal itself, title, save, and delete buttons
          *      6) Attach a keypress handler on the modal title to capture 'enter', and move the cursor to the contents
          *      7) Show the modal
          **/
         handleNewNoteClick: function(e){
+
+            $('#editNoteDelete').hide();
 
             $('#editNoteTitle').text('')
                 .trigger('change');
@@ -520,52 +579,14 @@ $(function(){
             $('#editNoteContents').html('')
                 .trigger('change');
 
-            $('#editNoteDelete').hide();
-
-            $('#editNoteSave').click(function(e){
-
-                var editTitle = $('#editNoteTitle').text().trim();
-
-                var editContent = '';
-                $.each($('#editNoteContents').html().split('<br>'), function(i, line){
-                    editContent += '\r\n' + line;
-                });
-                editContent = editContent.trim();
-
-                if (editTitle == '' || editContent == '') {
-                    $.alert("Can't save the note. Please enter both a title and some note contents.", 'Oops');
-                    return;
-                }
-
-                // Make POST call to create new note
-                $.ajax({
-                    url: this.currNotebook.url + 'notes/',
-                    type: 'POST',
-                    timeout: 1000,
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        'title'  : editTitle,
-                        'content': editContent,
-                    }),
-                    success: function(note){
-                        $(this.noteTemplate(note))
-                            .appendTo(util.getShortestColumn())
-                            .animateCss('fadeIn');
-                        $('#editNote').modal('hide');
-                    }.bind(this),
-                });
-
-            }.bind(this));
+            $('#editNoteSave').click(this.handleNewNoteSaveClick.bind(this));
 
             $('#editNote')
                 .on('shown.bs.modal', function() {
                     util.setEndOfContenteditable($('#editNoteTitle'));
                 })
                 .on('hidden.bs.modal', function() {
-                    $('#editNote').off();
-                    $('#editNoteTitle').off();
-                    $('#editNoteSave').off();
-                    $('#editNoteDelete').show();
+                    $('#editNoteDelete, #editNoteSave, #editNoteTitle, #editNote').off();
                 });
 
             $('#editNoteTitle')
@@ -577,6 +598,51 @@ $(function(){
                 });
 
             $('#editNote').modal('show');
+        },
+
+        /**
+         * Handle the add notebook modal save button being clicked by doing the following:
+         *      1) Get the notebook's name from the modal
+         *      2) Get the current notebook url
+         *      3) Make an async POST to the current notebook url to create a child notebook. When complete:
+         *          a) Double-check the current notebook and get it
+         *          b) Async load notebooks, which when complete:
+         *          c) Rebuild the treeview
+         *          d) Re-select the previously-selected node in the tree
+         *          e) Hide the notebook modal
+         **/
+        handleAddNotebookSaveClick: function(){
+
+            var newName = $('#editNotebookName').text().trim();
+            var currNotebookUrl = this.currNotebook.url;
+
+            // Make POST call to create new notebook
+            $.ajax({
+                url: '/api/notebooks/',
+                type: 'POST',
+                timeout: 1000,
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    'name'  : newName,
+                    'parent': currNotebookUrl,
+                }),
+                success: function(data){
+                    this.currNotebook = this.tree.getSelected()[0];
+                    this.async_loadNotebooks().done(function(notebooks){
+                        this.notebooks = notebooks;
+                        this.buildTree();
+                        if (this.currNotebook) {
+                            this.tree.selectNode(this.currNotebook.nodeId, {silent: true});
+                            this.tree.revealNode(this.currNotebook.nodeId, {silent: true});
+                        }
+                        $('#editNotebook').modal('hide');
+                    }.bind(this));
+                }.bind(this),
+                error: function(xhr, status, err) {
+                    //notifyError("Error creating '<strong>" + nbName + "</strong>': " + status + ".");
+                }
+            });
+
         },
 
         /**
@@ -609,39 +675,7 @@ $(function(){
                     }
                 });
 
-            $('#editNotebookSave').click(function(e){
-
-                var newName = $('#editNotebookName').text().trim();
-                var currNotebookUrl = this.currNotebook.url;
-
-                // Make POST call to create new notebook
-                $.ajax({
-                    url: '/api/notebooks/',
-                    type: 'POST',
-                    timeout: 1000,
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        'name'  : newName,
-                        'parent': currNotebookUrl,
-                    }),
-                    success: function(data){
-                        this.currNotebook = this.tree.getSelected()[0];
-                        this.async_loadNotebooks().done(function(notebooks){
-                            this.notebooks = notebooks;
-                            this.buildTree();
-                            if (this.currNotebook) {
-                                this.tree.selectNode(this.currNotebook.nodeId, {silent: true});
-                                this.tree.revealNode(this.currNotebook.nodeId, {silent: true});
-                            }
-                            $('#editNotebook').modal('hide');
-                        }.bind(this));
-                    }.bind(this),
-                    error: function(xhr, status, err) {
-                        //notifyError("Error creating '<strong>" + nbName + "</strong>': " + status + ".");
-                    }
-                });
-
-            }.bind(this));
+            $('#editNotebookSave').click(this.handleAddNotebookSaveClick.bind(this));
 
             $('#editNotebook').modal('show');
         },
