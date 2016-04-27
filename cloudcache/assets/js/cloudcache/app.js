@@ -195,6 +195,7 @@ $(function(){
 
         notebooks: [],
         notes: [],
+        checklists: [],
 
         noteTemplate: null,
 
@@ -281,10 +282,8 @@ $(function(){
             $('#new-note-wrapper').show();
 
             $('#notes-wrapper').find('.note-col').empty();
-            this.async_loadNotes().done(function(notes){
-                this.notes = notes;
-                this.buildNotes();
-            });
+
+            $.when(this.async_loadNotes(), this.async_loadChecklists()).done(this.buildNotes.bind(this));
 
             this.buildBreadcrumbs();
             $('#renameNotebook').show();
@@ -466,10 +465,8 @@ $(function(){
             this.tree.revealNode(this.currNotebook, {silent: true});
 
             $('#notes-wrapper').find('.note-col').empty();
-            this.async_loadNotes().done(function(notes){
-                this.notes = notes;
-                this.buildNotes();
-            });
+
+            $.when(this.async_loadNotes(), this.async_loadChecklists()).done(this.buildNotes);
 
             this.buildBreadcrumbs();
 
@@ -817,6 +814,7 @@ $(function(){
                     .animateCss('fadeIn');
             };
             $.each(this.notes, buildNote.bind(this));
+            console.log(this.checklists);
         },
 
         /**
@@ -834,16 +832,31 @@ $(function(){
         },
 
         /**
-         * Kick off the async process for retrieving all notebooks for the current notebook. Return an async promise
-         * to the caller so they can do whatever they want whenever this is ready.
+         * Kick off the async process for retrieving all notes for the current notebook. Return an async promise to the
+         * caller so they can do whatever they want whenever this is ready.
          **/
         async_loadNotes: function() {
             return $.ajax({
-                context: this,
                 url: this.currNotebook.url + 'notes/',
                 type: 'GET',
                 timeout: 1000,
-            });
+            }).then(function(notes){
+                this.notes = notes;
+            }.bind(this));
+        },
+
+        /**
+         * Kick off the async process for retrieving all checklists for the current notebook. Return an async promise
+         * to the caller so they can do whatever they want whenever this is ready.
+         **/
+        async_loadChecklists: function() {
+            return $.ajax({
+                url: this.currNotebook.url + 'checklists/',
+                type: 'GET',
+                timeout: 1000,
+            }).then(function(checklists){
+                this.checklists = checklists;
+            }.bind(this));
         },
 
         /**
