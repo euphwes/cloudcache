@@ -587,6 +587,7 @@ $(function(){
                 })
                 .on('hidden.bs.modal', function() {
                     $('#editNoteDelete, #editNoteSave, #editNoteTitle, #editNote').off();
+                    $('#editNoteDelete').show();
                 });
 
             $('#editNoteTitle')
