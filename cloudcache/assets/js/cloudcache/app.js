@@ -820,6 +820,10 @@ $(function(){
                     .appendTo(util.getShortestColumn())
                     .animateCss('fadeIn');
             }.bind(this));
+            $('.checklist .item input').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green'
+            });
         },
 
         /**
