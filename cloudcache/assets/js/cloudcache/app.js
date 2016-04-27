@@ -198,15 +198,17 @@ $(function(){
         checklists: [],
 
         noteTemplate: null,
+        checklistTemplate: null,
 
         /**
          * Initialize the app controller, perform all the setup stuff necessary.
          **/
         init: function() {
 
-            // Register the renderContents helper function with Handlebars.js and compile the template.
+            // Register the renderContents helper function with Handlebars.js and compile the templates.
             Handlebars.registerHelper('render', util.renderContents);
             this.noteTemplate = Handlebars.compile($('#note-template').html());
+            this.checklistTemplate = Handlebars.compile($('#checklist-template').html());
 
             // Register with enquire.js so that if the the screen size changes and media queries are matched or
             // unmatched, the slideout menu size params are rebuilt and the toggle mechanism is reattached to the button
@@ -808,13 +810,16 @@ $(function(){
          * shortest column in the notes wrapper.
          **/
         buildNotes: function() {
-            var buildNote = function(i, note){
+            $.each(this.notes, function(i, note){
                 $(this.noteTemplate(note))
                     .appendTo(util.getShortestColumn())
                     .animateCss('fadeIn');
-            };
-            $.each(this.notes, buildNote.bind(this));
-            console.log(this.checklists);
+            }.bind(this));
+            $.each(this.checklists, function(i, list){
+                $(this.checklistTemplate(list))
+                    .appendTo(util.getShortestColumn())
+                    .animateCss('fadeIn');
+            }.bind(this));
         },
 
         /**

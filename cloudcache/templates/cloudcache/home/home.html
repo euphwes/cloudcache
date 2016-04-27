@@ -105,6 +105,28 @@
             </div>
         </div>
     </script>
+
+    <script id='checklist-template' type='text/x-handlebars-template'>
+        <div class="cc-element checklist" data-url="{{url}}" data-notebook-url="{{notebook}}">
+            <div class="title">
+                <div class="inline">{{title}}</div>
+            </div>
+            <div class="contents">
+                {{#each items}}
+                    <div class="item" data-url="{{url}}">
+                        {{#if complete}}
+                        <input type="checkbox"><span>{{text}}</span>
+                        {{else}}
+                        <input type="checkbox" checked><span class="complete">{{text}}</span>
+                        {{/if}}
+                    </div>
+                {{/each}}
+            </div>
+            <div class="toolbar">
+                <span class="glyphicon glyphicon-trash pull-right"></span>
+            </div>
+        </div>
+    </script>
     {% endverbatim %}
 
     <script src="{% static 'js/cc.min.js' %}"></script>

@@ -44,7 +44,7 @@
     overflow-y: auto;
 }
 
-// --------------------- Note and notebook common styles ----------------------
+// --------------------- Note and checklist common styles ----------------------
 
 @cc-el-side-margin:          0;  // Unnecessary because of Bootstrap's column sidepadding
 @cc-el-top-bottom-margin: 10px;  // Match Bootstrap's column 10px side padding, create equal spacing on all sides
@@ -53,7 +53,26 @@
 @cc-el-transition: all 0.3s ease;
 @cc-el-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.2), 0 1px 5px 0 rgba(0,0,0,0.12);
 
+@cc-padding-top:  0.625em;
+@cc-padding-side: 1em;
+
+@title-font-size:    1em;
+@title-font-weight:  bold;
+
+@contents-font-size:  0.75em;
+@contents-min-height: 1em;
+
+@note-hover-shadow:     0 2px 15px rgba(0,0,0,0.30);
+@note-hover-transition: box-shadow 0.3s ease;
+
 .cc-element {
+    background: white;
+
+    cursor: default;
+    .user-select(none);
+
+    padding: @cc-padding-top @cc-padding-side;
+
     display: inline-block;
     width: 100%;
     margin: @cc-el-top-bottom-margin @cc-el-side-margin;
@@ -63,67 +82,6 @@
 
     .border-radius(@cc-el-border-radius);
     .box-shadow(@cc-el-shadow);
-}
-
-// Help <div> and <span> display inline next to each other in a parent container
-.inline {
-    display: inline-block;
-}
-
-// Help to visually denote that the contenteditable divs are editable
-// The 1px padding is Chrome hack to that the element displays a blinking cursor
-.edit {
-    cursor: text;
-    padding-left: 1px;
-}
-
-// Get rid of the border on a focused contenteditable on some platforms
-[contenteditable]:focus {
-    outline: 0px solid transparent;
-}
-
-// Styling which helps emulate placeholder effect on contenteditable divs 
-*[data-placeholder]:not(:focus):not([data-div-placeholder-content]):before {
-    content: attr(data-placeholder);
-    float: left;
-    //margin-left: 2px;
-    color: darken(#b3b3b3, 10%);
-}
-
-// ------------------------------- Note styles --------------------------------
-
-@note-hover-shadow:     0 2px 15px rgba(0,0,0,0.30);
-@note-hover-transition: box-shadow 0.3s ease;
-
-@note-padding-top:  0.625em;
-@note-padding-side: 1em;
-
-@title-font-size:    1em;
-@title-font-weight:  bold;
-
-@contents-font-size:  0.75em;
-@contents-min-height: 1em;
-
-@para-margin-bottom: 0.75em;
-
-.note {
-    background: white;
-
-    padding: @note-padding-top @note-padding-side;
-
-    cursor: default;
-    .user-select(none);
-
-    &:hover {
-        transition: @note-hover-transition;
-        .box-shadow(@note-hover-shadow);
-
-        .toolbar span {
-            transition: opacity 0.3s ease;
-            opacity: 0.75;
-            cursor: pointer;
-        }
-    }
 
     .title {
         font-size:   @title-font-size;
@@ -160,8 +118,19 @@
         }
     }
 
+    &:hover {
+        transition: @note-hover-transition;
+        .box-shadow(@note-hover-shadow);
+
+        .toolbar span {
+            transition: opacity 0.3s ease;
+            opacity: 0.75;
+            cursor: pointer;
+        }
+    }
+
     .responsive-mobile({
-        padding: (2.25 * @note-padding-top) (2.25 * @note-padding-side);
+        padding: (2.25 * @cc-padding-top) (2.25 * @cc-padding-side);
         .title {
             font-size: 2.75 * @title-font-size;
         }
@@ -169,6 +138,31 @@
             font-size: 2.75 * @contents-font-size;
         }
     })
+}
+
+// Help <div> and <span> display inline next to each other in a parent container
+.inline {
+    display: inline-block;
+}
+
+// Help to visually denote that the contenteditable divs are editable
+// The 1px padding is Chrome hack to that the element displays a blinking cursor
+.edit {
+    cursor: text;
+    padding-left: 1px;
+}
+
+// Get rid of the border on a focused contenteditable on some platforms
+[contenteditable]:focus {
+    outline: 0px solid transparent;
+}
+
+// Styling which helps emulate placeholder effect on contenteditable divs 
+*[data-placeholder]:not(:focus):not([data-div-placeholder-content]):before {
+    content: attr(data-placeholder);
+    float: left;
+    //margin-left: 2px;
+    color: darken(#b3b3b3, 10%);
 }
 
 // --------------------------- New note placeholder ---------------------------
