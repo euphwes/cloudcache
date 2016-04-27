@@ -135,6 +135,41 @@ class NotebookChecklistsList(ListCreateAPIView):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
+class ChecklistItemsList(ListCreateAPIView):
+    """ API endpoint for listing only those items under a specific Checklist. Requires authentication. """
+
+    serializer_class = ChecklistItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        """ Retrieve only those items which are contained within the Checklist whose ID is <pk>
+        in the API endpoint. """
+
+        items = self.get_queryset().filter(checklist__id=pk)
+        serializer = ChecklistItemSerializer(items, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        """ Create a new ChecklistItem under the Checklist whose ID is <pk> in the API endpoint. """
+
+        # Add a 'Checklist' parameter to the request data (or override it if it exists) to ensure the ChecklistItem
+        # being posted is owned by the Checklist whose ID is in the API endpoint URL.
+        request.data['checklist'] = '/api/checklists/{}/'.format(pk)
+
+        serializer = ChecklistItemSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        """ Only show ChecklistItems which are in Checklists in Notebooks that are owned by the currently
+        logged-in user. """
+        return ChecklistItem.objects.filter(checklist__notebook__owner=self.request.user)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 class NotebookNotebooksList(ListCreateAPIView):
     """ API endpoint for listing only those Notebooks under a specific Notebook. Requires authentication. """
 

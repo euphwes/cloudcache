@@ -6,7 +6,7 @@ from rest_framework.reverse import reverse
 
 from .views.public import AccountList, AccountDetail, NotebookList, NotebookDetail, NoteList, NoteDetail,\
     NotebookNotesList, NotebookNotebooksList, ChecklistList, ChecklistDetail, ChecklistItemList, ChecklistItemDetail,\
-    NotebookChecklistsList
+    NotebookChecklistsList, ChecklistItemsList
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ def api_root(request, format=None):
         'notebooks': reverse('notebook-list', request=request, format=format),
         'notes': reverse('note-list', request=request, format=format),
         'checklists': reverse('checklist-list', request=request, format=format),
-        'checklistitems': reverse('checklistitem-list', request=request, format=format),
+        'checklist items': reverse('checklistitem-list', request=request, format=format),
     })
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -56,4 +56,7 @@ urlpatterns = [
     # cloudcache.models.ChecklistItem list and detail views
     url(r'^checklistitems/$', ChecklistItemList.as_view(), name='checklistitem-list'),
     url(r'^checklistitems/(?P<pk>[0-9]+)/$', ChecklistItemDetail.as_view(), name='checklistitem-detail'),
+
+    # cloudcache.models.Checklist nested ChecklistItem list
+    url('^checklists/(?P<pk>[0-9]+)/items/$', ChecklistItemsList.as_view(), name='checklist-items-list'),
 ]
