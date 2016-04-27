@@ -795,7 +795,7 @@ $(function(){
                 e.stopPropagation();
             });
 
-            $('#new-note-wrapper').on('click', '.new-note', this.handleNewNoteClick.bind(this));
+            $('#new-note-wrapper').on('click', '#new-note', this.handleNewNoteClick.bind(this));
 
             $('.breadcrumbs').on('click', '.bc-root', this.handleRootBreadcrumbClick.bind(this));
             $('.breadcrumbs').on('click', '.bc-crumb', this.handleBreadcrumbClick.bind(this));
@@ -869,7 +869,7 @@ $(function(){
             // apply iCheck checkboxes to the checklist checkboxes
             $('.checklist .item input').iCheck({
                 checkboxClass: 'icheckbox_square-green',
-                radioClass: 'iradio_square-green'
+                radioClass: 'iradio_square-green',
             });
 
             this.rebindChecklistCheckboxEvents();
