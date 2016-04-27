@@ -59,7 +59,7 @@
 @title-font-size:    1em;
 @title-font-weight:  bold;
 
-@contents-font-size:  0.75em;
+@contents-font-size:  0.875em;
 @contents-min-height: 1em;
 
 @note-hover-shadow:     0 2px 15px rgba(0,0,0,0.30);
@@ -163,6 +163,28 @@
     float: left;
     //margin-left: 2px;
     color: darken(#b3b3b3, 10%);
+}
+
+// ----------------------------- Checklist styles -----------------------------
+
+.checklist .item {
+
+    display: flex;
+    align-items: center;
+    margin: 5px auto;
+
+    input {
+        margin: 0;
+    }
+
+    span {
+        margin-left: 10px;
+    }
+
+    .complete {
+        text-decoration: line-through;
+        opacity: 0.75;
+    }
 }
 
 // --------------------------- New note placeholder ---------------------------
