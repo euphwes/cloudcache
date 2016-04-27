@@ -115,9 +115,9 @@
                 {{#each items}}
                     <div class="item" data-url="{{url}}">
                         {{#if complete}}
-                        <input type="checkbox"><span>{{text}}</span>
-                        {{else}}
                         <input type="checkbox" checked><span class="complete">{{text}}</span>
+                        {{else}}
+                        <input type="checkbox"><span>{{text}}</span>
                         {{/if}}
                     </div>
                 {{/each}}

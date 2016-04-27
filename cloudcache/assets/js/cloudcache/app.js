@@ -806,24 +806,73 @@ $(function(){
         },
 
         /**
-         * Iterate through the current array of notes, running each through the template and then appending it to the
-         * shortest column in the notes wrapper.
+         * Perform an async ajax call to update a checklist item with the parameters sent in the function.
+         **/
+        updateChecklistItem: function(url, text, complete, checklistUrl, callback) {
+            $.ajax({
+                url: url,
+                type: 'PUT',
+                timeout: 1000,
+                data: {
+                    'text'      : text,
+                    'complete'  : complete,
+                    'checklist' : checklistUrl,
+                },
+                success: function(data){
+                    if (callback) callback(data);
+                },
+            });
+        },
+
+        /**
+         * Bind event handlers to the checklist div checkboxes to update the checklist items when checked or unchecked.
+         **/
+        rebindChecklistCheckboxEvents: function() {
+
+            $('.checklist .item input').off().on('ifToggled', function(e) {
+
+                var checked = $(e.target).is(':checked');
+                var $list   = $(e.target).parents('.checklist');
+                var $item   = $(e.target).parents('.item');
+
+                if (checked)
+                    $item.find('span').addClass('complete');
+                else
+                    $item.find('span').removeClass('complete');
+
+                this.updateChecklistItem($item.data('url'), $item.find('span').text(), checked, $list.data('url'));
+
+            }.bind(this));
+
+        },
+
+        /**
+         * Iterate through the arrays of notes and checklists, running each through the appropriate template and then
+         * appending it to the shortest column in the notes wrapper.
          **/
         buildNotes: function() {
+
+            // render and append notes
             $.each(this.notes, function(i, note){
                 $(this.noteTemplate(note))
                     .appendTo(util.getShortestColumn())
                     .animateCss('fadeIn');
             }.bind(this));
+
+            // render and append checklists
             $.each(this.checklists, function(i, list){
                 $(this.checklistTemplate(list))
                     .appendTo(util.getShortestColumn())
                     .animateCss('fadeIn');
             }.bind(this));
+
+            // apply iCheck checkboxes to the checklist checkboxes
             $('.checklist .item input').iCheck({
                 checkboxClass: 'icheckbox_square-green',
                 radioClass: 'iradio_square-green'
             });
+
+            this.rebindChecklistCheckboxEvents();
         },
 
         /**
