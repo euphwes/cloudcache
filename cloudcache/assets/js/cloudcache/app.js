@@ -783,11 +783,67 @@ $(function(){
         },
 
         /**
+         *
+         **/
+        handleListClick: function(e) {
+            var $list = $(e.target).closest('.checklist');
+
+            $('#editListTitle')
+                .text($list.children('.title').text())
+                .trigger('change');
+
+            $('#editListContents')
+                .html($list.children('.contents').html())
+                .trigger('change');
+
+            var $newItem = $('<div class="item"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>')
+            $('#editListContents').append($newItem);
+
+            // apply iCheck checkboxes to the checklist checkboxes
+            $('#editListContents .item input').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            /*
+            $('#editNoteSave').click(function(){
+                this.handleEditNoteSaveClick($note);
+            }.bind(this));
+
+            $('#editNoteDelete').click(function(){
+                this.handleNoteModalNoteDelete($note);
+            }.bind(this));
+
+            $('#editNote')
+                .on('shown.bs.modal', function() {
+                    util.setEndOfContenteditable($('#editNoteTitle'));
+                })
+                .on('hide.bs.modal', function(){
+                    $note.showThenAnimateCss('zoomIn');
+                    $('#editNote, #editNoteTitle, #editNoteSave, #editNoteDelete').off();
+                });
+
+            $('#editNoteTitle')
+                .on('keypress', function(e){
+                    if (e.keyCode == 13) {
+                        $('#editNoteSave').trigger('click');
+                        return false;
+                    }
+                });
+
+            $note.animateCssThenHide('zoomOut');
+            $('#editNote').modal('show');
+            */
+            $('#editList').modal('show');
+        },
+
+        /**
          * Wire up events for pretty much everything
          **/
         wireEvents: function() {
 
             $('#notes-wrapper').on('click', '.note', this.handleNoteClick.bind(this));
+            $('#notes-wrapper').on('click', '.checklist', this.handleListClick.bind(this));
 
             var boundHandleTrashCanClick = this.handleTrashCanClick.bind(this);
             $('#notes-wrapper').on('click', '.glyphicon-trash', function(e){

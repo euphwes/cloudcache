@@ -77,6 +77,22 @@
       </div>
     </div>
 
+    <!-- Checklist modal -->
+    <div class="modal fade" id="editList" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="editListTitle" contenteditable="true" data-placeholder="Title"></h4>
+          </div>
+          <div class="modal-body" id="editListContents"></div>
+          <div class="modal-footer">
+            <button id="editListSave" type="button" class="btn btn-primary">Save</button>
+            <button id="editListDelete" type="button" class="btn btn-danger pull-left">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Notebook modal -->
     <div class="modal fade" id="editNotebook" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
@@ -112,13 +128,13 @@
             </div>
             <div class="contents">
                 {{#each items}}
-                    <div class="item" data-url="{{url}}">
-                        {{#if complete}}
-                        <input type="checkbox" checked><span class="complete">{{text}}</span>
-                        {{else}}
-                        <input type="checkbox"><span>{{text}}</span>
-                        {{/if}}
-                    </div>
+                <div class="item" data-url="{{url}}">
+                    {{#if complete}}
+                    <input type="checkbox" checked><span class="complete">{{text}}</span>
+                    {{else}}
+                    <input type="checkbox"><span>{{text}}</span>
+                    {{/if}}
+                </div>
                 {{/each}}
             </div>
             <div class="toolbar">
