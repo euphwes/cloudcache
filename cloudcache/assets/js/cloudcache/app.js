@@ -796,6 +796,8 @@ $(function(){
                 .html($list.children('.contents').html())
                 .trigger('change');
 
+            $('#editListContents').children().attr('contenteditable', true);
+
             var $newItem = $('<div class="item"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>')
             $('#editListContents').append($newItem);
 
