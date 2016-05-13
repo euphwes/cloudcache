@@ -148,16 +148,13 @@
 // Help to visually denote that the contenteditable divs are editable
 // The 1px padding is Chrome hack to that the element displays a blinking cursor
 .edit {
-
+    cursor: text;
+    padding-left: 1px;
 }
 
 // Get rid of the border on a focused contenteditable on some platforms
-[contenteditable] {
-    cursor: text;
-    padding-left: 1px;
-    &:focus {
-        outline: 0px solid transparent;
-    }
+[contenteditable]:focus {
+    outline: 0px solid transparent;
 }
 
 // Styling which helps emulate placeholder effect on contenteditable divs 
@@ -181,6 +178,8 @@
         }
 
         span {
+            cursor: text;
+            padding-left: 1px;
             display: block;
             margin-left: 10px;
         }
