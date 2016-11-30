@@ -22,7 +22,7 @@ class NoteSerializer(HyperlinkedModelSerializer):
         try:
             # Assume there is a context and nested HTTP request in the kwargs
             # Only show Notebooks owned by the currently logged-in user in the `notebook` dropdown
-            user = kwargs['context']['request'].user
+            owner = kwargs['context']['request'].user
 
         except KeyError:
             # This would pop if there is no `context` in the kwargs, or `request` in the context. This would just mean

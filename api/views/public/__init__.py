@@ -73,6 +73,23 @@ class NoteList(ListCreateAPIView):
         """ Only show Notes which are owned by the currently logged-in user. """
         return Note.objects.filter(owner=self.request.user)
 
+    def post(self, request, *args, **kwargs):
+        """ When creating a new Note, only allow the user to create new Notes for themselves. """
+
+        # Get Account detail url for the currently logged-in user. Set that Account url as the data for 'owner'
+        # in this request, ignoring what's already there.
+        request.data['owner'] = AccountSerializer(request.user, context={'request': request}).data['url']
+
+        # Use the note serializer to build up the notebook, checking for validity, etc
+        # If valid, save the object and return a detail-style view along with status 201
+        # If invalid, return error messages along with status 400
+        note_serializer = NoteSerializer(data=request.data, context={'request': request})
+        if note_serializer.is_valid():
+            note_serializer.save()
+            return Response(note_serializer.data, status=HTTP_201_CREATED)
+
+        return Response(note_serializer.errors, status=HTTP_400_BAD_REQUEST)
+
 
 class NoteDetail(RetrieveUpdateDestroyAPIView):
     """ API endpoint which allows retrieving details for, updating, or deleting a specific Note. """

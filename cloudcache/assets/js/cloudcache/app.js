@@ -253,7 +253,7 @@ $(function(){
                 data: {
                     'title'    : editTitle,
                     'content'  : editContent,
-                    'notebook' : $note.data('notebook-url'),
+                    'owner'    : $note.data('owner-url'),
                 },
                 success: function(data){
                     $note.children('.title').text(editTitle);
@@ -382,7 +382,7 @@ $(function(){
 
             // Make POST call to create new note
             $.ajax({
-                url: this.currNotebook.url + 'notes/',
+                url: '/api/notes/',
                 type: 'POST',
                 timeout: 1000,
                 contentType: 'application/json',
