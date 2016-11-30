@@ -191,9 +191,6 @@ $(function(){
 
         tree: null,
 
-        currNotebook: null,
-
-        notebooks: [],
         notes: [],
         checklists: [],
 
@@ -210,111 +207,14 @@ $(function(){
             this.noteTemplate = Handlebars.compile($('#note-template').html());
             this.checklistTemplate = Handlebars.compile($('#checklist-template').html());
 
-            // Register with enquire.js so that if the the screen size changes and media queries are matched or
-            // unmatched, the slideout menu size params are rebuilt and the toggle mechanism is reattached to the button
-            this.buildMenu();
-            enquire.register('only screen and (max-device-width: 480px)', {
-                  match: this.buildMenu,
-                unmatch: this.buildMenu,
-            });
-
             this.wireEvents();
 
-            // Do an initial load of the notebooks, and build the tree
-            this.async_loadNotebooks().done(function(notebooks){
-                this.notebooks = notebooks;
-                this.buildTree();
-                this.buildBreadcrumbs();
-                $('#renameNotebook').hide();
-                $('#deleteNotebook').hide();
-                $('#default-view').show();
-            });
+            // Do an initial load of the notes and checklists
+            $.when(this.async_loadChecklists(), this.async_loadNotes()).done(function(){
+                $('#new-note-wrapper').show();
+                this.buildNotes.bind(this)();
+            }.bind(this));
         },
-
-        /**
-         * Build up the breadcrumbs for the current notebook structure. Start at the current notebook, then keep working
-         * up the tree until the root is reached. At each notebook, append a link element with the notebook's name.
-         * All root notebooks fall under an imaginary element here which we'll call 'Home'.
-         **/
-        buildBreadcrumbs: function() {
-
-            var $breadcrumbs = $('.breadcrumbs').empty();
-
-            // If no notebook is provided, bail out early
-            if (this.currNotebook == null) return;
-
-            var $rootLink = $('<a href="#">')
-                .addClass('bc-root')
-                .append('Home');
-
-            $breadcrumbs.append(this.currNotebook.text);
-
-            // Keep climbing the tree, finding each parent notebook, until we reach the top. For each parent notebook
-            // append a link element with the parent's name
-            var parent = this.tree.getParent(this.currNotebook);
-            while (parent) {
-                $breadcrumbs.append(' ▶ ');
-                $("<a href='#'>")
-                    .append(parent.text)
-                    .addClass('bc-crumb')
-                    .attr('data-nodeId', parent.nodeId)
-                    .appendTo($breadcrumbs);
-                parent = this.tree.getParent(parent);
-            }
-
-            $breadcrumbs.append(' ▶ ');
-            $breadcrumbs.append($rootLink);
-        },
-
-        /**
-         * Handle a click of a row (in effect, selecting a notebook) in the treeview by doing the following:
-         *      1) Set the current notebook to the one selected in the treeview
-         *      2) Ensure the new note div is visible, by showing the new note wrapper
-         *      3) Remove any notes from the notes wrapper
-         *      4) Perform an async notes load for the current notebook, which when complete, does the following:
-         *          a) Creates note divs for each note then appends them to the notes wrapper
-         *      5) Build the breadcrumbs for the current notebook hierarchy
-         *      6) Ensure the rename notebook menu option is visible
-         *      7) Ensure the delete notebook menu option is visible
-         *      8) Ensure the default view is hidden
-         **/
-        handleTreeClick: function(e, notebookNode) {
-            this.currNotebook = notebookNode;
-
-            $('#new-note-wrapper').show();
-
-            $('#notes-wrapper').find('.note-col').empty();
-
-            $.when(this.async_loadNotes(), this.async_loadChecklists()).done(this.buildNotes.bind(this));
-
-            this.buildBreadcrumbs();
-            $('#renameNotebook').show();
-            $('#deleteNotebook').show();
-            $('#default-view').hide();
-        },
-
-        /**
-         * Handle deselecting a row (in effect, no notebook being chosen) in the treeview by doing the following:
-         *      1) Set the current notebook to null
-         *      2) Ensure the new note div is invisible, by hiding the new note wrapper
-         *      3) Remove any notes from the notes wrapper
-         *      4) Clear breadcrumbs (by running buildBreadcrumbs with a null current notebook)
-         *      5) Ensure the rename notebook menu option is hidden
-         *      6) Ensure the delete notebook menu option is hidden
-         *      7) Ensure the default view is visible
-         **/
-        handleTreeUnselect: function(e, notebookNode) {
-            this.currNotebook = null;
-            $('#new-note-wrapper').hide();
-
-            $('#notes-wrapper').find('.note-col').empty();
-            this.buildBreadcrumbs();
-
-            $('#renameNotebook').hide();
-            $('#deleteNotebook').hide();
-            $('#default-view').show();
-        },
-
 
         /**
          * Handle the note modal delete button being clicked by doing the following:
@@ -418,63 +318,6 @@ $(function(){
 
             $note.animateCssThenHide('zoomOut');
             $('#editNote').modal('show');
-        },
-
-        /**
-         * Handle the root breadcrumb element being clicked by doing the following:
-         *      1) Set the current notebook to null
-         *      2) Hide the new note div by setting its wrapper to be hidden
-         *      3) Unselect the current node in the treeview, suppressing events being fired by this
-         *      4) Empty the notes wrapper of any notes which might be in there
-         *      5) Empty the breadcrumbs, by running buildBreadcrumbs when the current notebook is null
-         *      6) Hide the rename notebook menu option
-         *      7) Hide the delete notebook menu option
-         *      8) Show the default view in the main content panel
-         **/
-        handleRootBreadcrumbClick: function() {
-            this.currNotebook = null;
-            $('#new-note-wrapper').hide();
-
-            this.tree.unselectNode(this.tree.getSelected()[0], {silent: true});
-
-            $('#notes-wrapper').find('.note-col').empty();
-            this.buildBreadcrumbs();
-
-            $('#renameNotebook').hide();
-            $('#deleteNotebook').hide();
-            $('#default-view').show();
-        },
-
-        /**
-         * Handle a non-root breadcrumb element being clicked by doing the following:
-         *      1) Set the current notebook to the node in the tree with the node ID from the breadcrumb being clicked
-         *      3) Select that notebook in the treeview, suppressing events being fired by this
-         *      3) Show that notebook in the treeview, suppressing events being fired by this
-         *      4) Empty the notes wrapper of any notes which might be in there
-         *      5) Perform an async notes load for the current notebook, which when complete, does the following:
-         *          a) Creates note divs for each note then appends them to the notes wrapper
-         *      6) Build up the breadcrumbs for the current notebook hierarchy
-         *      7) Show the rename notebook menu option
-         *      8) Show the delete notebook menu option
-         *      9) Hide the default view from the main content panel
-         **/
-        handleBreadcrumbClick: function(e) {
-
-            var $notebook = $(e.target);
-            this.currNotebook = this.tree.getNode($notebook.attr('data-nodeId'));
-
-            this.tree.selectNode(this.currNotebook, {silent: true});
-            this.tree.revealNode(this.currNotebook, {silent: true});
-
-            $('#notes-wrapper').find('.note-col').empty();
-
-            $.when(this.async_loadNotes(), this.async_loadChecklists()).done(this.buildNotes);
-
-            this.buildBreadcrumbs();
-
-            $('#renameNotebook').show();
-            $('#deleteNotebook').show();
-            $('#default-view').hide();
         },
 
         /**
@@ -600,189 +443,6 @@ $(function(){
         },
 
         /**
-         * Handle the add notebook modal save button being clicked by doing the following:
-         *      1) Get the notebook's name from the modal
-         *      2) Get the current notebook url
-         *      3) Make an async POST to the current notebook url to create a child notebook. When complete:
-         *          a) Double-check the current notebook and get it
-         *          b) Async load notebooks, which when complete:
-         *          c) Rebuild the treeview
-         *          d) Re-select the previously-selected node in the tree
-         *          e) Hide the notebook modal
-         **/
-        handleAddNotebookSaveClick: function(){
-
-            var newName = $('#editNotebookName').text().trim();
-            var currNotebookUrl = this.currNotebook.url;
-
-            // Make POST call to create new notebook
-            $.ajax({
-                url: '/api/notebooks/',
-                type: 'POST',
-                timeout: 1000,
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    'name'  : newName,
-                    'parent': currNotebookUrl,
-                }),
-                success: function(data){
-                    this.currNotebook = this.tree.getSelected()[0];
-                    this.async_loadNotebooks().done(function(notebooks){
-                        this.notebooks = notebooks;
-                        this.buildTree();
-                        if (this.currNotebook) {
-                            this.tree.selectNode(this.currNotebook.nodeId, {silent: true});
-                            this.tree.revealNode(this.currNotebook.nodeId, {silent: true});
-                        }
-                        $('#editNotebook').modal('hide');
-                    }.bind(this));
-                }.bind(this),
-                error: function(xhr, status, err) {
-                    //notifyError("Error creating '<strong>" + nbName + "</strong>': " + status + ".");
-                }
-            });
-
-        },
-
-        /**
-         * Handle the `Add Notebook` menu option being clicked by doing the following:
-         *      1) Clear the notebook modal title, and trigger `change` so the placeholder text is entered
-         *      2) Attach misc event handlers to the notebook modal:
-         *          a) After being shown, move the cursor to the end of the modal's notebook name area
-         *          b) On being hidden, detach all event handlers from the modal itself, and the save button
-         *          b) On keypress, capture enter, and trigger a save button click instead
-         *      3) Attach a click handler to the save button, to save the new notebook
-         *      4) Show the modal
-         **/
-        handleAddNotebookClick: function(){
-
-            $('#editNotebookName').text('')
-                .trigger('change');
-
-            $('#editNotebook')
-                .on('hidden.bs.modal', function() {
-                    $('#editNotebook').off();
-                    $('#editNotebookSave').off();
-                })
-                .on('shown.bs.modal', function() {
-                    util.setEndOfContenteditable($('#editNotebookName'));
-                })
-                .on('keypress', function(e){
-                    if (e.keyCode == 13) {
-                        $('#editNotebookSave').trigger('click');
-                        return false;
-                    }
-                });
-
-            $('#editNotebookSave').click(this.handleAddNotebookSaveClick.bind(this));
-
-            $('#editNotebook').modal('show');
-        },
-
-        /**
-         * Handle the `Rename Notebook` menu option being clicked by doing the following:
-         *      1) Set notebook modal title to the current title, and trigger `change` so the placeholder is removed
-         *      2) Attach misc event handlers to the notebook modal:
-         *          a) After being shown, move the cursor to the end of the modal's notebook name area
-         *          b) On being hidden, detach all event handlers from the modal itself, and the save button
-         *          b) On keypress, capture enter, and trigger a save button click instead
-         *      3) Attach a click handler to the save button, to save the new notebook
-         *      4) Show the modal
-         **/
-        handleRenameNotebookClick: function() {
-
-            $('#editNotebookName').text(this.currNotebook.text)
-                .trigger('change');
-
-            $('#editNotebookSave').click(function(){
-                // Make PUT call to update notebook
-                $.ajax({
-                    url: this.currNotebook.url,
-                    type: 'PUT',
-                    timeout: 1000,
-                    data: {
-                        'name'  : $('#editNotebookName').text().trim(),
-                        'parent': this.currNotebook.parent,
-                        'owner' : this.currNotebook.owner,
-                    },
-                    success: function(data){
-                        this.async_loadNotebooks().done(function(notebooks){
-                            this.notebooks = notebooks;
-                            this.buildTree();
-                            this.tree.selectNode(this.currNotebook.nodeId, {silent: true});
-                            this.tree.revealNode(this.currNotebook.nodeId, {silent: true});
-                            this.currNotebook = this.tree.getSelected()[0];
-                            this.buildBreadcrumbs();
-                            $('#editNotebook').modal('hide');
-                        }.bind(this));
-                    }.bind(this),
-                    error: function(xhr, status, err) {
-                        //notifyError("Error updating '<strong>" + nbName + "</strong>': " + status + ".");
-                    }
-                });
-            }.bind(this));
-
-            $('#editNotebook')
-                .on('hidden.bs.modal', function() {
-                    $('#editNotebook').off();
-                    $('#editNotebookSave').off();
-                })
-                .on('shown.bs.modal', function() {
-                    util.setEndOfContenteditable($('#editNotebookName'));
-                })
-                .on('keypress', function(e){
-                    if (e.keyCode == 13) {
-                        $('#editNotebookSave').trigger('click');
-                        return false;
-                    }
-                });
-
-            $('#editNotebook').modal('show');
-        },
-
-        /**
-         * Handle the delete notebook menu option being clicked by doing the following:
-         *      1) Display a confirmation box, indicating the dangers to the user
-         *      2) If no, just exit without doing anything. If yes, continue
-         *      3) Start an async ajax call to the delete the notebook.
-         *          a) On success, do the following:
-         *              i) Async reload notebooks
-         *              ii) Rebuild the treeview
-         *              iii) Set the current notebook to null
-         *              iv) Clear breadcrumbs
-         *              v) Empty the content panel of all notes
-         *              vi) Hide the new note thingy
-         *              vii) Show the default view
-         **/
-        handleDeleteNotebookClick: function(e){
-
-            var onNotebookDeleteSuccess = function() {
-                this.async_loadNotebooks().done(function(notebooks){
-                    this.notebooks = notebooks;
-                    this.buildTree();
-                    this.currNotebook = null;
-                    this.buildBreadcrumbs();
-                    $('#notes-wrapper').find('.note-col').empty();
-                    $('#new-note-wrapper').hide();
-                    $('#default-view').show();
-                }.bind(this));
-            };
-
-            var onConfirm = function() {
-                $.ajax({
-                    url: this.currNotebook.url,
-                    type: 'DELETE',
-                    timeout: 1000,
-                    success: onNotebookDeleteSuccess.bind(this),
-                });
-            };
-
-            util.confirm('Delete notebook?',
-                'This action cannot be reversed. All nested notebook and notes will be deleted.', 'Delete',
-                onConfirm.bind(this));
-        },
-
-        /**
          *
          **/
         handleListClick: function(e) {
@@ -854,13 +514,6 @@ $(function(){
             });
 
             $('#new-note-wrapper').on('click', '#new-note', this.handleNewNoteClick.bind(this));
-
-            $('.breadcrumbs').on('click', '.bc-root', this.handleRootBreadcrumbClick.bind(this));
-            $('.breadcrumbs').on('click', '.bc-crumb', this.handleBreadcrumbClick.bind(this));
-
-            $('#addNotebook').click(this.handleAddNotebookClick.bind(this));
-            $('#renameNotebook').click(this.handleRenameNotebookClick.bind(this));
-            $('#deleteNotebook').click(this.handleDeleteNotebookClick.bind(this));
         },
 
         /**
@@ -934,26 +587,12 @@ $(function(){
         },
 
         /**
-         * Kick off the async process for retrieving all notebooks for the current user. When the call returns, run the
-         * notebooks through the process to prepare them for use in the treeview, then return an async promise to the
-         * caller so they can do whatever they want whenever this is ready.
-         **/
-        async_loadNotebooks: function () {
-            return $.ajax({
-                context: this,
-                url: '/api/notebooks/',
-                type: 'GET',
-                timeout: 5000,
-            }).then(util.massageNotebookFormat);
-        },
-
-        /**
          * Kick off the async process for retrieving all notes for the current notebook. Return an async promise to the
          * caller so they can do whatever they want whenever this is ready.
          **/
         async_loadNotes: function() {
             return $.ajax({
-                url: this.currNotebook.url + 'notes/',
+                url: '/api/notes/',
                 type: 'GET',
                 timeout: 1000,
             }).then(function(notes){
@@ -967,53 +606,12 @@ $(function(){
          **/
         async_loadChecklists: function() {
             return $.ajax({
-                url: this.currNotebook.url + 'checklists/',
+                url: '/api/checklists/',
                 type: 'GET',
                 timeout: 1000,
             }).then(function(checklists){
                 this.checklists = checklists;
             }.bind(this));
-        },
-
-        /**
-         * Build the treeview in the sidebar. Bind the event handlers for tree nodes being selected and unselected.
-         **/
-        buildTree: function() {
-            if (this.notebooks.length == 0) return;
-
-            $('#tree').treeview({
-                data: this.notebooks,
-                levels: 2,
-                showBorder: false,
-                expandIcon: 'glyphicon glyphicon-triangle-right',
-                collapseIcon: 'glyphicon glyphicon-triangle-bottom',
-            });
-
-            $('#tree')
-                .on('nodeSelected', this.handleTreeClick.bind(this))
-                .on('nodeUnselected', this.handleTreeUnselect.bind(this));
-
-            this.tree = $('#tree').treeview(true);
-        },
-
-        /**
-         * Build the slide-out menu, and attach a click handler to the hamburger icon. Make the menu visible when it's
-         * done being built.
-         **/
-        buildMenu: function() {
-            var slideout = new Slideout({
-                'panel': $('#panel')[0],
-                'menu': $('#menu')[0],
-                'padding': $('.slide-menu').css('width'),
-                'tolerance': 70
-            });
-            $('.hamburger')
-                .off('click')
-                .on('click', function() {
-                    $(this).toggleClass('active');
-                    slideout.toggle();
-                });
-            $('#menu').show();
         },
     };
 

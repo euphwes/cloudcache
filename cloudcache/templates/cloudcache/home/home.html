@@ -10,43 +10,12 @@
 </head>
 <body oncontextmenu="return false;" spellcheck="false">
 
-    <nav id="menu" class="slide-menu">
-        <header>
-            <h3 class="text-center">Notebooks</h3>
-        </header>
-        <div class="tree-wrapper">
-            <div id="tree"></div>
-        </div>
-        <ul class="nav nav-pills nav-stacked">
-            <li id="addNotebook">
-                <a>Add notebook</a>
-            </li>
-            <li id="renameNotebook">
-                <a>Rename notebook</a>
-            </li>
-            <li id="deleteNotebook">
-                <a>Delete notebook</a>
-            </li>
-            <li>
-                <a id="id_navbar_logout" href="{% url 'cloudcache:logout' %}">Log Out</a>
-            </li>
-        </ul>
-    </nav>
-
-    <main id="panel" class="panel-wrapper">
+    <main id="panel">
 
         <header class="cc-navbar">
-            <button class="hamburger">
-                <span>toggle menu</span>
-            </button>
-            <div class="breadcrumbs"></div>
         </header>
 
         <div class="content-wrapper">
-            <div id="default-view">
-                <h2>Welcome!</h2>
-                <h3>Use the menu to create a new notebook, or choose an existing one.</h3>
-            </div>
             <div id="new-note-wrapper" class="row section-wrapper text-center">
                 <div id="new-note" class="inline"><span class="icono-document"></span></div>
                 <div id="new-checklist" class="inline"><span class="icono-list"></span></div>
@@ -88,20 +57,6 @@
           <div class="modal-footer">
             <button id="editListDone" type="button" class="btn btn-primary">Done</button>
             <button id="editListDelete" type="button" class="btn btn-danger pull-left">Delete</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Notebook modal -->
-    <div class="modal fade" id="editNotebook" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="editNotebookName" contenteditable="true" data-placeholder="Notebook name..."></h4>
-          </div>
-          <div class="modal-footer">
-            <button id="editNotebookSave" type="button" class="btn btn-primary">Save</button>
           </div>
         </div>
       </div>
