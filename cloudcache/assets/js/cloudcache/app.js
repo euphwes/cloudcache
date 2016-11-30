@@ -81,48 +81,6 @@ $(function(){
         },
 
         /**
-         * Bootstrap-Treeview believes that all objects with a 'nodes' attribute have children, even if that attribute
-         * is an empty array, and will display a collapse/expand icon. We don't want that behavior, so if a notebook has
-         * no child notebooks, we'll delete the (empty) 'nodes' attribute. If there are child notebooks, recursively
-         * check them for empty 'nodes' attributes as well.
-         **/
-        _deleteEmptyNodes: function(notebooks) {
-            notebooks.forEach(function(notebook) {
-                if (notebook.nodes.length == 0) {
-                    delete notebook.nodes;
-                } else {
-                    notebook.nodes = util._deleteEmptyNodes(notebook.nodes);
-                }
-            });
-            return notebooks;
-        },
-
-        /**
-         * Bootstrap-Treeview library requires each object in the hierarchy to have a 'text' attribute for displaying
-         * the node in the tree. We can just use the notebook's name, so we rename it to 'text'. Also, child objects in
-         * the tree fall under a 'nodes' attribute. This information is in the notebook's 'notebooks' attribute, which
-         * we can just rename to 'nodes'.
-         **/
-        _renameFieldsForTreeview: function(notebooks) {
-            notebooks.forEach(function(notebook){
-                notebook.text  = notebook.name;      delete notebook.name;
-                notebook.nodes = notebook.notebooks; delete notebook.notebooks;
-            });
-            return notebooks;
-        },
-
-        /**
-         * Ready the ajax-retrieved list of notebooks for use in the Bootstrap-Treeview tree by making it fit the format
-         * that library is expecting.
-        **/
-        massageNotebookFormat: function(notebooks) {
-            notebooks = util._renameFieldsForTreeview(notebooks);
-            notebooks = util._buildNested(notebooks);
-            notebooks = util._deleteEmptyNodes(notebooks);
-            return notebooks;
-        },
-
-        /**
          * Helper function to determine the shortest child column/container (in terms of DOM height in pixels) in a
          * parent container. At the moment, just used to get the shortest notes column inside the notes wrapper.
          **/
@@ -736,6 +694,11 @@ $(function(){
         theme: "dark",
         scrollInertia: 500,
     });
+
+    // Update the section with the custom scroll bar whenever the window resizes
+    $(window).resize(util.debounce(function(){
+        $('#notes-wrapper').mCustomScrollbar("update");
+    },50));
 
     App.init();
 });
