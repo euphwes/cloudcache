@@ -12,7 +12,7 @@ class ChecklistSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = Checklist
-        fields = ('id', 'title', 'notebook', 'items', 'created', 'modified', 'url')
+        fields = ('id', 'title', 'owner', 'items', 'created', 'modified', 'url')
 
         extra_kwargs = {
             'id': {'read_only': True},     # Shouldn't be able to edit ID

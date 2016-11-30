@@ -1,6 +1,5 @@
-from django.db.models import Model, CharField, ForeignKey, CASCADE
-
-from . import Notebook
+from django.db.models import Model, CharField, ForeignKey
+from django.conf import settings
 from .mixins import TrackingFieldsMixin
 
 class Checklist(TrackingFieldsMixin, Model):
@@ -9,8 +8,8 @@ class Checklist(TrackingFieldsMixin, Model):
     class Meta:
         ordering = ('id',)
 
+    owner = ForeignKey(settings.AUTH_USER_MODEL, related_name='lists')
     title = CharField(max_length=1024, blank=False)
-    notebook = ForeignKey(Notebook, on_delete=CASCADE, related_name='checklists')
 
     def __repr__(self):
         return '<Checklist: {}>'.format(self.title)

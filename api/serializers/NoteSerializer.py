@@ -1,4 +1,4 @@
-from cloudcache.models import Note, Notebook
+from cloudcache.models import Note
 from rest_framework.serializers import HyperlinkedModelSerializer
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8,7 +8,7 @@ class NoteSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = Note
-        fields = ('id', 'title', 'content', 'notebook', 'created', 'modified', 'url')
+        fields = ('id', 'title', 'content', 'owner', 'created', 'modified', 'url')
 
         extra_kwargs = {
             'id': {'read_only': True},    # Shouldn't be able to edit ID
@@ -23,7 +23,6 @@ class NoteSerializer(HyperlinkedModelSerializer):
             # Assume there is a context and nested HTTP request in the kwargs
             # Only show Notebooks owned by the currently logged-in user in the `notebook` dropdown
             user = kwargs['context']['request'].user
-            self.fields['notebook'].queryset = Notebook.objects.filter(owner=user)
 
         except KeyError:
             # This would pop if there is no `context` in the kwargs, or `request` in the context. This would just mean

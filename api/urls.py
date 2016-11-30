@@ -4,9 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from .views.public import AccountList, AccountDetail, NotebookList, NotebookDetail, NoteList, NoteDetail,\
-    NotebookNotesList, NotebookNotebooksList, ChecklistList, ChecklistDetail, ChecklistItemList, ChecklistItemDetail,\
-    NotebookChecklistsList, ChecklistItemsList
+from .views.public import AccountList, AccountDetail, NoteList, NoteDetail, ChecklistList, ChecklistDetail,\
+    ChecklistItemList, ChecklistItemDetail, ChecklistItemsList
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -16,7 +15,6 @@ def api_root(request, format=None):
 
     return Response({
         'accounts': reverse('account-list', request=request, format=format),
-        'notebooks': reverse('notebook-list', request=request, format=format),
         'notes': reverse('note-list', request=request, format=format),
         'checklists': reverse('checklist-list', request=request, format=format),
         'checklist items': reverse('checklistitem-list', request=request, format=format),
@@ -31,19 +29,6 @@ urlpatterns = [
     # authentication.models.Account list and detail views
     url(r'^accounts/$', AccountList.as_view(), name='account-list'),
     url(r'^accounts/(?P<pk>[0-9]+)/$', AccountDetail.as_view(), name='account-detail'),
-
-    # cloudcache.models.Notebook list and detail views
-    url(r'^notebooks/$', NotebookList.as_view(), name='notebook-list'),
-    url(r'^notebooks/(?P<pk>[0-9]+)/$', NotebookDetail.as_view(), name='notebook-detail'),
-
-    # cloudcache.models.Notebook nested notes list
-    url('^notebooks/(?P<pk>[0-9]+)/notes/$', NotebookNotesList.as_view(), name='notebook-notes-list'),
-
-    # cloudcache.models.Notebook nested checklists list
-    url('^notebooks/(?P<pk>[0-9]+)/checklists/$', NotebookChecklistsList.as_view(), name='notebook-notes-list'),
-
-    # cloudcache.models.Notebook nested notebooks list
-    url('^notebooks/(?P<pk>[0-9]+)/notebooks/$', NotebookNotebooksList.as_view(), name='notebook-notebooks-list'),
 
     # cloudcache.models.Note list and detail views
     url(r'^notes/$', NoteList.as_view(), name='note-list'),
