@@ -8,8 +8,8 @@
 // so that all content falls underneath the navbar
 @content-padding-top:        1.25 * @navbar-height;
 @content-padding-top-mobile: 1.25 * @navbar-height-mobile;
+@content-padding-bottom:     20px;
 
-// Pad the sides so that
 @content-padding-side:        8%;
 @content-padding-side-mobile: 2.5%;
 
@@ -17,7 +17,7 @@
     padding-top:    @content-padding-top;
     padding-left:   @content-padding-side;
     padding-right:  @content-padding-side;
-    padding-bottom: 0;
+    padding-bottom: @content-padding-bottom;
 
     background-color: @bg-grey;
     min-height: 100%;
@@ -32,16 +32,12 @@
 
 // ----------------------------- Section wrappers -----------------------------
 
-@section-padding: 20px;
-
-// Both notebook and note sections get top/bottom padding
-.section-wrapper {
-    margin-top:    @section-padding;
-}
+@section-margin: 20px;
 
 #notes-wrapper {
-    max-height: ~"calc(100% - @{section-padding} - @{section-padding} - @{content-padding-top} - 60px)";
-    overflow-y: auto;
+    margin-bottom: @section-margin;
+    max-height:    ~"calc(100% - @{content-padding-top} - 30px)";
+    overflow-y:    auto;
 }
 
 // --------------------- Note and checklist common styles ----------------------
@@ -159,6 +155,12 @@
 
 // Styling which helps emulate placeholder effect on contenteditable divs 
 *[data-placeholder]:not(:focus):not([data-div-placeholder-content]):before {
+    content: attr(data-placeholder);
+    float: left;
+    //margin-left: 2px;
+    color: darken(#b3b3b3, 10%);
+}
+*[data-placeholder]:empty:focus:not([data-div-placeholder-content]):before {
     content: attr(data-placeholder);
     float: left;
     //margin-left: 2px;

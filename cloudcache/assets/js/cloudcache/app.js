@@ -55,32 +55,6 @@ $(function(){
         },
 
         /**
-         * General utility function for turning a flat list of objects into a nested structure. The ID, parent, and
-         * children attribute names are configurable, but it's assumed that each object coming in has a unique ID, and
-         * that each object either identifies a parent object by ID or identifies an explicit null parent, meaning it's
-         * a root element.
-         **/
-        _buildNested: function(list, idAttr, parentAttr, childrenAttr) {
-            if (!idAttr)       idAttr       = 'url';
-            if (!parentAttr)   parentAttr   = 'parent';
-            if (!childrenAttr) childrenAttr = 'nodes';
-            var treeList = [];
-            var lookup = {};
-            list.forEach(function(obj) {
-                lookup[obj[idAttr]] = obj;
-                obj[childrenAttr] = [];
-            });
-            list.forEach(function(obj) {
-                if (obj[parentAttr] != null) {
-                    lookup[obj[parentAttr]][childrenAttr].push(obj);
-                } else {
-                    treeList.push(obj);
-                }
-            });
-            return treeList;
-        },
-
-        /**
          * Helper function to determine the shortest child column/container (in terms of DOM height in pixels) in a
          * parent container. At the moment, just used to get the shortest notes column inside the notes wrapper.
          **/
