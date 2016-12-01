@@ -169,7 +169,6 @@ $(function(){
 
             // Do an initial load of the notes and checklists
             $.when(this.async_loadChecklists(), this.async_loadNotes()).done(function(){
-                $('#new-note-wrapper').show();
                 this.buildNotes.bind(this)();
             }.bind(this));
         },
@@ -471,7 +470,7 @@ $(function(){
                 e.stopPropagation();
             });
 
-            $('#new-note-wrapper').on('click', '#new-note', this.handleNewNoteClick.bind(this));
+            $('#new-note').on('click', this.handleNewNoteClick.bind(this));
         },
 
         /**

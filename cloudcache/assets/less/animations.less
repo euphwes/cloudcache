@@ -2,136 +2,19 @@
 //                                  Animations
 // ----------------------------------------------------------------------------
 
-// ------------------------------- General pop --------------------------------
-
-.hvr {
-    display: inline-block;
-    vertical-align: middle;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -moz-osx-font-smoothing: grayscale;
+/* Grow Rotate */
+.hvr-grow-rotate {
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px transparent;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: transform;
+  transition-property: transform;
 }
-
-.hvr-active {
-    -webkit-animation-duration: 0.25s;
-            animation-duration: 0.25s;
-
-    -webkit-animation-timing-function: linear;
-            animation-timing-function: linear;
-
-    -webkit-animation-iteration-count: 1;
-            animation-iteration-count: 1;
-}
-
-// ---------------------------------- Pop 5% ----------------------------------
-
-@pop-5-scale: 1.05;
-
-@-webkit-keyframes hvr-pop-5 {
-    50% {
-       .transform(scale(@pop-5-scale));
-    }
-}
-
-@keyframes hvr-pop-5 {
-    50% {
-        .transform(scale(@pop-5-scale));
-    }
-}
-
-.hvr-pop-5 {
-    .hvr;
-    &:hover, &:focus, &:active {
-        -webkit-animation-name: hvr-pop-5;
-                animation-name: hvr-pop-5;
-        .hvr-active;
-    }
-}
-
-// --------------------------------- Pop 25% ----------------------------------
-
-@pop-25-scale: 1.25;
-
-@-webkit-keyframes hvr-pop-25 {
-    50% {
-        .transform(scale(@pop-25-scale));
-    }
-}
-
-@keyframes hvr-pop-25 {
-    50% {
-       .transform(scale(@pop-25-scale));
-    }
-}
-
-.hvr-pop-25 {
-    .hvr;
-    &:hover, &:focus, &:active {
-        -webkit-animation-name: hvr-pop-25;
-                animation-name: hvr-pop-25;
-        .hvr-active;
-    }
-}
-
-// --------------------------------- Zoom in/out ----------------------------------
-
-.animated {
-    animation-duration: 0.5s;
-    animation-fill-mode: forwards;
-}
-
-@keyframes zoomOut {
-  0% {
-    opacity: 1;
-  }
-
-  75% {
-    opacity: 0;
-    transform: scale(.3);
-  }
-
-  100% {
-    visibility: hidden;
-    opacity: 0;
-  }
-}
-
-.zoomOut {
-  animation-name: zoomOut;
-}
-
-@keyframes zoomIn {
-  0% {
-    opacity: 0;
-    visibility: visible;
-    transform: scale(.3);
-  }
-
-  50% {
-    visibility: visible;
-    opacity: 1;
-  }
-}
-
-.zoomIn {
-  animation-name: zoomIn;
-}
-
-// --------------------------------- Fade in ----------------------------------
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.fadeIn {
-  animation-name: fadeIn;
+.hvr-grow-rotate:hover, .hvr-grow-rotate:focus, .hvr-grow-rotate:active {
+  -webkit-transform: scale(1.1) rotate(4deg);
+  transform: scale(1.1) rotate(4deg);
 }
