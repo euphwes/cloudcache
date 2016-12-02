@@ -407,15 +407,6 @@ $(function(){
                 this.handleNoteModalNoteDelete($note);
             }.bind(this));
 
-            $('#editNote')
-                .on('shown.bs.modal', function() {
-                    util.setEndOfContenteditable($('#editNoteTitle'));
-                })
-                .on('hide.bs.modal', function(){
-                    $note.showThenAnimateCss('zoomIn');
-                    $('#editNote, #editNoteTitle, #editNoteSave, #editNoteDelete').off();
-                });
-
             $('#editNoteTitle')
                 .on('keypress', function(e){
                     if (e.keyCode == 13) {
@@ -423,10 +414,18 @@ $(function(){
                         return false;
                     }
                 });
-
-            $note.animateCssThenHide('zoomOut');
-            $('#editNote').modal('show');
             */
+
+            $('#editList')
+                .on('shown.bs.modal', function() {
+                    util.setEndOfContenteditable($('#editListTitle'));
+                })
+                .on('hide.bs.modal', function(){
+                    $list.showThenAnimateCss('zoomIn');
+                    $('#editList, #editListTitle, #editListSave, #editListDelete').off();
+                });
+
+            $list.animateCssThenHide('zoomOut');
             $('#editList').modal('show');
         },
 
