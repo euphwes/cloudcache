@@ -384,18 +384,34 @@ $(function(){
                 .trigger('change');
 
             $('#editListContents')
-                .html($list.children('.contents').html())
-                .trigger('change');
+                .empty();
 
-            $('#editListContents > div > span').attr('contenteditable', true);
+            $list.find('.item').each(function(){
+                var $item = $('<div class="item" data-url=""><input type="checkbox"><span contenteditable="true"></span></div>');
+                $item.data('url', $(this).data('url'));
+                $item.find('span').text($(this).find('span').text());
+                if($(this).find('span').hasClass('complete')){
+                    $item.find('span').addClass('complete');
+                }
+                $item.find('input').prop('checked', $(this).find('input').prop('checked'));
+                $('#editListContents').append($item);
+            });
+
+            $('#editListContents')
+                .on('ifChecked', 'input', function(e){
+                    $(this).parent().next().addClass('complete');
+                })
+                .on('ifUnchecked', 'input', function(e){
+                    $(this).parent().next().removeClass('complete');
+                });
 
             var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
             $('#editListContents').append($newItem);
 
             // apply iCheck checkboxes to the checklist checkboxes
             $('#editListContents .item input').iCheck({
-                checkboxClass: 'icheckbox_square-green',
-                radioClass: 'iradio_square-green',
+                checkboxClass: 'icheckbox_minimal-grey',
+                radioClass: 'iradio_minimal-grey',
             });
 
             /*
@@ -420,18 +436,15 @@ $(function(){
                 .on('keypress', '.item', function(e){
                     if (e.which == 13) {
                         var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
-                        $('#editListContents').append($newItem);
+                        $(this).after($newItem);
                         // apply iCheck checkboxes to the checklist checkboxes
                         $('#editListContents .item input').iCheck({
-                            checkboxClass: 'icheckbox_square-green',
-                            radioClass: 'iradio_square-green',
+                            checkboxClass: 'icheckbox_minimal-grey',
+                            radioClass: 'iradio_minimal-grey',
                         });
                         e.preventDefault();
 
-                        console.log($(this));
-                        console.log($(this).get(0));
-
-                        util.setEndOfContenteditable($('#editListContents > div:last-child > span'));
+                        util.setEndOfContenteditable($('#editListContents > div > span:empty'));
                     }
                 });
 
@@ -528,8 +541,8 @@ $(function(){
 
             // apply iCheck checkboxes to the checklist checkboxes
             $('.checklist .item input').iCheck({
-                checkboxClass: 'icheckbox_square-green',
-                radioClass: 'iradio_square-green',
+                checkboxClass: 'icheckbox_minimal-grey',
+                radioClass: 'iradio_minimal-grey',
             });
 
             this.rebindChecklistCheckboxEvents();
