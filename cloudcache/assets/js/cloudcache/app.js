@@ -387,9 +387,9 @@ $(function(){
                 .html($list.children('.contents').html())
                 .trigger('change');
 
-            $('#editListContents').children().attr('contenteditable', true);
+            $('#editListContents > div > span').attr('contenteditable', true);
 
-            var $newItem = $('<div class="item"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>')
+            var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
             $('#editListContents').append($newItem);
 
             // apply iCheck checkboxes to the checklist checkboxes
@@ -415,6 +415,25 @@ $(function(){
                     }
                 });
             */
+
+            $('#editList')
+                .on('keypress', '.item', function(e){
+                    if (e.which == 13) {
+                        var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
+                        $('#editListContents').append($newItem);
+                        // apply iCheck checkboxes to the checklist checkboxes
+                        $('#editListContents .item input').iCheck({
+                            checkboxClass: 'icheckbox_square-green',
+                            radioClass: 'iradio_square-green',
+                        });
+                        e.preventDefault();
+
+                        console.log($(this));
+                        console.log($(this).get(0));
+
+                        util.setEndOfContenteditable($('#editListContents > div:last-child > span'));
+                    }
+                });
 
             $('#editList')
                 .on('shown.bs.modal', function() {
