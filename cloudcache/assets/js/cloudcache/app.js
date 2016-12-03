@@ -233,7 +233,7 @@ $(function(){
             var editTitle = $('#editListTitle').text().trim();
 
             var renderChecklist = this.checklistTemplate;
-            var rebindChecklistCheckboxEvents = this.rebindChecklistCheckboxEvents;
+            var rebindChecklistCheckboxEvents = this.rebindChecklistCheckboxEvents.bind(this);
 
             $.ajax({
                 url: $list.data('url'),
