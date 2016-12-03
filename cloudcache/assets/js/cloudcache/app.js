@@ -160,6 +160,18 @@ $(function(){
         },
 
         /**
+         * Handle the list modal delete button being clicked by doing the following:
+         *      1) Pop up a confirmation dialog. If the user chooses yes...
+         *      2) Make ajax list delete call, which when complete, hides the list edit modal
+         **/
+        handleListModalListDelete: function($list) {
+            var onConfirm = function(){
+                this.deleteList($list, function(){ $('#editList').modal('hide'); });
+            };
+            util.confirm('Delete checklist?', 'This action cannot be reversed.', 'Delete', onConfirm.bind(this));
+        },
+
+        /**
          * Handle the edit note modal being clicked out by doing the following:
          *      1) Get the whitespace-trimmed content of the note title
          *      2) Get the content of the note body, where <br> are replaced by \r\n
@@ -315,16 +327,29 @@ $(function(){
         },
 
         /**
-         * Handle the trash can icon being clicked by doing the following:
+         * Handle the note trash can icon being clicked by doing the following:
          *      1) Display a confirmation box, asking the user if they are sure.
          *          a) If yes, call the function to delete the note
          *          b) If no, just close the confirm dialog and do nothing further.
          **/
-        handleTrashCanClick: function(e){
+        handleNoteTrashCanClick: function(e){
             var onConfirm = function() {
                 this.deleteNote($(e.target).closest('.note'));
             };
             util.confirm('Delete note?', 'This action cannot be reversed.', 'Delete', onConfirm.bind(this));
+        },
+
+        /**
+         * Handle the list trash can icon being clicked by doing the following:
+         *      1) Display a confirmation box, asking the user if they are sure.
+         *          a) If yes, call the function to delete the note
+         *          b) If no, just close the confirm dialog and do nothing further.
+         **/
+        handleListTrashCanClick: function(e){
+            var onConfirm = function() {
+                this.deleteList($(e.target).closest('.checklist'));
+            };
+            util.confirm('Delete checklist?', 'This action cannot be reversed.', 'Delete', onConfirm.bind(this));
         },
 
         /**
@@ -342,6 +367,27 @@ $(function(){
                 success: function() {
                     $note.animateCss('zoomOut', function() {
                         $note.remove();
+                        if (callback) callback();
+                    });
+                },
+            });
+        },
+
+        /**
+         * Perform an ajax call to delete the provided list (a jQuery object of a list div). When the async call is
+         * done, do the following:
+         *      1) Animate the list div with a zoom-out animation to make it visually disappear
+         *      2) Remove the list div from the DOM
+         *      3) If a callback function was supplied, call it
+         **/
+        deleteList: function($list, callback) {
+            $.ajax({
+                url: $list.data('url'),
+                type: 'DELETE',
+                timeout: 1000,
+                success: function() {
+                    $list.animateCss('zoomOut', function() {
+                        $list.remove();
                         if (callback) callback();
                     });
                 },
@@ -473,19 +519,9 @@ $(function(){
                 radioClass: 'iradio_minimal-grey',
             });
 
-            /*
-            $('#editNoteDelete').click(function(){
-                this.handleNoteModalNoteDelete($note);
+            $('#editListDelete').click(function(){
+                this.handleListModalListDelete($list);
             }.bind(this));
-
-            $('#editNoteTitle')
-                .on('keypress', function(e){
-                    if (e.keyCode == 13) {
-                        $('#editNoteSave').trigger('click');
-                        return false;
-                    }
-                });
-            */
 
             $('#editList')
                 .on('keypress', '.item', function(e){
@@ -524,9 +560,15 @@ $(function(){
             $('#notes-wrapper').on('click', '.note', this.handleNoteClick.bind(this));
             $('#notes-wrapper').on('click', '.checklist', this.handleListClick.bind(this));
 
-            var boundHandleTrashCanClick = this.handleTrashCanClick.bind(this);
-            $('#notes-wrapper').on('click', '.glyphicon-trash', function(e){
-                boundHandleTrashCanClick(e);
+            var boundHandleNoteTrashCanClick = this.handleNoteTrashCanClick.bind(this);
+            $('#notes-wrapper').on('click', '.note .glyphicon-trash', function(e){
+                boundHandleNoteTrashCanClick(e);
+                e.stopPropagation();
+            });
+
+            var boundHandleListTrashCanClick = this.handleListTrashCanClick.bind(this);
+            $('#notes-wrapper').on('click', '.checklist .glyphicon-trash', function(e){
+                boundHandleListTrashCanClick(e);
                 e.stopPropagation();
             });
 
