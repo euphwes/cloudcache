@@ -160,7 +160,7 @@ $(function(){
         },
 
         /**
-         * Handle the edit note modal save button being clicked by doing the following:
+         * Handle the edit note modal being clicked out by doing the following:
          *      1) Get the whitespace-trimmed content of the note title
          *      2) Get the content of the note body, where <br> are replaced by \r\n
          *      3) Make an async PUT call to update the new note. Upon success, do the following:
@@ -168,7 +168,7 @@ $(function(){
          *          b) Update the note div's content with the new content
          *          c) Hide the note modal
          **/
-        handleEditNoteSaveClick: function($note) {
+        handleEditNoteSave: function($note) {
             var editTitle = $('#editNoteTitle').text().trim();
 
             var editContent = '';
@@ -189,7 +189,6 @@ $(function(){
                 success: function(data){
                     $note.children('.title').text(editTitle);
                     $note.children('.contents').html($('#editNoteContents').html());
-                    $('#editNote').modal('hide');
                 },
             });
         },
@@ -222,10 +221,6 @@ $(function(){
                 .html($note.children('.contents').html())
                 .trigger('change');
 
-            $('#editNoteSave').click(function(){
-                this.handleEditNoteSaveClick($note);
-            }.bind(this));
-
             $('#editNoteDelete').click(function(){
                 this.handleNoteModalNoteDelete($note);
             }.bind(this));
@@ -235,9 +230,10 @@ $(function(){
                     util.setEndOfContenteditable($('#editNoteTitle'));
                 })
                 .on('hide.bs.modal', function(){
+                    this.handleEditNoteSave($note);
                     $note.showThenAnimateCss('zoomIn');
                     $('#editNote, #editNoteTitle, #editNoteSave, #editNoteDelete').off();
-                });
+                }.bind(this));
 
             $('#editNoteTitle')
                 .on('keypress', function(e){
@@ -286,7 +282,7 @@ $(function(){
         },
 
         /**
-         * Handle the new note modal save button being clicked by doing the following:
+         * Handle the new note modal being clicked out by doing the following:
          *      1) Get the whitespace-trimmed content of the note title
          *      2) Get the content of the note body, where <br> are replaced by \r\n
          *      3) If either note title or content are empty, alert the user and return early
@@ -296,7 +292,7 @@ $(function(){
          *          c) Animate the note and fade it in
          *          d) Hide the note modal
          **/
-        handleNewNoteSaveClick: function() {
+        handleNewNoteSave: function() {
 
             var editTitle = $('#editNoteTitle').text().trim();
 
@@ -307,7 +303,6 @@ $(function(){
             editContent = editContent.trim();
 
             if (editTitle == '' || editContent == '') {
-                $.alert("Can't save the note. Please enter both a title and some note contents.", 'Oops');
                 return;
             }
 
@@ -325,7 +320,6 @@ $(function(){
                     $(this.noteTemplate(note))
                         .appendTo(util.getShortestColumn())
                         .animateCss('fadeIn');
-                    $('#editNote').modal('hide');
                 }.bind(this),
             });
         },
@@ -352,15 +346,14 @@ $(function(){
             $('#editNoteContents').html('')
                 .trigger('change');
 
-            $('#editNoteSave').click(this.handleNewNoteSaveClick.bind(this));
-
             $('#editNote')
                 .on('shown.bs.modal', function() {
                     util.setEndOfContenteditable($('#editNoteTitle'));
                 })
                 .on('hidden.bs.modal', function() {
+                    this.handleNewNoteSave.bind(this)();
                     $('#editNoteDelete, #editNoteSave, #editNoteTitle, #editNote').off();
-                });
+                }.bind(this));
 
             $('#editNoteTitle')
                 .on('keypress', function(e){
