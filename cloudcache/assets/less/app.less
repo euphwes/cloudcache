@@ -7,11 +7,9 @@
 // Pad the main content wrapper to the same height as the navbar
 // so that all content falls underneath the navbar
 @content-padding-top:        1.25 * @navbar-height;
-@content-padding-top-mobile: 1.25 * @navbar-height-mobile;
 @content-padding-bottom:     20px;
 
 @content-padding-side:        8%;
-@content-padding-side-mobile: 2.5%;
 
 .content-wrapper {
     padding-top:    @content-padding-top;
@@ -21,12 +19,6 @@
 
     background-color: @bg-grey;
     min-height: 100%;
-
-    .responsive-mobile({
-        padding-top:    @content-padding-top-mobile;
-        padding-left:   @content-padding-side-mobile;
-        padding-right:  @content-padding-side-mobile;
-    })
 }
 
 
@@ -103,10 +95,6 @@
                 transition: all 0.25s ease;
                 opacity: 1;
             }
-
-            .responsive-mobile({
-                display: none;
-            })
         }
 
         .glyphicon-trash:hover {
@@ -124,16 +112,6 @@
             cursor: pointer;
         }
     }
-
-    .responsive-mobile({
-        padding: (2.25 * @cc-padding-top) (2.25 * @cc-padding-side);
-        .title {
-            font-size: 2.75 * @title-font-size;
-        }
-        .contents {
-            font-size: 2.75 * @contents-font-size;
-        }
-    })
 }
 
 // Help <div> and <span> display inline next to each other in a parent container
@@ -215,6 +193,10 @@
 
 // ------------------- Note edit modal Bootstrap overrides --------------------
 
+.modal-backdrop {
+   background-color: @cc-theme-trim !important;
+}
+
 .modal {
     margin-top: 80px;
 
@@ -243,42 +225,6 @@
             overflow-y: auto;
         }
     }
-
-    .responsive-mobile({
-
-        margin-top: @navbar-height-mobile + 10px;
-
-        .modal-dialog {
-            width: 90%;
-            margin: 20px auto;
-        }
-
-        .modal-content {
-
-            .modal-header {
-                padding: 30px 30px 0 30px;
-            }
-
-            .modal-title {
-                font-size: 2.75em;
-            }
-
-            .modal-body {
-                font-size: 2em;
-                padding: 30px;
-                max-height: 600px;
-            }
-
-            .modal-footer {
-                padding: 30px;
-
-                button {
-                    font-size: 2.25em;
-                }
-            }
-        }
-
-    })
 }
 
 #editNotebook {
@@ -289,48 +235,12 @@
     .modal-title {
         font-size: 1em;
     }
-
-    .responsive-mobile({
-        .modal-header {
-            padding: 30px;
-        }
-
-        .modal-title {
-            font-size: 2em;
-        }
-    })
 }
 
 // ------------------------- jQuery-confirm overrides -------------------------
 
 .jconfirm.jconfirm-black .jconfirm-box {
     border-radius: @cc-el-border-radius;
-
-    .responsive-mobile({
-
-        padding: 45px 30px 0 30px;
-
-        .title-c {
-            font-size: 2.75em;
-        }
-
-        .content-pane {
-            margin-top: 30px;
-            font-size: 2em;
-        }
-
-        .buttons {
-
-            margin-top: 30px;
-            margin-bottom: 30px;
-
-            button {
-                margin-left: 20px;
-                font-size: 2em;
-            }
-        }
-
-    })
 }
 
 // ----------------------- Default text section styles ------------------------
@@ -339,22 +249,4 @@
     padding-top: 40px;
     text-align: center;
     color: #757575;
-
-    .responsive-mobile({
-
-        padding-top: 60px;
-
-        h2 {
-            font-size: 4.5em;
-        }
-
-        h3 {
-            padding-top: 30px;
-            padding-left: 15px;
-            padding-right: 15px;
-            font-size: 2.75em;
-        }
-
-    })
-
 }
