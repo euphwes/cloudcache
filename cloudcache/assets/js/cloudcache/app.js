@@ -194,6 +194,73 @@ $(function(){
         },
 
         /**
+         * Handle the edit list modal being clicked out by doing the following:
+         **/
+        handleEditListSave: function($list) {
+
+            $('#editListContents')
+                .find('.item:not([data-isnew])')
+                .each(function(){
+                    $.ajax({
+                        url: $(this).data('url'),
+                        type: 'PUT',
+                        timeout: 1000,
+                        data: {
+                            'text'      : $(this).find('span').text(),
+                            'checklist' : $list.data('url'),
+                            'complete'  : $(this).find('input').prop('checked'),
+                        },
+                    });
+                });
+
+            $('#editListContents')
+                .find('.item[data-isnew]')
+                .each(function(){
+                    if($(this).find('span').text()) {
+                        $.ajax({
+                            url: '/api/checklistitems/',
+                            type: 'POST',
+                            timeout: 1000,
+                            data: {
+                                'text'      : $(this).find('span').text(),
+                                'checklist' : $list.data('url'),
+                                'complete'  : $(this).find('input').prop('checked'),
+                            },
+                        });
+                    }
+                });
+
+            var editTitle = $('#editListTitle').text().trim();
+
+            var renderChecklist = this.checklistTemplate;
+            var rebindChecklistCheckboxEvents = this.rebindChecklistCheckboxEvents;
+
+            $.ajax({
+                url: $list.data('url'),
+                type: 'PUT',
+                timeout: 1000,
+                data: {
+                    'title'    : editTitle,
+                    'owner'    : $list.data('owner-url'),
+                },
+                success: function(data){
+                    var $newList = $(renderChecklist(data));
+                    $list.replaceWith($newList);
+
+                    // apply iCheck checkboxes to the checklist checkboxes
+                    $('.checklist .item input').iCheck({
+                        checkboxClass: 'icheckbox_minimal-grey',
+                        radioClass: 'iradio_minimal-grey',
+                    });
+
+                    rebindChecklistCheckboxEvents();
+
+                    $newList.showThenAnimateCss('zoomIn');
+                },
+            });
+        },
+
+        /**
          * Handle a note being clicked by doing the following:
          *      1) Make sure we have a ref to the actual note itself, in case an internal element click triggered this
          *      2) Set the note modal title to the title of the note being clicked, trigger change to erase placeholder
@@ -380,8 +447,7 @@ $(function(){
                 .empty();
 
             $list.find('.item').each(function(){
-                var $item = $('<div class="item" data-url=""><input type="checkbox"><span contenteditable="true"></span></div>');
-                $item.data('url', $(this).data('url'));
+                var $item = $('<div class="item" data-url="' + $(this).data('url') + '"><input type="checkbox"><span contenteditable="true"></span></div>');
                 $item.find('span').text($(this).find('span').text());
                 if($(this).find('span').hasClass('complete')){
                     $item.find('span').addClass('complete');
@@ -408,10 +474,6 @@ $(function(){
             });
 
             /*
-            $('#editNoteSave').click(function(){
-                this.handleEditNoteSaveClick($note);
-            }.bind(this));
-
             $('#editNoteDelete').click(function(){
                 this.handleNoteModalNoteDelete($note);
             }.bind(this));
@@ -446,9 +508,9 @@ $(function(){
                     util.setEndOfContenteditable($('#editListTitle'));
                 })
                 .on('hide.bs.modal', function(){
-                    $list.showThenAnimateCss('zoomIn');
-                    $('#editList, #editListTitle, #editListSave, #editListDelete').off();
-                });
+                    this.handleEditListSave.bind(this)($list);
+                    $('#editList, #editListTitle, #editListDelete').off();
+                }.bind(this));
 
             $list.animateCssThenHide('zoomOut');
             $('#editList').modal('show');
