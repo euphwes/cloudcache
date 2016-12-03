@@ -210,10 +210,12 @@ $(function(){
          **/
         handleEditListSave: function($list) {
 
+            var deferreds = Array();
+
             $('#editListContents')
                 .find('.item:not([data-isnew])')
                 .each(function(){
-                    $.ajax({
+                    deferreds.push($.ajax({
                         url: $(this).data('url'),
                         type: 'PUT',
                         timeout: 1000,
@@ -222,14 +224,14 @@ $(function(){
                             'checklist' : $list.data('url'),
                             'complete'  : $(this).find('input').prop('checked'),
                         },
-                    });
+                    }));
                 });
 
             $('#editListContents')
                 .find('.item[data-isnew]')
                 .each(function(){
                     if($(this).find('span').text()) {
-                        $.ajax({
+                        deferreds.push($.ajax({
                             url: '/api/checklistitems/',
                             type: 'POST',
                             timeout: 1000,
@@ -238,7 +240,7 @@ $(function(){
                                 'checklist' : $list.data('url'),
                                 'complete'  : $(this).find('input').prop('checked'),
                             },
-                        });
+                        }));
                     }
                 });
 
@@ -247,28 +249,30 @@ $(function(){
             var renderChecklist = this.checklistTemplate;
             var rebindChecklistCheckboxEvents = this.rebindChecklistCheckboxEvents.bind(this);
 
-            $.ajax({
-                url: $list.data('url'),
-                type: 'PUT',
-                timeout: 1000,
-                data: {
-                    'title'    : editTitle,
-                    'owner'    : $list.data('owner-url'),
-                },
-                success: function(data){
-                    var $newList = $(renderChecklist(data));
-                    $list.replaceWith($newList);
+            $.when.apply($, deferreds).done(function(){
+                $.ajax({
+                    url: $list.data('url'),
+                    type: 'PUT',
+                    timeout: 1000,
+                    data: {
+                        'title'    : editTitle,
+                        'owner'    : $list.data('owner-url'),
+                    },
+                    success: function(data){
+                        var $newList = $(renderChecklist(data));
+                        $list.replaceWith($newList);
 
-                    // apply iCheck checkboxes to the checklist checkboxes
-                    $('.checklist .item input').iCheck({
-                        checkboxClass: 'icheckbox_minimal-grey',
-                        radioClass: 'iradio_minimal-grey',
-                    });
+                        // apply iCheck checkboxes to the checklist checkboxes
+                        $('.checklist .item input').iCheck({
+                            checkboxClass: 'icheckbox_minimal-grey',
+                            radioClass: 'iradio_minimal-grey',
+                        });
 
-                    rebindChecklistCheckboxEvents();
+                        rebindChecklistCheckboxEvents();
 
-                    $newList.showThenAnimateCss('zoomIn');
-                },
+                        $newList.showThenAnimateCss('zoomIn');
+                    },
+                });
             });
         },
 
