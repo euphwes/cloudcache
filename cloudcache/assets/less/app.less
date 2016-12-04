@@ -181,10 +181,14 @@
         border-bottom: 1px solid @off-white;
     }
 
-    .item:hover, .item:focus {
+    .item[data-has-cursor="true"] {
         border-top: 1px solid lightgrey;
         border-bottom: 1px solid lightgrey;
+    }
+
+    .item:hover, .item:focus,  {
         // make delete button visible when I add that
+        // make re-order drag element thing visible when I add that
     }
 }
 
@@ -231,8 +235,6 @@
         }
 
         .modal-body {
-            padding-left: 0;
-            padding-right: 0;
             font-size: 0.875em;
             max-height: 400px;
             overflow-y: auto;
@@ -248,6 +250,13 @@
                 cursor: pointer;
             }
         }
+    }
+}
+
+#editList {
+    .modal-body {
+        padding-left: 0;
+        padding-right: 0;
     }
 }
 

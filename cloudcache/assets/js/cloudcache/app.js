@@ -589,6 +589,18 @@ $(function(){
                     $(this).parent().next().removeClass('complete');
                 });
 
+            $('#editListContents').on('click', '.item span', function(e){
+                $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
+                $(this).parent().attr('data-has-cursor', true);
+                e.stopPropagation();
+            });
+
+            $('#editListContents').on('click', '.item', function(e){
+                $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
+                $(this).attr('data-has-cursor', true);
+                util.setEndOfContenteditable($(this).find('span'));
+            });
+
             // apply iCheck checkboxes to the checklist checkboxes
             $('#editListContents .item input').iCheck({
                 checkboxClass: 'icheckbox_minimal-grey',
@@ -606,6 +618,9 @@ $(function(){
                             radioClass: 'iradio_minimal-grey',
                         });
                         e.preventDefault();
+
+                        $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
+                        $newItem.attr('data-has-cursor', true);
 
                         util.setEndOfContenteditable($('#editListContents > div > span:empty'));
                     }
@@ -673,6 +688,18 @@ $(function(){
                 radioClass: 'iradio_minimal-grey',
             });
 
+            $('#editListContents').on('click', '.item span', function(e){
+                $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
+                $(this).parent().attr('data-has-cursor', true);
+                e.stopPropagation();
+            });
+
+            $('#editListContents').on('click', '.item', function(e){
+                $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
+                $(this).attr('data-has-cursor', true);
+                util.setEndOfContenteditable($(this).find('span'));
+            });
+
             $('#editListDelete').click(function(){
                 this.handleListModalListDelete($list);
             }.bind(this));
@@ -688,6 +715,9 @@ $(function(){
                             radioClass: 'iradio_minimal-grey',
                         });
                         e.preventDefault();
+
+                        $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
+                        $newItem.attr('data-has-cursor', true);
 
                         util.setEndOfContenteditable($('#editListContents > div > span:empty'));
                     }
@@ -784,8 +814,6 @@ $(function(){
                     keyB = new Date(b.created);
                 return keyA - keyB;
             });
-
-            console.log(both);
 
             $.each(both, function(i, item){
                 if (util.hasOwnProperty(item, "items")){
