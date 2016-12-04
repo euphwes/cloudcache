@@ -151,7 +151,7 @@
     .item {
         display: flex;
         align-items: center;
-        margin: 10px auto;
+        margin: 5px auto;
 
         input {
             margin: 0;
@@ -172,7 +172,18 @@
 }
 
 #editList {
-    .item:hover {
+
+    .item {
+        margin: 0 auto;
+        padding: 3px 15px;
+
+        border-top: 1px solid @off-white;
+        border-bottom: 1px solid @off-white;
+    }
+
+    .item:hover, .item:focus {
+        border-top: 1px solid lightgrey;
+        border-bottom: 1px solid lightgrey;
         // make delete button visible when I add that
     }
 }
@@ -220,6 +231,8 @@
         }
 
         .modal-body {
+            padding-left: 0;
+            padding-right: 0;
             font-size: 0.875em;
             max-height: 400px;
             overflow-y: auto;
