@@ -19,6 +19,12 @@ $(function(){
             return new Handlebars.SafeString($tmp.html());
         },
 
+        hasOwnProperty: function(obj, prop) {
+            var proto = obj.__proto__ || obj.constructor.prototype;
+            return (prop in obj) &&
+                (!(prop in proto) || proto[prop] !== obj[prop]);
+        },
+
         /**
          * Cross-browser method to clear all text selections in the browser.
          **/
@@ -771,18 +777,26 @@ $(function(){
          **/
         buildNotes: function() {
 
-            // render and append notes
-            $.each(this.notes, function(i, note){
-                $(this.noteTemplate(note))
-                    .appendTo(util.getShortestColumn())
-                    .animateCss('fadeIn');
-            }.bind(this));
+            var both = this.notes.concat(this.checklists);
 
-            // render and append checklists
-            $.each(this.checklists, function(i, list){
-                $(this.checklistTemplate(list))
-                    .appendTo(util.getShortestColumn())
-                    .animateCss('fadeIn');
+            both = both.sort(function(a,b){
+                var keyA = new Date(a.created),
+                    keyB = new Date(b.created);
+                return keyA - keyB;
+            });
+
+            console.log(both);
+
+            $.each(both, function(i, item){
+                if (util.hasOwnProperty(item, "items")){
+                    $(this.checklistTemplate(item))
+                        .appendTo(util.getShortestColumn())
+                        .animateCss('fadeIn');
+                } else {
+                    $(this.noteTemplate(item))
+                        .appendTo(util.getShortestColumn())
+                        .animateCss('fadeIn');
+                }
             }.bind(this));
 
             // apply iCheck checkboxes to the checklist checkboxes
