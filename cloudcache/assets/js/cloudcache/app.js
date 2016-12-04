@@ -452,6 +452,8 @@ $(function(){
          **/
         handleNewListSave: function() {
 
+            $('#listSortable').sortable({axis: "y", delay: 150});
+
             var renderChecklist = this.checklistTemplate;
             var rebindChecklistCheckboxEvents = this.rebindChecklistCheckboxEvents.bind(this);
 
@@ -575,11 +577,11 @@ $(function(){
                     }
                 });
 
-            $('#editListContents')
+            $('#listSortable')
                 .empty();
 
             var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
-            $('#editListContents').append($newItem);
+            $('#listSortable').append($newItem);
 
             $('#editListContents')
                 .on('ifChecked', 'input', function(e){
@@ -622,7 +624,7 @@ $(function(){
                         $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
                         $newItem.attr('data-has-cursor', true);
 
-                        util.setEndOfContenteditable($('#editListContents > div > span:empty'));
+                        util.setEndOfContenteditable($('#editListContents > ul > div > span:empty'));
                     }
                 });
 
@@ -658,8 +660,10 @@ $(function(){
                     }
                 });
 
-            $('#editListContents')
+            $('#listSortable')
                 .empty();
+
+            $('#listSortable').sortable({axis: "y", delay: 150});
 
             $list.find('.item').each(function(){
                 var $item = $('<div class="item" data-url="' + $(this).data('url') + '"><input type="checkbox"><span contenteditable="true"></span></div>');
@@ -668,7 +672,7 @@ $(function(){
                     $item.find('span').addClass('complete');
                 }
                 $item.find('input').prop('checked', $(this).find('input').prop('checked'));
-                $('#editListContents').append($item);
+                $('#listSortable').append($item);
             });
 
             $('#editListContents')
@@ -680,7 +684,7 @@ $(function(){
                 });
 
             var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
-            $('#editListContents').append($newItem);
+            $('#listSortable').append($newItem);
 
             // apply iCheck checkboxes to the checklist checkboxes
             $('#editListContents .item input').iCheck({
@@ -716,10 +720,10 @@ $(function(){
                         });
                         e.preventDefault();
 
-                        $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
+                        $('#listSortable .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
                         $newItem.attr('data-has-cursor', true);
 
-                        util.setEndOfContenteditable($('#editListContents > div > span:empty'));
+                        util.setEndOfContenteditable($('#listSortable > ul > div > span:empty'));
                     }
                 });
 
