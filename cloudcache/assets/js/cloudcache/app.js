@@ -218,35 +218,71 @@ $(function(){
 
             var deferreds = Array();
 
+            var count = 0;
+
             $('#editListContents')
-                .find('.item:not([data-isnew])')
+                .find('.item')
                 .each(function(){
-                    deferreds.push($.ajax({
-                        url: $(this).data('url'),
-                        type: 'PUT',
-                        timeout: 1000,
-                        data: {
-                            'text'      : $(this).find('span').text(),
-                            'checklist' : $list.data('url'),
-                            'complete'  : $(this).find('input').prop('checked'),
-                        },
-                    }));
+                    if(!$(this).find('input').prop('checked') && $(this).find('span').text()){
+                        count += 1;
+                        if($(this).get(0).hasAttribute('data-isnew')){
+                            deferreds.push($.ajax({
+                                url: '/api/checklistitems/',
+                                type: 'POST',
+                                timeout: 1000,
+                                data: {
+                                    'text'      : $(this).find('span').text(),
+                                    'checklist' : $list.data('url'),
+                                    'complete'  : $(this).find('input').prop('checked'),
+                                    'order'     : count,
+                                },
+                            }));
+                        } else {
+                            deferreds.push($.ajax({
+                                url: $(this).data('url'),
+                                type: 'PUT',
+                                timeout: 1000,
+                                data: {
+                                    'text'      : $(this).find('span').text(),
+                                    'checklist' : $list.data('url'),
+                                    'complete'  : $(this).find('input').prop('checked'),
+                                    'order'     : count,
+                                },
+                            }));
+                        }
+                    }
                 });
 
             $('#editListContents')
-                .find('.item[data-isnew]')
+                .find('.item')
                 .each(function(){
-                    if($(this).find('span').text()) {
-                        deferreds.push($.ajax({
-                            url: '/api/checklistitems/',
-                            type: 'POST',
-                            timeout: 1000,
-                            data: {
-                                'text'      : $(this).find('span').text(),
-                                'checklist' : $list.data('url'),
-                                'complete'  : $(this).find('input').prop('checked'),
-                            },
-                        }));
+                    if($(this).find('input').prop('checked') && $(this).find('span').text()){
+                        count += 1;
+                        if($(this).get(0).hasAttribute('data-isnew')){
+                            deferreds.push($.ajax({
+                                url: '/api/checklistitems/',
+                                type: 'POST',
+                                timeout: 1000,
+                                data: {
+                                    'text'      : $(this).find('span').text(),
+                                    'checklist' : $list.data('url'),
+                                    'complete'  : $(this).find('input').prop('checked'),
+                                    'order'     : count,
+                                },
+                            }));
+                        } else {
+                            deferreds.push($.ajax({
+                                url: $(this).data('url'),
+                                type: 'PUT',
+                                timeout: 1000,
+                                data: {
+                                    'text'      : $(this).find('span').text(),
+                                    'checklist' : $list.data('url'),
+                                    'complete'  : $(this).find('input').prop('checked'),
+                                    'order'     : count,
+                                },
+                            }));
+                        }
                     }
                 });
 
@@ -265,6 +301,9 @@ $(function(){
                         'owner'    : $list.data('owner-url'),
                     },
                     success: function(data){
+                        data.items = data.items.sort(function(a,b){
+                            return a.order - b.order;
+                        });
                         var $newList = $(renderChecklist(data));
                         $list.replaceWith($newList);
 
@@ -478,11 +517,14 @@ $(function(){
             };
 
             var saveItems = function(listUrl){
+                var count = 0;
                 var deferreds = Array();
+
                 $('#editListContents')
-                    .find('.item[data-isnew]')
+                    .find('.item')
                     .each(function(){
-                        if($(this).find('span').text()) {
+                        if(!$(this).find('input').prop('checked') && $(this).find('span').text()){
+                            count += 1;
                             deferreds.push($.ajax({
                                 url: '/api/checklistitems/',
                                 type: 'POST',
@@ -490,7 +532,27 @@ $(function(){
                                 data: {
                                     'text'      : $(this).find('span').text(),
                                     'checklist' : listUrl,
-                                    'complete'  : $(this).find('input').prop('checked'),
+                                    'complete'  : false,
+                                    'order'     : count,
+                                },
+                            }));
+                        }
+                    });
+
+                $('#editListContents')
+                    .find('.item')
+                    .each(function(){
+                        if($(this).find('input').prop('checked') && $(this).find('span').text()){
+                            count += 1;
+                            deferreds.push($.ajax({
+                                url: '/api/checklistitems/',
+                                type: 'POST',
+                                timeout: 1000,
+                                data: {
+                                    'text'      : $(this).find('span').text(),
+                                    'checklist' : listUrl,
+                                    'complete'  : true,
+                                    'order'     : count,
                                 },
                             }));
                         }
@@ -570,7 +632,7 @@ $(function(){
             $('#editListTitle')
                 .on('keypress', function(e){
                     if (e.keyCode == 13) {
-                        util.setEndOfContenteditable($('#editListContents > div > span:empty'));
+                        util.setEndOfContenteditable($('#editListContents > ul > div > span:empty'));
                         return false;
                     }
                 });
@@ -589,11 +651,6 @@ $(function(){
                     $(this).parent().next().removeClass('complete');
                 });
 
-            $('#editListContents').on('click', '.item span', function(e){
-                $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
-                $(this).parent().attr('data-has-cursor', true);
-                e.stopPropagation();
-            });
 
             $('#editListContents').on('click', '.item', function(e){
                 $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
@@ -688,12 +745,6 @@ $(function(){
                 radioClass: 'iradio_minimal-grey',
             });
 
-            $('#editListContents').on('click', '.item span', function(e){
-                $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
-                $(this).parent().attr('data-has-cursor', true);
-                e.stopPropagation();
-            });
-
             $('#editListContents').on('click', '.item', function(e){
                 $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
                 $(this).attr('data-has-cursor', true);
@@ -719,7 +770,7 @@ $(function(){
                         $('#listSortable .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
                         $newItem.attr('data-has-cursor', true);
 
-                        util.setEndOfContenteditable($('#listSortable > ul > div > span:empty'));
+                        util.setEndOfContenteditable($('#editListContents > ul > div > span:empty'));
                     }
                 });
 
@@ -861,6 +912,11 @@ $(function(){
                 timeout: 1000,
             }).then(function(checklists){
                 this.checklists = checklists;
+                $.each(this.checklists, function(i, list){
+                    list.items = list.items.sort(function(a,b){
+                        return a.order - b.order;
+                    });
+                });
             }.bind(this));
         },
     };
