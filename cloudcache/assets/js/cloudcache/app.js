@@ -452,8 +452,6 @@ $(function(){
          **/
         handleNewListSave: function() {
 
-            $('#listSortable').sortable({axis: "y", delay: 150});
-
             var renderChecklist = this.checklistTemplate;
             var rebindChecklistCheckboxEvents = this.rebindChecklistCheckboxEvents.bind(this);
 
@@ -662,8 +660,6 @@ $(function(){
 
             $('#listSortable')
                 .empty();
-
-            $('#listSortable').sortable({axis: "y", delay: 150});
 
             $list.find('.item').each(function(){
                 var $item = $('<div class="item" data-url="' + $(this).data('url') + '"><input type="checkbox"><span contenteditable="true"></span></div>');
@@ -995,6 +991,14 @@ $(function(){
     $(window).resize(util.debounce(function(){
         $('#notes-wrapper').mCustomScrollbar("update");
     },50));
+
+    $('#listSortable').sortable({
+        axis: "y",
+        delay: 150,
+        classes: {
+            "ui-sortable-helper": "sortableItemHelper",
+        }
+    });
 
     App.init();
 });
