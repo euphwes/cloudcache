@@ -321,7 +321,7 @@ $(function(){
             $('#editNoteTitle')
                 .on('keypress', function(e){
                     if (e.keyCode == 13) {
-                        $('#editNoteSave').trigger('click');
+                        $("#editNote").modal("toggle");
                         return false;
                     }
                 });
@@ -561,6 +561,14 @@ $(function(){
             $('#editListTitle').text('')
                 .trigger('change');
 
+            $('#editListTitle')
+                .on('keypress', function(e){
+                    if (e.keyCode == 13) {
+                        util.setEndOfContenteditable($('#editListContents > div > span:empty'));
+                        return false;
+                    }
+                });
+
             $('#editListContents')
                 .empty();
 
@@ -620,6 +628,14 @@ $(function(){
             $('#editListTitle')
                 .text($list.children('.title').text())
                 .trigger('change');
+
+            $('#editListTitle')
+                .on('keypress', function(e){
+                    if (e.keyCode == 13) {
+                        $("#editList").modal("toggle");
+                        return false;
+                    }
+                });
 
             $('#editListContents')
                 .empty();
