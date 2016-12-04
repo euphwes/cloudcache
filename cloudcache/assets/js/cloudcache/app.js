@@ -442,6 +442,74 @@ $(function(){
         },
 
         /**
+         * Handle the new list modal being clicked out by doing the following:
+         **/
+        handleNewListSave: function() {
+
+            var renderChecklist = this.checklistTemplate;
+            var rebindChecklistCheckboxEvents = this.rebindChecklistCheckboxEvents.bind(this);
+
+            var getCompleteNewNoteAndRender = function(listUrl){
+                $.ajax({
+                    url: listUrl,
+                    type: 'GET',
+                    timeout: 1000,
+                    success: function(data){
+                        var $newList = $(renderChecklist(data));
+                        $newList.appendTo(util.getShortestColumn());
+
+                        rebindChecklistCheckboxEvents();
+
+                        // apply iCheck checkboxes to the checklist checkboxes
+                        $('.checklist .item input').iCheck({
+                            checkboxClass: 'icheckbox_minimal-grey',
+                            radioClass: 'iradio_minimal-grey',
+                        });
+
+                        $newList.showThenAnimateCss('zoomIn');
+                    },
+                });
+            };
+
+            var saveItems = function(listUrl){
+                var deferreds = Array();
+                $('#editListContents')
+                    .find('.item[data-isnew]')
+                    .each(function(){
+                        if($(this).find('span').text()) {
+                            deferreds.push($.ajax({
+                                url: '/api/checklistitems/',
+                                type: 'POST',
+                                timeout: 1000,
+                                data: {
+                                    'text'      : $(this).find('span').text(),
+                                    'checklist' : listUrl,
+                                    'complete'  : $(this).find('input').prop('checked'),
+                                },
+                            }));
+                        }
+                    });
+
+                $.when.apply($, deferreds).done(function(){
+                    getCompleteNewNoteAndRender(listUrl);
+                });
+            };
+
+            $.ajax({
+                url: '/api/checklists/',
+                type: 'POST',
+                timeout: 1000,
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    'title' : $('#editListTitle').text().trim(),
+                }),
+                success: function(data){
+                    saveItems(data.url);
+                },
+            });
+        },
+
+        /**
          * Handle the new note div being clicked by doing the following:
          *      1) Hide the note modal's delete button
          *      2) Clear out the note modal title, and trigger 'change' so the placeholder text is displayed
@@ -484,10 +552,70 @@ $(function(){
         },
 
         /**
+         * Handle the new list div being clicked by doing the following:
+         **/
+        handleNewListClick: function(e){
+
+            $('#editListDelete').hide();
+
+            $('#editListTitle').text('')
+                .trigger('change');
+
+            $('#editListContents')
+                .empty();
+
+            var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
+            $('#editListContents').append($newItem);
+
+            $('#editListContents')
+                .on('ifChecked', 'input', function(e){
+                    $(this).parent().next().addClass('complete');
+                })
+                .on('ifUnchecked', 'input', function(e){
+                    $(this).parent().next().removeClass('complete');
+                });
+
+            // apply iCheck checkboxes to the checklist checkboxes
+            $('#editListContents .item input').iCheck({
+                checkboxClass: 'icheckbox_minimal-grey',
+                radioClass: 'iradio_minimal-grey',
+            });
+
+            $('#editList')
+                .on('keypress', '.item', function(e){
+                    if (e.which == 13) {
+                        var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
+                        $(this).after($newItem);
+                        // apply iCheck checkboxes to the checklist checkboxes
+                        $('#editListContents .item input').iCheck({
+                            checkboxClass: 'icheckbox_minimal-grey',
+                            radioClass: 'iradio_minimal-grey',
+                        });
+                        e.preventDefault();
+
+                        util.setEndOfContenteditable($('#editListContents > div > span:empty'));
+                    }
+                });
+
+            $('#editList')
+                .on('shown.bs.modal', function() {
+                    util.setEndOfContenteditable($('#editListTitle'));
+                })
+                .on('hide.bs.modal', function(){
+                    this.handleNewListSave.bind(this)();
+                    $('#editList, #editListTitle, #editListDelete').off();
+                }.bind(this));
+
+            $('#editList').modal('show');
+        },
+
+        /**
          *
          **/
         handleListClick: function(e) {
             var $list = $(e.target).closest('.checklist');
+
+            $('#editListDelete').show();
 
             $('#editListTitle')
                 .text($list.children('.title').text())
@@ -577,6 +705,7 @@ $(function(){
             });
 
             $('#new-note').on('click', this.handleNewNoteClick.bind(this));
+            $('#new-list').on('click', this.handleNewListClick.bind(this));
         },
 
         /**

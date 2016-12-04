@@ -113,6 +113,23 @@ class ChecklistList(ListCreateAPIView):
         """ Only show Checklists which are owned by the currently logged-in user. """
         return Checklist.objects.filter(owner=self.request.user)
 
+    def post(self, request, *args, **kwargs):
+        """ When creating a new Checklist, only allow the user to create new Checklist for themselves. """
+
+        # Get Account detail url for the currently logged-in user. Set that Account url as the data for 'owner'
+        # in this request, ignoring what's already there.
+        request.data['owner'] = AccountSerializer(request.user, context={'request': request}).data['url']
+
+        # Use the list serializer to build up the notebook, checking for validity, etc
+        # If valid, save the object and return a detail-style view along with status 201
+        # If invalid, return error messages along with status 400
+        list_serializer = ChecklistSerializer(data=request.data, context={'request': request})
+        if list_serializer.is_valid():
+            list_serializer.save()
+            return Response(list_serializer.data, status=HTTP_201_CREATED)
+
+        return Response(list_serializer.errors, status=HTTP_400_BAD_REQUEST)
+
 
 class ChecklistDetail(RetrieveUpdateDestroyAPIView):
     """ API endpoint which allows retrieving details for, updating, or deleting a specific Checklist. """
