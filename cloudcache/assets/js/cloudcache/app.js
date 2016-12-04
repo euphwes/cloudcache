@@ -172,7 +172,10 @@ $(function(){
          **/
         handleListModalListDelete: function($list) {
             var onConfirm = function(){
-                this.deleteList($list, function(){ $('#editList').modal('hide'); });
+                this.deleteList($list, function(){
+                    $('#editList, #editListTitle, #editListDelete').off();
+                    $('#editList').modal('hide');
+                });
             };
             util.confirm('Delete checklist?', 'This action cannot be reversed.', 'Delete', onConfirm.bind(this));
         },
