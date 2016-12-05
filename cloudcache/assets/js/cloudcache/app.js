@@ -25,6 +25,14 @@ $(function(){
                 (!(prop in proto) || proto[prop] !== obj[prop]);
         },
 
+        refreshFancyCheckboxes: function() {
+            // apply iCheck checkboxes to the checklist checkboxes
+            $('.item input').iCheck({
+                checkboxClass: 'icheckbox_minimal-grey',
+                radioClass: 'iradio_minimal-grey',
+            });
+        },
+
         /**
          * Cross-browser method to clear all text selections in the browser.
          **/
@@ -133,6 +141,8 @@ $(function(){
 
         noteTemplate: null,
         checklistTemplate: null,
+        newListItemTemplate: null,
+        listItemTemplate: null,
 
         /**
          * Initialize the app controller, perform all the setup stuff necessary.
@@ -143,6 +153,8 @@ $(function(){
             Handlebars.registerHelper('render', util.renderContents);
             this.noteTemplate = Handlebars.compile($('#note-template').html());
             this.checklistTemplate = Handlebars.compile($('#checklist-template').html());
+            this.newListItemTemplate = Handlebars.compile($('#list-item-new-template').html());
+            this.listItemTemplate = Handlebars.compile($('#list-item-template').html());
 
             this.wireEvents();
 
@@ -312,12 +324,7 @@ $(function(){
                         var $newList = $(renderChecklist(data));
                         $list.replaceWith($newList);
 
-                        // apply iCheck checkboxes to the checklist checkboxes
-                        $('.checklist .item input').iCheck({
-                            checkboxClass: 'icheckbox_minimal-grey',
-                            radioClass: 'iradio_minimal-grey',
-                        });
-
+                        util.refreshFancyCheckboxes();
                         rebindChecklistCheckboxEvents();
 
                         $newList.showThenAnimateCss('zoomIn');
@@ -510,13 +517,8 @@ $(function(){
                         var $newList = $(renderChecklist(data));
                         $newList.appendTo(util.getShortestColumn());
 
+                        util.refreshFancyCheckboxes();
                         rebindChecklistCheckboxEvents();
-
-                        // apply iCheck checkboxes to the checklist checkboxes
-                        $('.checklist .item input').iCheck({
-                            checkboxClass: 'icheckbox_minimal-grey',
-                            radioClass: 'iradio_minimal-grey',
-                        });
 
                         $newList.showThenAnimateCss('zoomIn');
                     },
@@ -631,6 +633,8 @@ $(function(){
          **/
         handleNewListClick: function(e){
 
+            var newListItem = this.getNewListElement.bind(this);
+
             $('#editListDelete').hide();
 
             $('#editListTitle').text('')
@@ -647,8 +651,8 @@ $(function(){
             $('#listSortable')
                 .empty();
 
-            var $newItem = $('<div class="item" data-isnew="true"><div class="glyphicon glyphicon-th-large handle"></div><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
-            $('#listSortable').append($newItem);
+            $('#listSortable')
+                .append(newListItem());
 
             $('#editListContents')
                 .on('ifChecked', 'input', function(e){
@@ -665,28 +669,20 @@ $(function(){
                 util.setEndOfContenteditable($(this).find('span'));
             });
 
-            // apply iCheck checkboxes to the checklist checkboxes
-            $('#editListContents .item input').iCheck({
-                checkboxClass: 'icheckbox_minimal-grey',
-                radioClass: 'iradio_minimal-grey',
-            });
+            util.refreshFancyCheckboxes();
 
             $('#editList')
                 .on('keypress', '.item', function(e){
                     if (e.which == 13) {
-                        var $newItem = $('<div class="item" data-isnew="true"><div class="glyphicon glyphicon-th-large handle"></div><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
+                        var $newItem = newListItem();
                         $(this).after($newItem);
-                        // apply iCheck checkboxes to the checklist checkboxes
-                        $('#editListContents .item input').iCheck({
-                            checkboxClass: 'icheckbox_minimal-grey',
-                            radioClass: 'iradio_minimal-grey',
-                        });
-                        e.preventDefault();
+                        util.refreshFancyCheckboxes();
 
                         $('#editListContents .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
                         $newItem.attr('data-has-cursor', true);
 
                         util.setEndOfContenteditable($('#editListContents > ul > div > span:empty'));
+                        e.preventDefault();
                     }
                 });
 
@@ -702,10 +698,26 @@ $(function(){
             $('#editList').modal('show');
         },
 
+        getNewListElement: function() {
+            return $(this.newListItemTemplate({}));
+        },
+
+        getListElement: function($listItem) {
+            return $(this.listItemTemplate({
+                url: $listItem.data('url'),
+                text: $listItem.find('span').text(),
+                complete: $listItem.find('span').hasClass('complete'),
+            }));
+        },
+
         /**
          *
          **/
         handleListClick: function(e) {
+
+            var newListItem = this.getNewListElement.bind(this);
+            var getListItem = this.getListElement.bind(this);
+
             var $list = $(e.target).closest('.checklist');
 
             $('#editListDelete').show();
@@ -726,13 +738,7 @@ $(function(){
                 .empty();
 
             $list.find('.item').each(function(){
-                var $item = $('<div class="item" data-url="' + $(this).data('url') + '"><div class="glyphicon glyphicon-th-large handle"></div><input type="checkbox"><span contenteditable="true"></span></div>');
-                $item.find('span').text($(this).find('span').text());
-                if($(this).find('span').hasClass('complete')){
-                    $item.find('span').addClass('complete');
-                }
-                $item.find('input').prop('checked', $(this).find('input').prop('checked'));
-                $('#listSortable').append($item);
+                $('#listSortable').append(getListItem($(this)));
             });
 
             $('#editListContents')
@@ -743,8 +749,8 @@ $(function(){
                     $(this).parent().next().removeClass('complete');
                 });
 
-            var $newItem = $('<div class="item" data-isnew="true"><div class="glyphicon glyphicon-th-large handle"></div><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
-            $('#listSortable').append($newItem);
+            $('#listSortable')
+                .append(newListItem());
 
             // apply iCheck checkboxes to the checklist checkboxes
             $('#editListContents .item input').iCheck({
@@ -765,19 +771,16 @@ $(function(){
             $('#editList')
                 .on('keypress', '.item', function(e){
                     if (e.which == 13) {
-                        var $newItem = $('<div class="item" data-isnew="true"><div class="glyphicon glyphicon-th-large handle"></div><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
+                        var $newItem = newListItem();
                         $(this).after($newItem);
-                        // apply iCheck checkboxes to the checklist checkboxes
-                        $('#editListContents .item input').iCheck({
-                            checkboxClass: 'icheckbox_minimal-grey',
-                            radioClass: 'iradio_minimal-grey',
-                        });
-                        e.preventDefault();
+
+                        util.refreshFancyCheckboxes();
 
                         $('#listSortable .item[data-has-cursor="true"]').removeAttr('data-has-cursor');
                         $newItem.attr('data-has-cursor', true);
 
                         util.setEndOfContenteditable($('#editListContents > ul > div > span:empty'));
+                        e.preventDefault();
                     }
                 });
 
@@ -841,9 +844,7 @@ $(function(){
          * Bind event handlers to the checklist div checkboxes to update the checklist items when checked or unchecked.
          **/
         rebindChecklistCheckboxEvents: function() {
-
             $('.checklist .item input').off().on('ifToggled', function(e) {
-
                 var checked = $(e.target).is(':checked');
                 var $list   = $(e.target).parents('.checklist');
                 var $item   = $(e.target).parents('.item');
@@ -854,9 +855,7 @@ $(function(){
                     $item.find('span').removeClass('complete');
 
                 this.updateChecklistItem($item.data('url'), $item.find('span').text(), checked, $list.data('url'));
-
             }.bind(this));
-
         },
 
         /**
@@ -865,9 +864,7 @@ $(function(){
          **/
         buildNotes: function() {
 
-            var both = this.notes.concat(this.checklists);
-
-            both = both.sort(function(a,b){
+            var both = this.notes.concat(this.checklists).sort(function(a,b){
                 var keyA = new Date(a.created),
                     keyB = new Date(b.created);
                 return keyA - keyB;
@@ -885,12 +882,7 @@ $(function(){
                 }
             }.bind(this));
 
-            // apply iCheck checkboxes to the checklist checkboxes
-            $('.checklist .item input').iCheck({
-                checkboxClass: 'icheckbox_minimal-grey',
-                radioClass: 'iradio_minimal-grey',
-            });
-
+            util.refreshFancyCheckboxes();
             this.rebindChecklistCheckboxEvents();
         },
 

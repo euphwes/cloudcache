@@ -75,6 +75,25 @@
         </div>
     </script>
 
+    <script id='list-item-new-template' type='text/x-handlebars-template'>
+        <div class="item" data-isnew="true">
+            <div class="glyphicon glyphicon-th-large handle"></div>
+            <input type="checkbox">
+            <span contenteditable="true" data-placeholder="Item..."></span>
+        </div>
+    </script>
+
+    <script id='list-item-template' type='text/x-handlebars-template'>
+        <div class="item" data-url="{{url}}">
+            <div class="glyphicon glyphicon-th-large handle"></div>
+            {{#if complete}}
+            <input type="checkbox" checked><span class="complete" contenteditable="true">{{text}}</span>
+            {{else}}
+            <input type="checkbox"><span contenteditable="true">{{text}}</span>
+            {{/if}}
+        </div>
+    </script>
+
     <script id='checklist-template' type='text/x-handlebars-template'>
         <div class="cc-element checklist" data-url="{{url}}" data-owner-url="{{owner}}">
             <div class="title">
