@@ -175,20 +175,33 @@
 
     .item {
         margin: 0 auto;
-        padding: 3px 15px;
+        padding: 3px 10px;
 
         border-top: 1px solid @off-white;
         border-bottom: 1px solid @off-white;
+
+        .glyphicon {
+            transition: opacity 0.1s ease;
+            opacity: 0.0;
+            height: 18px;
+        }
+
+        .glyphicon.glyphicon-th-large {
+            margin-right: 10px;
+        }
+
+        &:hover {
+            .glyphicon {
+                transition: opacity 0.1s ease;
+                opacity: 0.5;
+                cursor: move;
+            }
+        }
     }
 
     .item[data-has-cursor="true"] {
         border-top: 1px solid lightgrey;
         border-bottom: 1px solid lightgrey;
-    }
-
-    .item:hover, .item:focus,  {
-        // make delete button visible when I add that
-        // make re-order drag element thing visible when I add that
     }
 }
 

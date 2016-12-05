@@ -647,7 +647,7 @@ $(function(){
             $('#listSortable')
                 .empty();
 
-            var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
+            var $newItem = $('<div class="item" data-isnew="true"><div class="glyphicon glyphicon-th-large handle"></div><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
             $('#listSortable').append($newItem);
 
             $('#editListContents')
@@ -674,7 +674,7 @@ $(function(){
             $('#editList')
                 .on('keypress', '.item', function(e){
                     if (e.which == 13) {
-                        var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
+                        var $newItem = $('<div class="item" data-isnew="true"><div class="glyphicon glyphicon-th-large handle"></div><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
                         $(this).after($newItem);
                         // apply iCheck checkboxes to the checklist checkboxes
                         $('#editListContents .item input').iCheck({
@@ -726,7 +726,7 @@ $(function(){
                 .empty();
 
             $list.find('.item').each(function(){
-                var $item = $('<div class="item" data-url="' + $(this).data('url') + '"><input type="checkbox"><span contenteditable="true"></span></div>');
+                var $item = $('<div class="item" data-url="' + $(this).data('url') + '"><div class="glyphicon glyphicon-th-large handle"></div><input type="checkbox"><span contenteditable="true"></span></div>');
                 $item.find('span').text($(this).find('span').text());
                 if($(this).find('span').hasClass('complete')){
                     $item.find('span').addClass('complete');
@@ -743,7 +743,7 @@ $(function(){
                     $(this).parent().next().removeClass('complete');
                 });
 
-            var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
+            var $newItem = $('<div class="item" data-isnew="true"><div class="glyphicon glyphicon-th-large handle"></div><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
             $('#listSortable').append($newItem);
 
             // apply iCheck checkboxes to the checklist checkboxes
@@ -765,7 +765,7 @@ $(function(){
             $('#editList')
                 .on('keypress', '.item', function(e){
                     if (e.which == 13) {
-                        var $newItem = $('<div class="item" data-isnew="true"><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
+                        var $newItem = $('<div class="item" data-isnew="true"><div class="glyphicon glyphicon-th-large handle"></div><input type="checkbox"><span contenteditable="true" data-placeholder="Item..."></span></div>');
                         $(this).after($newItem);
                         // apply iCheck checkboxes to the checklist checkboxes
                         $('#editListContents .item input').iCheck({
@@ -1058,6 +1058,8 @@ $(function(){
     $('#listSortable').sortable({
         axis: "y",
         delay: 150,
+        handle: ".handle",
+        containment: "parent",
         classes: {
             "ui-sortable-helper": "sortableItemHelper",
         }
