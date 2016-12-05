@@ -110,12 +110,11 @@ $(function(){
             $.confirm({
                 title: title,
                 content: content,
-                theme: 'black',
                 animation: 'top',
                 closeAnimation: 'bottom',
                 columnClass: 'col-md-8 col-md-offset-6 col-sm-20',
                 confirmButton: confirmButton,
-                confirmButtonClass: 'btn-danger',
+                confirmButtonClass: "btn-danger",
                 cancelButton: 'Cancel',
                 confirm: onConfirm,
             });
@@ -160,7 +159,10 @@ $(function(){
          **/
         handleNoteModalNoteDelete: function($note) {
             var onConfirm = function(){
-                this.deleteNote($note, function(){ $('#editNote').modal('hide'); });
+                this.deleteNote($note, function(){
+                    $('#editNote, #editNoteTitle, #editNoteDelete').off();
+                    $('#editNote').modal('hide');
+                });
             };
             util.confirm('Delete note?', 'This action cannot be reversed.', 'Delete', onConfirm.bind(this));
         },
@@ -344,6 +346,8 @@ $(function(){
 
             var $note = $(e.target).closest('.note');
 
+            $('#editNoteDelete').show();
+
             $('#editNoteTitle')
                 .text($note.children('.title').text())
                 .trigger('change');
@@ -363,7 +367,7 @@ $(function(){
                 .on('hide.bs.modal', function(){
                     this.handleEditNoteSave($note);
                     $note.showThenAnimateCss('zoomIn');
-                    $('#editNote, #editNoteTitle, #editNoteSave, #editNoteDelete').off();
+                    $('#editNote, #editNoteTitle, #editNoteDelete').off();
                 }.bind(this));
 
             $('#editNoteTitle')
