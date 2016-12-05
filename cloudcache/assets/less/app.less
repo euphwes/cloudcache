@@ -7,44 +7,32 @@
 // Pad the main content wrapper to the same height as the navbar
 // so that all content falls underneath the navbar
 @content-padding-top:        1.25 * @navbar-height;
-@content-padding-top-mobile: 1.25 * @navbar-height-mobile;
+@content-padding-bottom:     20px;
 
-// Pad the sides so that
 @content-padding-side:        8%;
-@content-padding-side-mobile: 2.5%;
 
 .content-wrapper {
     padding-top:    @content-padding-top;
     padding-left:   @content-padding-side;
     padding-right:  @content-padding-side;
-    padding-bottom: 0;
+    padding-bottom: @content-padding-bottom;
 
     background-color: @bg-grey;
     min-height: 100%;
-
-    .responsive-mobile({
-        padding-top:    @content-padding-top-mobile;
-        padding-left:   @content-padding-side-mobile;
-        padding-right:  @content-padding-side-mobile;
-    })
 }
 
 
 // ----------------------------- Section wrappers -----------------------------
 
-@section-padding: 20px;
-
-// Both notebook and note sections get top/bottom padding
-.section-wrapper {
-    margin-top:    @section-padding;
-}
+@section-margin: 20px;
 
 #notes-wrapper {
-    max-height: ~"calc(100% - @{section-padding} - @{section-padding} - @{content-padding-top} - 60px)";
-    overflow-y: auto;
+    margin-bottom: @section-margin;
+    max-height:    ~"calc(100% - @{content-padding-top} - 30px)";
+    overflow-y:    auto;
 }
 
-// --------------------- Note and notebook common styles ----------------------
+// --------------------- Note and checklist common styles ----------------------
 
 @cc-el-side-margin:          0;  // Unnecessary because of Bootstrap's column sidepadding
 @cc-el-top-bottom-margin: 10px;  // Match Bootstrap's column 10px side padding, create equal spacing on all sides
@@ -53,7 +41,26 @@
 @cc-el-transition: all 0.3s ease;
 @cc-el-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.2), 0 1px 5px 0 rgba(0,0,0,0.12);
 
+@cc-padding-top:  0.625em;
+@cc-padding-side: 1em;
+
+@title-font-size:    1em;
+@title-font-weight:  bold;
+
+@contents-font-size:  0.875em;
+@contents-min-height: 1em;
+
+@note-hover-shadow:     0 2px 15px rgba(0,0,0,0.30);
+@note-hover-transition: box-shadow 0.3s ease;
+
 .cc-element {
+    background: white;
+
+    cursor: default;
+    .user-select(none);
+
+    padding: @cc-padding-top @cc-padding-side;
+
     display: inline-block;
     width: 100%;
     margin: @cc-el-top-bottom-margin @cc-el-side-margin;
@@ -63,6 +70,48 @@
 
     .border-radius(@cc-el-border-radius);
     .box-shadow(@cc-el-shadow);
+
+    .title {
+        font-size:   @title-font-size;
+        font-weight: @title-font-weight;
+    }
+
+    .contents {
+        font-size:  @contents-font-size;
+        min-height: @contents-min-height;
+
+        padding-top: 0.625em;
+        padding-bottom: 1em;
+
+        word-break: break-all;
+    }
+
+    .toolbar {
+        span {
+            transition: opacity 0.3s ease;
+            opacity: 0.0;
+
+            &:hover {
+                transition: all 0.25s ease;
+                opacity: 1;
+            }
+        }
+
+        .glyphicon-trash:hover {
+            color: #660000;
+        }
+    }
+
+    &:hover {
+        transition: @note-hover-transition;
+        .box-shadow(@note-hover-shadow);
+
+        .toolbar span {
+            transition: opacity 0.3s ease;
+            opacity: 0.75;
+            cursor: pointer;
+        }
+    }
 }
 
 // Help <div> and <span> display inline next to each other in a parent container
@@ -89,111 +138,92 @@
     //margin-left: 2px;
     color: darken(#b3b3b3, 10%);
 }
+*[data-placeholder]:empty:focus:not([data-div-placeholder-content]):before {
+    content: attr(data-placeholder);
+    float: left;
+    //margin-left: 2px;
+    color: darken(#b3b3b3, 10%);
+}
 
-// ------------------------------- Note styles --------------------------------
+// ----------------------------- Checklist styles -----------------------------
 
-@note-hover-shadow:     0 2px 15px rgba(0,0,0,0.30);
-@note-hover-transition: box-shadow 0.3s ease;
+.checklist, #editList {
+    .item {
+        display: flex;
+        align-items: center;
+        margin: 5px auto;
 
-@note-padding-top:  0.625em;
-@note-padding-side: 1em;
-
-@title-font-size:    1em;
-@title-font-weight:  bold;
-
-@contents-font-size:  0.75em;
-@contents-min-height: 1em;
-
-@para-margin-bottom: 0.75em;
-
-.note {
-    background: white;
-
-    padding: @note-padding-top @note-padding-side;
-
-    cursor: default;
-    .user-select(none);
-
-    &:hover {
-        transition: @note-hover-transition;
-        .box-shadow(@note-hover-shadow);
-
-        .toolbar span {
-            transition: opacity 0.3s ease;
-            opacity: 0.75;
-            cursor: pointer;
+        input {
+            margin: 0;
         }
-    }
 
-    .title {
-        font-size:   @title-font-size;
-        font-weight: @title-font-weight;
-    }
-
-    .contents {
-        font-size:  @contents-font-size;
-        min-height: @contents-min-height;
-
-        padding-top: 0.625em;
-        padding-bottom: 1em;
-
-        word-break: break-all;
-    }
-
-    .toolbar {
         span {
-            transition: opacity 0.3s ease;
-            opacity: 0.0;
-
-            &:hover {
-                transition: all 0.25s ease;
-                opacity: 1;
-            }
-
-            .responsive-mobile({
-                display: none;
-            })
+            cursor: text;
+            padding-left: 1px;
+            display: block;
+            margin-left: 10px;
         }
 
-        .glyphicon-trash:hover {
-            color: #660000;
+        .complete {
+            text-decoration: line-through;
+            opacity: 0.75;
+        }
+    }
+}
+
+#editList {
+
+    .item {
+        margin: 0 auto;
+        padding: 3px 10px;
+
+        border-top: 1px solid @off-white;
+        border-bottom: 1px solid @off-white;
+
+        .glyphicon {
+            transition: opacity 0.1s ease;
+            opacity: 0.0;
+            height: 18px;
+        }
+
+        .glyphicon.glyphicon-th-large {
+            margin-right: 10px;
+        }
+
+        &:hover {
+            .glyphicon {
+                transition: opacity 0.1s ease;
+                opacity: 0.5;
+                cursor: move;
+            }
         }
     }
 
-    .responsive-mobile({
-        padding: (2.25 * @note-padding-top) (2.25 * @note-padding-side);
-        .title {
-            font-size: 2.75 * @title-font-size;
-        }
-        .contents {
-            font-size: 2.75 * @contents-font-size;
-        }
-    })
+    .item[data-has-cursor="true"] {
+        border-top: 1px solid lightgrey;
+        border-bottom: 1px solid lightgrey;
+    }
 }
 
 // --------------------------- New note placeholder ---------------------------
 
-@new-note-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.2), 0 1px 5px 0 rgba(0,0,0,0.12);
+#new-note, #new-list {
 
-.new-note {
-    font-size: 1em;
-    padding: 15px;
-    background: white;
-    color: darken(#b3b3b3, 15%);
-    .box-shadow(@new-note-shadow);
+    background: @cc-theme;
     cursor: pointer;
 
-    .responsive-mobile({
-        font-size: 2.25em;
-        padding: 30px;
-    })
-}
+    [class*=icono-] {
+        color: @off-white;
+    }
 
-#new-note-wrapper {
-    display: none;
+    margin: auto 10px;
 }
 
 // ------------------- Note edit modal Bootstrap overrides --------------------
+
+.modal-backdrop {
+   background-color: @cc-theme-trim !important;
+}
 
 .modal {
     margin-top: 80px;
@@ -222,95 +252,39 @@
             max-height: 400px;
             overflow-y: auto;
         }
+
+        .modal-footer {
+            .glyphicon-trash:hover {
+                color: #660000;
+            }
+
+            .glyphicon:hover {
+                opacity: 0.75;
+                cursor: pointer;
+            }
+        }
     }
-
-    .responsive-mobile({
-
-        margin-top: @navbar-height-mobile + 10px;
-
-        .modal-dialog {
-            width: 90%;
-            margin: 20px auto;
-        }
-
-        .modal-content {
-
-            .modal-header {
-                padding: 30px 30px 0 30px;
-            }
-
-            .modal-title {
-                font-size: 2.75em;
-            }
-
-            .modal-body {
-                font-size: 2em;
-                padding: 30px;
-                max-height: 600px;
-            }
-
-            .modal-footer {
-                padding: 30px;
-
-                button {
-                    font-size: 2.25em;
-                }
-            }
-        }
-
-    })
 }
 
-#editNotebook {
-    .modal-header {
-        padding: 15px;
+#editList {
+    .modal-body {
+        padding-left: 0;
+        padding-right: 0;
     }
+}
 
-    .modal-title {
-        font-size: 1em;
-    }
+#listSortable {
+    padding: 0;
+}
 
-    .responsive-mobile({
-        .modal-header {
-            padding: 30px;
-        }
-
-        .modal-title {
-            font-size: 2em;
-        }
-    })
+.sortableItemHelper {
+    background-color: darken(@off-white, 8%);
 }
 
 // ------------------------- jQuery-confirm overrides -------------------------
 
-.jconfirm.jconfirm-black .jconfirm-box {
+.jconfirm .jconfirm-box {
     border-radius: @cc-el-border-radius;
-
-    .responsive-mobile({
-
-        padding: 45px 30px 0 30px;
-
-        .title-c {
-            font-size: 2.75em;
-        }
-
-        .content-pane {
-            margin-top: 30px;
-            font-size: 2em;
-        }
-
-        .buttons {
-
-            margin-top: 30px;
-            margin-bottom: 30px;
-
-            button {
-                margin-left: 20px;
-                font-size: 2em;
-            }
-        }
-
-    })
 }
 
 // ----------------------- Default text section styles ------------------------
@@ -319,22 +293,4 @@
     padding-top: 40px;
     text-align: center;
     color: #757575;
-
-    .responsive-mobile({
-
-        padding-top: 60px;
-
-        h2 {
-            font-size: 4.5em;
-        }
-
-        h3 {
-            padding-top: 30px;
-            padding-left: 15px;
-            padding-right: 15px;
-            font-size: 2.75em;
-        }
-
-    })
-
 }

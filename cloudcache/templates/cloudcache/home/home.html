@@ -10,48 +10,14 @@
 </head>
 <body oncontextmenu="return false;" spellcheck="false">
 
-    <nav id="menu" class="slide-menu">
-        <header>
-            <h3 class="text-center">Notebooks</h3>
-        </header>
-        <div class="tree-wrapper">
-            <div id="tree"></div>
-        </div>
-        <ul class="nav nav-pills nav-stacked">
-            <li id="addNotebook">
-                <a>Add notebook</a>
-            </li>
-            <li id="renameNotebook">
-                <a>Rename notebook</a>
-            </li>
-            <li id="deleteNotebook">
-                <a>Delete notebook</a>
-            </li>
-            <li>
-                <a id="id_navbar_logout" href="{% url 'cloudcache:logout' %}">Log Out</a>
-            </li>
-        </ul>
-    </nav>
-
-    <main id="panel" class="panel-wrapper">
+    <main id="panel">
 
         <header class="cc-navbar">
-            <button class="hamburger">
-                <span>toggle menu</span>
-            </button>
-            <div class="breadcrumbs"></div>
+            <div id="new-note" class="inline hvr-grow-rotate"><span class="icono-document"></span></div>
+            <div id="new-list" class="inline hvr-grow-rotate"><span class="icono-list"></span></div>
         </header>
 
         <div class="content-wrapper">
-            <div id="default-view">
-                <h2>Welcome!</h2>
-                <h3>Use the menu to create a new notebook, or choose an existing one.</h3>
-            </div>
-            <div id="new-note-wrapper" class="row section-wrapper">
-                <div class="col-md-8 col-md-offset-6">
-                    <div class="new-note">Take a new note...</div>
-                </div>
-            </div>
             <div id="notes-wrapper" class="row section-wrapper">
                 <div class="col-md-4 note-col"></div>
                 <div class="col-md-4 note-col"></div>
@@ -71,22 +37,25 @@
           </div>
           <div class="modal-body" id="editNoteContents" contenteditable="true" data-placeholder="Take a note..."></div>
           <div class="modal-footer">
-            <button id="editNoteSave" type="button" class="btn btn-primary">Save</button>
-            <button id="editNoteDelete" type="button" class="btn btn-danger pull-left">Delete</button>
+            <span id="editNoteDelete" class="glyphicon glyphicon-trash pull-right"></span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Notebook modal -->
-    <div class="modal fade" id="editNotebook" tabindex="-1" role="dialog">
+    <!-- Checklist modal -->
+    <div class="modal fade" id="editList" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title" id="editNotebookName" contenteditable="true" data-placeholder="Notebook name..."></h4>
+            <h4 class="modal-title" id="editListTitle" contenteditable="true" data-placeholder="Title"></h4>
+          </div>
+          <div class="modal-body" id="editListContents">
+              <ul id="listSortable">
+              </ul>
           </div>
           <div class="modal-footer">
-            <button id="editNotebookSave" type="button" class="btn btn-primary">Save</button>
+            <span id="editListDelete" class="glyphicon glyphicon-trash pull-right"></span>
           </div>
         </div>
       </div>
@@ -95,11 +64,52 @@
     <!-- Handlebars.js note template -->
     {% verbatim %}
     <script id='note-template' type='text/x-handlebars-template'>
-        <div class="cc-element note" data-url="{{url}}" data-notebook-url="{{notebook}}">
+        <div class="cc-element note" data-url="{{url}}" data-owner-url="{{owner}}">
             <div class="title">
                 <div class="inline">{{title}}</div>
             </div>
             <div class="contents">{{render content}}</div>
+            <div class="toolbar">
+                <span class="glyphicon glyphicon-trash pull-right"></span>
+            </div>
+        </div>
+    </script>
+
+    <script id='list-item-new-template' type='text/x-handlebars-template'>
+        <div class="item" data-isnew="true">
+            <div class="glyphicon glyphicon-th-large handle"></div>
+            <input type="checkbox">
+            <span contenteditable="true" data-placeholder="Item..."></span>
+        </div>
+    </script>
+
+    <script id='list-item-template' type='text/x-handlebars-template'>
+        <div class="item" data-url="{{url}}">
+            <div class="glyphicon glyphicon-th-large handle"></div>
+            {{#if complete}}
+            <input type="checkbox" checked><span class="complete" contenteditable="true">{{text}}</span>
+            {{else}}
+            <input type="checkbox"><span contenteditable="true">{{text}}</span>
+            {{/if}}
+        </div>
+    </script>
+
+    <script id='checklist-template' type='text/x-handlebars-template'>
+        <div class="cc-element checklist" data-url="{{url}}" data-owner-url="{{owner}}">
+            <div class="title">
+                <div class="inline">{{title}}</div>
+            </div>
+            <div class="contents">
+                {{#each items}}
+                <div class="item" data-url="{{url}}">
+                    {{#if complete}}
+                    <input type="checkbox" checked><span class="complete">{{text}}</span>
+                    {{else}}
+                    <input type="checkbox"><span>{{text}}</span>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
             <div class="toolbar">
                 <span class="glyphicon glyphicon-trash pull-right"></span>
             </div>
