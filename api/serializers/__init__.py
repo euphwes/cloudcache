@@ -2,3 +2,4 @@ from .AccountSerializer import AccountSerializer
 from .NoteSerializer import NoteSerializer
 from .ChecklistItemSerializer import ChecklistItemSerializer
 from .ChecklistSerializer import ChecklistSerializer
+from .CategorySerializer import CategorySerializer

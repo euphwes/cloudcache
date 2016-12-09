@@ -163,3 +163,26 @@ class ChecklistItemDetail(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         """ Only show ChecklistItems which are in Checklists that are owned by the currently logged-in user. """
         return ChecklistItem.objects.filter(checklist__owner=self.request.user)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+class CategoryList(ListCreateAPIView):
+    """ API endpoint for listing and creating Categories. Requires authentication. """
+
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """ Only show ChecklistItems which are in Checklists that are owned by the currently logged-in user. """
+        return ChecklistItem.objects.filter(checklist__owner=self.request.user)
+
+
+class ChecklistItemDetail(RetrieveUpdateDestroyAPIView):
+    """ API endpoint which allows retrieving details for, updating, or deleting a specific ChecklistItem. """
+
+    serializer_class = ChecklistItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """ Only show ChecklistItems which are in Checklists that are owned by the currently logged-in user. """
+        return ChecklistItem.objects.filter(checklist__owner=self.request.user)
