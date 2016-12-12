@@ -4,9 +4,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from authentication.models import Account
-from cloudcache.models import Note, ChecklistItem, Checklist
+from cloudcache.models import Note, ChecklistItem, Checklist, Category
 
-from ...serializers import AccountSerializer, NoteSerializer, ChecklistItemSerializer, ChecklistSerializer
+from ...serializers import AccountSerializer, NoteSerializer, ChecklistItemSerializer, ChecklistSerializer,\
+    CategorySerializer
 from ...permissions import IsAccountSelfOrReadOnly
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -173,16 +174,34 @@ class CategoryList(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """ Only show ChecklistItems which are in Checklists that are owned by the currently logged-in user. """
-        return ChecklistItem.objects.filter(checklist__owner=self.request.user)
+        """ Only show Categories that are owned by the currently logged-in user. """
+        return Category.objects.filter(owner=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        """ When creating a new Category, only allow the user to create new Category for themselves. """
+
+        # Get Account detail url for the currently logged-in user. Set that Account url as the data for 'owner'
+        # in this request, ignoring what's already there.
+        request.data['owner'] = AccountSerializer(request.user, context={'request': request}).data['url']
+
+        # Use the list serializer to build up the category, checking for validity, etc
+        # If valid, save the object and return a detail-style view along with status 201
+        # If invalid, return error messages along with status 400
+        category_serializer = CategorySerializer(data=request.data, context={'request': request})
+        if category_serializer.is_valid():
+            category_serializer.save()
+            return Response(category_serializer.data, status=HTTP_201_CREATED)
+
+        return Response(category_serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
-class ChecklistItemDetail(RetrieveUpdateDestroyAPIView):
-    """ API endpoint which allows retrieving details for, updating, or deleting a specific ChecklistItem. """
 
-    serializer_class = ChecklistItemSerializer
+class CategoryDetail(RetrieveUpdateDestroyAPIView):
+    """ API endpoint which allows retrieving details for, updating, or deleting a specific Category. """
+
+    serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """ Only show ChecklistItems which are in Checklists that are owned by the currently logged-in user. """
-        return ChecklistItem.objects.filter(checklist__owner=self.request.user)
+        """ Only show Categories that are owned by the currently logged-in user. """
+        return Category.objects.filter(owner=self.request.user)

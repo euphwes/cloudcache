@@ -1,4 +1,4 @@
-from cloudcache.models import ChecklistItem
+from cloudcache.models import Category
 from rest_framework.serializers import HyperlinkedModelSerializer
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -7,7 +7,7 @@ class CategorySerializer(HyperlinkedModelSerializer):
     """ Serializer for read/write actions on the Category model list and detail endpoints. """
 
     class Meta:
-        model = ChecklistItem
+        model = Category
         fields = ('id', 'owner', 'name', 'created', 'modified', 'url')
 
         extra_kwargs = {
