@@ -220,6 +220,7 @@ $(function(){
                     'title'    : editTitle,
                     'content'  : editContent,
                     'owner'    : $note.data('owner-url'),
+                    'category' : $note.data('category-url'),
                 },
                 success: function(data){
                     $note.children('.title').text(editTitle);
@@ -316,6 +317,7 @@ $(function(){
                     data: {
                         'title'    : editTitle,
                         'owner'    : $list.data('owner-url'),
+                        'category' : $list.data('category-url'),
                     },
                     success: function(data){
                         data.items = data.items.sort(function(a,b){
