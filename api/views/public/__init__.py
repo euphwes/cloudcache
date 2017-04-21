@@ -205,3 +205,69 @@ class CategoryDetail(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         """ Only show Categories that are owned by the currently logged-in user. """
         return Category.objects.filter(owner=self.request.user)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+class CategoryChecklistsList(ListCreateAPIView):
+    """ API endpoints for listing only those Checklists under a specific category, and for creating Checklists in that
+    category. Requires authentication. """
+
+    serializer_class = ChecklistSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        """ Retrieve only those Checklists which are contained in the Category whose ID is <pk>. """
+
+        checklists = self.get_queryset().filter(category__id=pk)
+        serializer = ChecklistSerializer(checklists, many=True, context={'request': request})
+
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        """ Create a new Checklist under the Category whose ID is <pk>. """
+
+        request.data['category'] = '/api/categories/{}/'.format(pk)
+
+        serializer = ChecklistSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        """ Only those Checklists which are in Categories owned by the currently logged-in user. """
+        return Checklist.objects.filter(category__owner=self.request.user)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+class CategoryNotesList(ListCreateAPIView):
+    """ API endpoints for listing only those Notes under a specific category, and for creating Notes in that
+    category. Requires authentication. """
+
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        """ Retrieve only those Notes which are contained in the Category whose ID is <pk>. """
+
+        notes = self.get_queryset().filter(category__id=pk)
+        serializer = NoteSerializer(notes, many=True, context={'request': request})
+
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        """ Create a new Note under the Category whose ID is <pk>. """
+
+        request.data['category'] = '/api/categories/{}/'.format(pk)
+
+        serializer = NoteSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        """ Only those Notes which are in Categories owned by the currently logged-in user. """
+        return Note.objects.filter(category__owner=self.request.user)
