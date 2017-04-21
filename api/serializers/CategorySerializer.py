@@ -8,10 +8,12 @@ class CategorySerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('id', 'owner', 'name', 'created', 'modified', 'url')
+        fields = ('id', 'owner', 'name', 'created', 'modified', 'url', 'checklists', 'notes')
 
         extra_kwargs = {
             'id': {'read_only': True},  # Shouldn't be able to edit ID
+            'checklists': {'read_only': True},  # Shouldn't be able to edit lists, do that in lists details
+            'notes': {'read_only': True},  # Shouldn't be able to edit lists, do that in notes details
         }
 
     def __init__(self, *args, **kwargs):

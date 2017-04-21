@@ -8,7 +8,7 @@ class NoteSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = Note
-        fields = ('id', 'title', 'content', 'owner', 'created', 'modified', 'url')
+        fields = ('id', 'title', 'content', 'owner', 'created', 'modified', 'url', 'category')
 
         extra_kwargs = {
             'id': {'read_only': True},    # Shouldn't be able to edit ID
