@@ -23,7 +23,7 @@ pyreadline==2.1
 python-dateutil==2.5.2
 python-http-client==1.2.3
 PyYAML==5.4
-requests==2.6.2
+requests==2.20.0
 semantic-version==2.5.0
 sendgrid==2.2.1
 simplegeneric==0.8.1
