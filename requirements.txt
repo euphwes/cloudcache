@@ -22,7 +22,7 @@ psycopg2==2.6.2
 pyreadline==2.1
 python-dateutil==2.5.2
 python-http-client==1.2.3
-PyYAML==3.11
+PyYAML==5.4
 requests==2.6.2
 semantic-version==2.5.0
 sendgrid==2.2.1
